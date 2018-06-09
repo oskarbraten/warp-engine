@@ -21,3 +21,4 @@
 
 export { default as Node } from './lib/Node';
 export { default as Scene } from './lib/Scene';
+export { default as BoxGeometry } from './lib/geometry/BoxGeometry';
