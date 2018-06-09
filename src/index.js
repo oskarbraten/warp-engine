@@ -20,5 +20,9 @@
  */
 
 export { default as Node } from './lib/Node';
+export { default as Mesh } from './lib/Mesh';
 export { default as Scene } from './lib/Scene';
 export { default as BoxGeometry } from './lib/geometry/BoxGeometry';
+export { default as BasicMaterial } from './lib/BasicMaterial';
+export { default as Renderer } from './lib/Renderer';
+export { default as PerspectiveCamera } from './lib/camera/PerspectiveCamera';

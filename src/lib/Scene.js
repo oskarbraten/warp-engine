@@ -3,10 +3,11 @@
  * Just a special Node, with the additional function getDrawableNodes.
  */
 
+import { vec4 } from 'gl-matrix';
 import Node from './Node';
 
 export default class Scene extends Node {
-    constructor(background = 0x000000) {
+    constructor(background = vec4.fromValues(1.0, 1.0, 1.0, 1.0)) {
         super();
         this.background = background;
     }
