@@ -1,10 +1,13 @@
 
 import { mat4, vec4 } from 'gl-matrix';
 
-import BasicShader from './BasicShader';
+import BasicShader from './shading/BasicShader';
 
 import GeometryBuffer from './GeometryBuffer';
 import Drawable from './Drawable';
+
+const POSITION_LOCATION = 0;
+const UV_LOCATION = 1;
 
 export default class Renderer {
     constructor(width, height) {
@@ -96,8 +99,8 @@ export default class Renderer {
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, geometryBuffer.buffer);
 
         // bind vPosition attribute.
-        this.gl.vertexAttribPointer(shader.attributeLocations.vPosition, 4, this.gl.FLOAT, false, 0, 0);
-        this.gl.enableVertexAttribArray(shader.attributeLocations.vPosition);
+        this.gl.vertexAttribPointer(POSITION_LOCATION, 4, this.gl.FLOAT, false, 0, 0);
+        this.gl.enableVertexAttribArray(POSITION_LOCATION);
 
         if (shader.attributeLocations.vNormal > -1) {
             this.gl.vertexAttribPointer(shader.attributeLocations.vNormal, 3, this.gl.FLOAT, false, 0, geometryBuffer.bufferNormalsOffset);
@@ -105,8 +108,8 @@ export default class Renderer {
         }
 
         if (shader.attributeLocations.vTextureCoordinate > -1) {
-            this.gl.vertexAttribPointer(shader.attributeLocations.vTextureCoordinate, 2, this.gl.FLOAT, false, 0, geometryBuffer.bufferUvsOffset);
-            this.gl.enableVertexAttribArray(shader.attributeLocations.vTextureCoordinate);
+            this.gl.vertexAttribPointer(UV_LOCATION, 2, this.gl.FLOAT, false, 0, geometryBuffer.bufferUvsOffset);
+            this.gl.enableVertexAttribArray(UV_LOCATION);
         }
 
         if (shader.attributeLocations.vTangent > -1) {
@@ -121,10 +124,14 @@ export default class Renderer {
         if (shader instanceof BasicShader) {
             this.gl.uniform4fv(shader.uniformLocations.color, mesh.material.uniforms.color);
 
-            this.gl.activeTexture(this.gl.TEXTURE0);
-            this.gl.bindTexture(this.gl.TEXTURE_2D, mesh.material.uniforms.map);
-            this.gl.uniform1i(shader.uniformLocations.map, 0);
+            
+            this.gl.uniform1i(shader.uniformLocations.hasMap, mesh.material.uniforms.hasMap);
 
+            if (mesh.material.uniforms.hasMap) {
+                this.gl.activeTexture(this.gl.TEXTURE0);
+                this.gl.bindTexture(this.gl.TEXTURE_2D, mesh.material.uniforms.map);
+                this.gl.uniform1i(shader.uniformLocations.map, 0);
+            }
         }
 
         //  else if (shader instanceof PhongShader) {
@@ -274,6 +281,7 @@ export default class Renderer {
         this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, 1, 1, 0, this.gl.RGBA, this.gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 255]));
 
         image.addEventListener('load', () => {
+
             this.gl.activeTexture(this.gl.TEXTURE0);
             this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
             this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, image);

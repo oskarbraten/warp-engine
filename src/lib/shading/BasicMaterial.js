@@ -12,11 +12,7 @@ export default class BasicMaterial extends Material {
 
         this.uniforms.color = color;
         this.uniforms.map = map;
-        this.uniforms.hasMap = false;
-
-        if (map !== null) {
-            this.uniforms.hasMap = true;
-        }
+        this.uniforms.hasMap = map ? true : false;
 
     }
 }

@@ -28,7 +28,7 @@ export default class GeometryBuffer {
     constructor(gl, geometry) {
 
         this.type = geometry.type;
-        this.numberOfVertices = geometry.vertices.length;
+        this.numberOfVertices = Math.round(geometry.vertices.length / 4);
 
         // ELEMENT ARRAY BUFFER
         if (geometry.indices !== undefined) {
@@ -64,7 +64,7 @@ export default class GeometryBuffer {
 
         if (geometry.vertices !== undefined) {
             arrays.push(geometry.vertices);
-            this.bufferNormalsOffset = geometry.vertices.length * (4 * 4); // 4 components of 4 bytes (32-bit).
+            this.bufferNormalsOffset = geometry.vertices.length * 4; // 4 components of 4 bytes (32-bit).
         } else {
             throw Error('WarpGL: Unable to create geometry buffer! Provided geometry must contain vertices.');
         }
@@ -73,14 +73,14 @@ export default class GeometryBuffer {
         if (geometry.normals !== undefined) {
             arrays.push(geometry.normals);
             this.hasNormals = true;
-            this.bufferUvsOffset += geometry.normals.length * (3 * 4); // 3 components of 4 bytes (32-bit).
+            this.bufferUvsOffset += geometry.normals.length * 4; // 3 components of 4 bytes (32-bit).
         }
 
         this.bufferTangentsOffset = this.bufferUvsOffset;
         if (geometry.uvs !== undefined) {
             arrays.push(geometry.uvs);
             this.hasUvs = true;
-            this.bufferTangentsOffset += geometry.uvs.length * (2 * 4); // 2 components of 4 bytes (32-bit).
+            this.bufferTangentsOffset += geometry.uvs.length * 4; // 2 components of 4 bytes (32-bit).
         }
 
         if (geometry.tangents !== undefined) {

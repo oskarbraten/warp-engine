@@ -1,3 +1,4 @@
+
 export default class Shader {
     constructor(gl, vertexShaderSource, fragmentShaderSource) {
         const program = this.constructor.build(gl, vertexShaderSource, fragmentShaderSource);

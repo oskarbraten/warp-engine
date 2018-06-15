@@ -21,3 +21,16 @@ A super simple WebGL2 graphics library.
 
 - [ ] PBR shader
 - [ ] Voxel global illumination
+
+
+
+## Shader standard
+
+### Attribute layout qualifiers
+
+```glsl
+
+layout(location = 0) // for vPosition
+layout(location = 1) // for vTextureCoordinate;
+
+```
