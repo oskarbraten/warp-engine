@@ -11,7 +11,7 @@ export default class Camera extends Node {
 
     tick() {
         super.tick();
-
+        
         mat4.invert(this.viewMatrix, this.worldMatrix);
     }
 

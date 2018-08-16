@@ -13,7 +13,7 @@ export default class Node {
 
         this.position = vec3.fromValues(0, 0, 0);
         this.scale = vec3.fromValues(1, 1, 1);
-        this.rotation = quat.create();
+        this.rotation = quat.create(); // quaternion
 
         this.parent = parent;
 

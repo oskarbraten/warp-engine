@@ -5,7 +5,7 @@ import BasicShader from './BasicShader';
 
 export default class BasicMaterial extends Material {
     constructor({
-        color = vec4.fromValues(1.0, 1.0, 0.0, 1.0),
+        color = vec4.fromValues(1.0, 1.0, 1.0, 1.0),
         map = null
     } = {}) {
         super(BasicShader);
