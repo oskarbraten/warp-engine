@@ -5,7 +5,8 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 module.exports = {
     mode: process.env.WEBPACK_SERVE ? 'development' : 'production',
     entry: {
-        warp: './src/index.js'
+        warp: './src/index.js',
+        demo: './src/demo.js'
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
@@ -43,7 +44,7 @@ module.exports = {
     plugins: [
         new CleanWebpackPlugin('dist', {}),
         new HtmlWebpackPlugin({
-            inject: false,
+            inject: true,
             hash: false,
             template: './src/index.html',
             filename: 'index.html'
