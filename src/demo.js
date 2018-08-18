@@ -1,5 +1,3 @@
-import { mat4 } from 'gl-matrix';
-
 import Warp from './index';
 
 import BarkImage from './misc/bark.jpg';
@@ -33,9 +31,9 @@ for (let i = 0; i < size; i += 2) {
 let camera = new Warp.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 5000);
 camera.translate(0, 0, 16);
 
-import FPSCameraController from './lib/controls/FPSCameraController';
+import CameraController from './lib/controls/CameraController';
 
-let cameraController = new FPSCameraController();
+let cameraController = new CameraController(camera);
 
 window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -56,8 +54,8 @@ let yaw = 0;
 let pitch = 0;
 
 function updateCamRotation(event) {
-    yaw += event.movementX * 0.0001;
-    pitch += event.movementY * 0.0001;
+    yaw += event.movementX * 0.001;
+    pitch += event.movementY * 0.001;
 }
 
 document.addEventListener('pointerlockchange', () => {
@@ -113,6 +111,7 @@ t2.translate(5, 0, 0);
 t.add(t2);
 scene.add(t);
 
+scene.add(camera);
 
 let then = 0;
 function loop(now) {
@@ -120,29 +119,32 @@ function loop(now) {
     const delta = now - then;
     then = now;
 
+    const moveSpeed = move.speed * delta;
 
-    cameraController.yaw(-yaw);
-    cameraController.pitch(-pitch);
-
-    yaw = 0;
-    pitch = 0;
+    let longitudinal = 0;
+    let lateral = 0;
 
     if (move.forward) {
-        cameraController.move(0, 0, move.speed);
+        longitudinal += moveSpeed;
     }
+
     if (move.backward) {
-        cameraController.move(0, 0, -move.speed);
+        longitudinal -= moveSpeed;
     }
+
     if (move.left) {
-        cameraController.move(-move.speed, 0, 0);
+        lateral += moveSpeed;
     }
+
     if (move.right) {
-        cameraController.move(move.speed, 0, 0);
+        lateral -= moveSpeed;
     }
 
-    cameraController.update(delta);
+    cameraController.update(pitch, yaw, longitudinal, lateral);
 
-    mat4.copy(camera.viewMatrix, cameraController.viewMatrix);
+    // reset movement buffers.
+    yaw = 0;
+    pitch = 0;
 
     t.rotateY(0.001 * delta);
     t2.rotateY(-0.004 * delta);
