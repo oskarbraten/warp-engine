@@ -1,5 +1,5 @@
 
-import { mat4, vec3, quat } from 'gl-matrix';
+import { vec3, quat } from 'gl-matrix';
 
 export default class CameraController {
     constructor(camera) {
