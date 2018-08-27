@@ -8,10 +8,11 @@ import { vec3, mat4, quat } from 'gl-matrix';
 export default class Node {
 
     constructor(parent = null) {
+
         this.localMatrix = mat4.create();
         this.worldMatrix = mat4.create();
 
-        this.position = vec3.fromValues(0, 0, 0);
+        this.translation = vec3.fromValues(0, 0, 0);
         this.scale = vec3.fromValues(1, 1, 1);
         this.rotation = quat.create(); // quaternion
 
@@ -67,7 +68,7 @@ export default class Node {
     }
 
     updateLocalMatrix() {
-        mat4.fromRotationTranslationScale(this.localMatrix, this.rotation, this.position, this.scale);
+        mat4.fromRotationTranslationScale(this.localMatrix, this.rotation, this.translation, this.scale);
     }
 
     setScale(x, y, z) {
@@ -83,15 +84,15 @@ export default class Node {
     }
 
     setPosition(x, y, z) {
-        this.position[0] = x;
-        this.position[1] = y;
-        this.position[2] = z;
+        this.translation[0] = x;
+        this.translation[1] = y;
+        this.translation[2] = z;
     }
 
     translate(x, y, z) {
-        this.position[0] += x;
-        this.position[1] += y;
-        this.position[2] += z;
+        this.translation[0] += x;
+        this.translation[1] += y;
+        this.translation[2] += z;
     }
 
     setRotationFromEuler(x, y, z) {
