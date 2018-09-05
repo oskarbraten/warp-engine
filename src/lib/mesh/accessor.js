@@ -26,16 +26,16 @@ const type = {
 export default (bufferView, componentType, type, count, min, max, byteOffset = 0) => {
 
     return {
-        bufferView: bufferView,
+        bufferView,
 
-        type: type,
-        componentType: componentType,
+        type,
+        componentType,
 
-        byteOffset: byteOffset,
-        count: count,
+        byteOffset,
+        count,
 
-        min: min,
-        max: max
+        min,
+        max
     };
 
 };

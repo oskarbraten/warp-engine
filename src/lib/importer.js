@@ -1,11 +1,11 @@
 
 import base64ToArrayBuffer from 'base64-arraybuffer';
-import scene from './Scene';
-import node from './Node';
-import mesh from './Mesh';
-import primitive from './Primitive';
-import accessor from './Accessor';
-import bufferView from './BufferView';
+import scene from './graph/scene';
+import node from './graph/node';
+import mesh from './mesh/mesh';
+import primitive from './mesh/primitive';
+import accessor from './mesh/accessor';
+import bufferView from './mesh/bufferView';
 
 export default (raw) => {
 
@@ -17,50 +17,69 @@ export default (raw) => {
 
         return bufferView(buffers[rbv.buffer], rbv.byteLength, rbv.byteOffset, rbv.target);
     }
-    
+
     function createAccessor(index) {
+
+        if (typeof index !== 'undefined') {
+            return null;
+        }
+
         let ra = gltf.accessors[index];
-    
-        let bv = createBufferView(ra.bufferView);
-    
-        return accessor(bv, ra.componentType, ra.type, ra.count, ra.min, ra.max, ra.byteOffset);
+
+        return accessor(createBufferView(ra.bufferView), ra.componentType, ra.type, ra.count, ra.min, ra.max, ra.byteOffset);
     }
-    
+
     function createPrimitive(props) {
-        
+
         let attributes = {};
-    
+
         for (let attribute in props.attributes) {
             attributes[attribute] = createAccessor(props.attributes[attribute]);
         }
-    
-        let indices = null;
-        if (typeof props.indices !== 'undefined') {
-            indices = createAccessor(props.indices);
-        }
-    
-    
-        return primitive(attributes, props.mode, null, indices);
-    }
-    
-    function createMesh(index) {
-        let rm = gltf.meshes[index];
 
-        let primitives = rm.primitives.map((props) => createPrimitive(props));
-    
-        return mesh(primitives, rm.name);
+        return primitive(attributes, props.mode, null, createAccessor(props.indices));
     }
-    
-    function createNode(index) {
-        let rn = gltf.nodes[index];
-    
-        let mesh = null;
-        
-        if (typeof rn.mesh !== 'undefined') {
-            mesh = createMesh(rn.mesh);
+
+    function createMesh(index) {
+
+        if (typeof index === 'undefined') {
+            return null;
         }
-    
-        return node(null, mesh, rn.name);
+
+        let {
+            name,
+            primitives: primitiveProperties
+        } = gltf.meshes[index];
+
+        return mesh(primitiveProperties.map((props) => createPrimitive(props)), name);
+    }
+
+    function createNode(index) {
+        let {
+            name,
+
+            rotation,
+            translation,
+            scale,
+            matrix,
+
+            mesh: meshIndex,
+            camera: cameraIndex,
+
+            children: childIndices = []
+
+        } = gltf.nodes[index];
+
+        return node({
+            name,
+            mesh: createMesh(meshIndex),
+            //camera: createCamera(cameraIndex), // TODO
+            rotation,
+            translation,
+            scale,
+            matrix,
+            children: childIndices.map((index) => createNode(index))
+        });
     }
 
     const result = {

@@ -6,10 +6,10 @@
 export default (attributes, mode = 4, material, indices = null) => {
 
     return {
-        attributes: attributes,
-        indices: indices, // if defined use drawElements, else drawArrays
-        material: material,
-        mode: mode
+        attributes,
+        indices, // if defined use drawElements, else drawArrays
+        material,
+        mode
     };
     
 };

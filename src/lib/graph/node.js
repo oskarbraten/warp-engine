@@ -1,24 +1,43 @@
 /**
  * Node
- * A simple SceneGraph node.
+ * A node in the node hierarchy.
  */
 
 import { vec3, mat4, quat } from 'gl-matrix';
 
-export default (parent = null, mesh = null, name = null) => {
+export default ({
+
+    name = null,
+
+    parent = null,
+    children = [],
+
+    mesh = null,
+    camera = null,
+
+    rotation = quat.create(),
+    translation = vec3.fromValues(0, 0, 0),
+    scale = vec3.fromValues(1, 1, 1),
+
+    matrix = null
+
+}) => {
 
     const node = {
+
+        name,
+
+        children,
+
+        mesh,
+        camera,
 
         localMatrix: mat4.create(),
         worldMatrix: mat4.create(),
 
-        translation: vec3.fromValues(0, 0, 0),
-        scale: vec3.fromValues(1, 1, 1),
-        rotation: quat.create(), // quaternion
-
-        children: [],
-        mesh: mesh,
-        name: name,
+        translation,
+        scale,
+        rotation, // quaternion
 
         add(child) {
             if (child && this.children.indexOf(child) === -1) {
@@ -71,19 +90,19 @@ export default (parent = null, mesh = null, name = null) => {
             this.scale[2] = z;
         },
 
-        // scale(x, y, z) {
-        //     this.scale[0] *= x;
-        //     this.scale[1] *= y;
-        //     this.scale[2] *= z;
-        // },
+        applyScale(x, y, z) {
+            this.scale[0] *= x;
+            this.scale[1] *= y;
+            this.scale[2] *= z;
+        },
 
-        setPosition(x, y, z) {
+        setTranslation(x, y, z) {
             this.translation[0] = x;
             this.translation[1] = y;
             this.translation[2] = z;
         },
 
-        translate(x, y, z) {
+        applyTranslation(x, y, z) {
             this.translation[0] += x;
             this.translation[1] += y;
             this.translation[2] += z;
@@ -93,21 +112,27 @@ export default (parent = null, mesh = null, name = null) => {
             quat.fromEuler(this.rotation, x, y, z);
         },
 
-        rotateX(rad) {
+        applyRotationX(rad) {
             quat.rotateX(this.rotation, this.rotation, rad);
         },
 
-        rotateY(rad) {
+        applyRotationY(rad) {
             quat.rotateY(this.rotation, this.rotation, rad);
         },
 
-        rotateZ(rad) {
+        applyRotationZ(rad) {
             quat.rotateZ(this.rotation, this.rotation, rad);
         }
     };
 
     if (parent) {
         parent.add(node);
+    }
+
+    if (matrix) {
+        mat4.getRotation(node.rotation, matrix);
+        mat4.getTranslation(node.translation, matrix);
+        mat4.getScaling(node.scale, matrix);
     }
 
     return node;

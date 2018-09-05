@@ -13,13 +13,13 @@ const target = {
 export default (buffer, byteLength, byteOffset = 0, target = target.ARRAY_BUFFER, byteStride = 0) => {
 
     return {
-        buffer: buffer, // Javascript ArrayBuffer (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer)
+        buffer, // Javascript ArrayBuffer (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer)
 
-        byteLength: byteLength,
-        byteOffset: byteOffset,
-        byteStride: byteStride, // int: [4, 252], default: 0 (tightly packed)
+        byteLength,
+        byteOffset,
+        byteStride, // int: [4, 252], default: 0 (tightly packed)
 
-        target: target
+        target
     };
     
 };
