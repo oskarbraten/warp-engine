@@ -1,161 +1,168 @@
 import Warp from './index';
 
-import BarkImage from './misc/bark.jpg';
+import rawGltf from './misc/cube.gltf';
 
-//Create renderer and canvas element, append canvas to DOM.
-let renderer = new Warp.Renderer(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
-
-// SCENEGRAPH:
-let scene = new Warp.Scene();
-
-let boxGeometry = new Warp.BoxGeometry();
-
-let basicMaterial = new Warp.BasicMaterial({
-    map: renderer.loadTexture(BarkImage),
-});
-
-let size = 20;
-let heightSpread = 10;
-
-for (let i = 0; i < size; i += 2) {
-    for (let j = 0; j < size; j += 2) {
-        let woodBlock = new Warp.Mesh(boxGeometry, basicMaterial);
-        woodBlock.translate(i - size / 2, -3 + (Math.random() * heightSpread - (heightSpread / 2)), j - size / 2);
-        scene.add(woodBlock);
-    }
-}
+console.log(Warp.importer(rawGltf));
 
 
-// CAMERA SETUP --------------
-let camera = new Warp.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 5000);
-camera.translate(0, 0, 16);
+// import Warp from './index';
 
-import CameraController from './lib/controls/CameraController';
+// import BarkImage from './misc/bark.jpg';
 
-let cameraController = new CameraController(camera);
+// //Create renderer and canvas element, append canvas to DOM.
+// let renderer = new Warp.Renderer(window.innerWidth, window.innerHeight);
+// document.body.appendChild(renderer.domElement);
 
-window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
+// // SCENEGRAPH:
+// let scene = new Warp.Scene();
 
-    renderer.setSize(window.innerWidth, window.innerHeight);
-}, false);
+// let boxGeometry = new Warp.BoxGeometry();
 
+// let basicMaterial = new Warp.BasicMaterial({
+//     map: renderer.loadTexture(BarkImage),
+// });
 
-// setup controls:
-let canvas = renderer.domElement;
+// let size = 20;
+// let heightSpread = 10;
 
-canvas.addEventListener('click', () => {
-    canvas.requestPointerLock();
-});
-
-let yaw = 0;
-let pitch = 0;
-
-function updateCamRotation(event) {
-    yaw += event.movementX * 0.001;
-    pitch += event.movementY * 0.001;
-}
-
-document.addEventListener('pointerlockchange', () => {
-    if (document.pointerLockElement === canvas) {
-        canvas.addEventListener('mousemove', updateCamRotation, false);
-    } else {
-        canvas.removeEventListener('mousemove', updateCamRotation, false);
-    }
-});
-
-let move = {
-    forward: false,
-    backward: false,
-    left: false,
-    right: false,
-    speed: 0.01
-};
+// for (let i = 0; i < size; i += 2) {
+//     for (let j = 0; j < size; j += 2) {
+//         let woodBlock = new Warp.Mesh(boxGeometry, basicMaterial);
+//         woodBlock.translate(i - size / 2, -3 + (Math.random() * heightSpread - (heightSpread / 2)), j - size / 2);
+//         scene.add(woodBlock);
+//     }
+// }
 
 
-window.addEventListener('keydown', (e) => {
-    e.preventDefault();
-    if (e.code === 'KeyW') {
-        move.forward = true;
-    } else if (e.code === 'KeyS') {
-        move.backward = true;
-    } else if (e.code === 'KeyA') {
-        move.left = true;
-    } else if (e.code === 'KeyD') {
-        move.right = true;
-    }
-});
+// // CAMERA SETUP --------------
+// let camera = new Warp.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 5000);
+// camera.translate(0, 0, 16);
 
-window.addEventListener('keyup', (e) => {
-    e.preventDefault();
-    if (e.code === 'KeyW') {
-        move.forward = false;
-    } else if (e.code === 'KeyS') {
-        move.backward = false;
-    } else if (e.code === 'KeyA') {
-        move.left = false;
-    } else if (e.code === 'KeyD') {
-        move.right = false;
-    }
-});
+// import CameraController from './lib/controls/CameraController';
 
-// CAMERA SETUP END ----------
+// let cameraController = new CameraController(camera);
 
-let t = new Warp.Mesh(boxGeometry, basicMaterial);
+// window.addEventListener('resize', () => {
+//     camera.aspect = window.innerWidth / window.innerHeight;
+//     camera.updateProjectionMatrix();
 
-let t2 = new Warp.Mesh(boxGeometry, basicMaterial);
-t2.translate(5, 0, 0);
+//     renderer.setSize(window.innerWidth, window.innerHeight);
+// }, false);
 
-t.add(t2);
-scene.add(t);
 
-scene.add(camera);
+// // setup controls:
+// let canvas = renderer.domElement;
 
-let then = 0;
-function loop(now) {
+// canvas.addEventListener('click', () => {
+//     canvas.requestPointerLock();
+// });
 
-    const delta = now - then;
-    then = now;
+// let yaw = 0;
+// let pitch = 0;
 
-    const moveSpeed = move.speed * delta;
+// function updateCamRotation(event) {
+//     yaw += event.movementX * 0.001;
+//     pitch += event.movementY * 0.001;
+// }
 
-    let longitudinal = 0;
-    let lateral = 0;
+// document.addEventListener('pointerlockchange', () => {
+//     if (document.pointerLockElement === canvas) {
+//         canvas.addEventListener('mousemove', updateCamRotation, false);
+//     } else {
+//         canvas.removeEventListener('mousemove', updateCamRotation, false);
+//     }
+// });
 
-    if (move.forward) {
-        longitudinal += moveSpeed;
-    }
+// let move = {
+//     forward: false,
+//     backward: false,
+//     left: false,
+//     right: false,
+//     speed: 0.01
+// };
 
-    if (move.backward) {
-        longitudinal -= moveSpeed;
-    }
 
-    if (move.left) {
-        lateral += moveSpeed;
-    }
+// window.addEventListener('keydown', (e) => {
+//     e.preventDefault();
+//     if (e.code === 'KeyW') {
+//         move.forward = true;
+//     } else if (e.code === 'KeyS') {
+//         move.backward = true;
+//     } else if (e.code === 'KeyA') {
+//         move.left = true;
+//     } else if (e.code === 'KeyD') {
+//         move.right = true;
+//     }
+// });
 
-    if (move.right) {
-        lateral -= moveSpeed;
-    }
+// window.addEventListener('keyup', (e) => {
+//     e.preventDefault();
+//     if (e.code === 'KeyW') {
+//         move.forward = false;
+//     } else if (e.code === 'KeyS') {
+//         move.backward = false;
+//     } else if (e.code === 'KeyA') {
+//         move.left = false;
+//     } else if (e.code === 'KeyD') {
+//         move.right = false;
+//     }
+// });
 
-    cameraController.update(pitch, yaw, longitudinal, lateral);
+// // CAMERA SETUP END ----------
 
-    // reset movement buffers.
-    yaw = 0;
-    pitch = 0;
+// let t = new Warp.Mesh(boxGeometry, basicMaterial);
 
-    t.rotateY(0.001 * delta);
-    t2.rotateY(-0.004 * delta);
+// let t2 = new Warp.Mesh(boxGeometry, basicMaterial);
+// t2.translate(5, 0, 0);
 
-    // Update the world matrices of the entire scene graph (Since we are starting at the root node).
+// t.add(t2);
+// scene.add(t);
 
-    scene.tick();
-    renderer.render(scene, camera);
+// scene.add(camera);
 
-    // Ask the the browser to draw when it's convenient
-    window.requestAnimationFrame(loop);
-}
+// let then = 0;
+// function loop(now) {
 
-window.requestAnimationFrame(loop);
+//     const delta = now - then;
+//     then = now;
+
+//     const moveSpeed = move.speed * delta;
+
+//     let longitudinal = 0;
+//     let lateral = 0;
+
+//     if (move.forward) {
+//         longitudinal += moveSpeed;
+//     }
+
+//     if (move.backward) {
+//         longitudinal -= moveSpeed;
+//     }
+
+//     if (move.left) {
+//         lateral += moveSpeed;
+//     }
+
+//     if (move.right) {
+//         lateral -= moveSpeed;
+//     }
+
+//     cameraController.update(pitch, yaw, longitudinal, lateral);
+
+//     // reset movement buffers.
+//     yaw = 0;
+//     pitch = 0;
+
+//     t.rotateY(0.001 * delta);
+//     t2.rotateY(-0.004 * delta);
+
+//     // Update the world matrices of the entire scene graph (Since we are starting at the root node).
+
+//     scene.tick();
+//     renderer.render(scene, camera);
+
+//     // Ask the the browser to draw when it's convenient
+//     window.requestAnimationFrame(loop);
+// }
+
+// window.requestAnimationFrame(loop);

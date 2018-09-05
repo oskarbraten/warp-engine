@@ -1,39 +1,48 @@
 /**
  * Scene
- * Just a special Node, with the additional function getDrawableNodes.
+ * A collection of root nodes of a scene.
  */
 
-import { vec4 } from 'gl-matrix';
-import Node from './Node';
 
-export default class Scene extends Node {
-    constructor(background = vec4.fromValues(1.0, 1.0, 1.0, 1.0)) {
-        super();
-        this.background = background;
-    }
 
-    getEntities() {
-        let entities = {
-            lights: [],
-            meshes: []
-        };
+export default (nodes = [], name = null) => {
 
-        function extract(node) {
-            if (node.isMesh) {
-                entities.meshes.push(node);
-            } else if (node.isLight) {
-                entities.lights.push(node);
-            }
+    return {
+        nodes: nodes,
+        name: name
+    };
 
-            if (node.children.length > 0) {
-                node.children.forEach((child) => {
-                    extract(child);
-                });
-            }
-        }
+};
 
-        extract(this);
+// import { vec4 } from 'gl-matrix';
+// export default class Scene extends Node {
+//     constructor(background = vec4.fromValues(1.0, 1.0, 1.0, 1.0)) {
+//         super();
+//         this.background = background;
+//     }
 
-        return entities;
-    }
-}
+//     getEntities() {
+//         let entities = {
+//             lights: [],
+//             meshes: []
+//         };
+
+//         function extract(node) {
+//             if (node.isMesh) {
+//                 entities.meshes.push(node);
+//             } else if (node.isLight) {
+//                 entities.lights.push(node);
+//             }
+
+//             if (node.children.length > 0) {
+//                 node.children.forEach((child) => {
+//                     extract(child);
+//                 });
+//             }
+//         }
+
+//         extract(this);
+
+//         return entities;
+//     }
+// }

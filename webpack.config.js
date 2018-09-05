@@ -27,7 +27,7 @@ module.exports = {
                 },
             },
             {
-                test: /\.glsl$/,
+                test: /\.(glsl|gltf)$/,
                 use: 'raw-loader'
             },
             {

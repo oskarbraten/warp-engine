@@ -19,20 +19,10 @@
  * 	- Improve performance by sorting SceneGraph			[ ]
  */
 
-import { default as Node } from './lib/Node';
-import { default as Mesh } from './lib/Mesh';
-import { default as Scene } from './lib/Scene';
-import { default as BoxGeometry } from './lib/geometry/BoxGeometry';
-import { default as BasicMaterial } from './lib/shading/BasicMaterial';
-import { default as Renderer } from './lib/Renderer';
-import { default as PerspectiveCamera } from './lib/camera/PerspectiveCamera';
+
+import { default as importer } from './lib/importer';
+
 
 export default {
-    Node,
-    Mesh,
-    Scene,
-    BoxGeometry,
-    BasicMaterial,
-    Renderer,
-    PerspectiveCamera
+    importer
 };

@@ -26,6 +26,7 @@
     "webpack-serve": "^1.0.2"
   },
   "dependencies": {
+    "base64-arraybuffer": "^0.1.5",
     "gl-matrix": "^2.6.1"
   }
 }
