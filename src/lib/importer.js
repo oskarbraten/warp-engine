@@ -2,6 +2,9 @@
 import base64ToArrayBuffer from 'base64-arraybuffer';
 import scene from './graph/scene';
 import node from './graph/node';
+
+import camera from './camera/camera';
+
 import mesh from './mesh/mesh';
 import primitive from './mesh/primitive';
 import accessor from './mesh/accessor';
@@ -54,6 +57,22 @@ export default (raw) => {
         return mesh(primitiveProperties.map((props) => createPrimitive(props)), name);
     }
 
+    function createCamera(index) {
+
+        if (typeof index === 'undefined') {
+            return null;
+        }
+
+        let {
+            name,
+            type,
+            perspective,
+            orthographic
+        } = gltf.cameras[index];
+
+        return camera({ type, name, perspective, orthographic });
+    }
+
     function createNode(index) {
         let {
             name,
@@ -73,7 +92,7 @@ export default (raw) => {
         return node({
             name,
             mesh: createMesh(meshIndex),
-            //camera: createCamera(cameraIndex), // TODO
+            camera: createCamera(cameraIndex),
             rotation,
             translation,
             scale,
