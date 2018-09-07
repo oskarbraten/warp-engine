@@ -50,5 +50,10 @@ module.exports = {
             filename: 'index.html'
         })
     ],
-    stats: "minimal"
+    stats: "minimal",
+    serve: {
+        dev: {
+            stats: 'minimal'
+        }
+    }
 };
