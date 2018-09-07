@@ -1,22 +1,21 @@
 
-import base64ToArrayBuffer from 'base64-arraybuffer';
+import { GLTF_VERSION, COMPONENT } from './core/constants';
 import scene from './graph/scene';
 import node from './graph/node';
 
-import camera from './camera/camera';
+import orthographic from './camera/orthographic';
+import perspective from './camera/perspective';
 
 import mesh from './mesh/mesh';
 import primitive from './mesh/primitive';
 import accessor from './mesh/accessor';
 import bufferView from './mesh/bufferView';
 
-const SUPPORTED_VERSION = '2.0'.split('.').map(a => parseInt(a));
+const SUPPORTED_VERSION = GLTF_VERSION.split('.').map(a => parseInt(a));
 
-export default (raw) => {
+export default async (raw) => {
 
     const gltf = JSON.parse(raw);
-
-    // Version check:
 
     let version = (gltf.asset.minVersion ? gltf.asset.minVersion : gltf.asset.version).split('.').map(a => parseInt(a));
 
@@ -29,11 +28,11 @@ export default (raw) => {
         // TODO: give feedback, minor version is incompatible.
         return null;
     }
+    
 
-
-    // Parsing:
-
-    const buffers = gltf.buffers.map((b) => base64ToArrayBuffer.decode(b.uri.replace(/^(data:application\/octet-stream;base64,)/, '')));
+    const buffers = await Promise.all(gltf.buffers.map(({ uri }) => {
+        return fetch(uri).then(res => res.arrayBuffer()); // use fetch to get data from uri.
+    }));
 
     const bufferViews = gltf.bufferViews.map(({
         buffer: bufferIndex,
@@ -56,6 +55,11 @@ export default (raw) => {
         max,
         byteOffset
     }) => {
+
+        if (componentType === COMPONENT.TYPE.FLOAT) {
+            min = min.map(a => Math.fround(a));
+            max = max.map(a => Math.fround(a));
+        }
 
         return accessor(bufferViews[bufferViewIndex], componentType, type, count, min, max, byteOffset);
 
@@ -88,41 +92,20 @@ export default (raw) => {
     const cameras = gltf.cameras.map(({
         name,
         type,
-        perspective,
-        orthographic
+        orthographic: orthographicProperties,
+        perspective: perspectiveProperties
     }) => {
 
-        return camera({ type, name, perspective, orthographic });
+        if (type === 'orthograpic') {
+            return orthographic(orthographicProperties, name);
+        } else if (type === 'perspective') {
+            return perspective(perspectiveProperties, name);
+        } else {
+            // TODO: type not defined, throw?
+            return null;
+        }
 
     });
-
-    // const nodes = gltf.nodes.map(({
-    //     name,
-
-    //     rotation,
-    //     translation,
-    //     scale,
-    //     matrix,
-
-    //     mesh: meshIndex,
-    //     camera: cameraIndex,
-
-    //     children: childIndices = []
-
-    // }) => {
-
-    //     return node({
-    //         name,
-    //         mesh: meshes[meshIndex],
-    //         camera: cameras[cameraIndex],
-    //         rotation,
-    //         translation,
-    //         scale,
-    //         matrix,
-    //         children: childIndices.map((index) => createNode(index))
-    //     });
-
-    // });
 
     // Note:
     // We assume that the nodes form a disjoint union of strict trees, as described in the specification.
