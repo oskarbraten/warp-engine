@@ -2,7 +2,11 @@ import Warp from './index';
 
 import rawGltf from './misc/test-instances.gltf';
 
-console.log(Warp.importer(rawGltf));
+Warp.importer(rawGltf).then((data) => {
+    console.log(data);
+}).catch((error) => {
+    console.log(error);
+});
 
 
 // import Warp from './index';
