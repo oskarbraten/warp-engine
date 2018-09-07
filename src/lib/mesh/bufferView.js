@@ -5,10 +5,10 @@
 
 // constants:
 // setting the target allows the runtime to upload the bufferView to the GPU without having to infer it from the accessors.
-const target = {
-    ELEMENT_ARRAY_BUFFER: 34963,
-    ARRAY_BUFFER: 34962
-};
+// const target = {
+//     ELEMENT_ARRAY_BUFFER: 34963,
+//     ARRAY_BUFFER: 34962
+// };
 
 export default (buffer, byteLength, byteOffset = 0, target = target.ARRAY_BUFFER, byteStride = 0) => {
 

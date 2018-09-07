@@ -1,6 +1,6 @@
 import Warp from './index';
 
-import rawGltf from './misc/test-2.gltf';
+import rawGltf from './misc/test-instances.gltf';
 
 console.log(Warp.importer(rawGltf));
 

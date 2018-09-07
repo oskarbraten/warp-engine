@@ -1,9 +1,7 @@
 /**
  * Camera
- * A simple SceneGraph node.
+ * 
  */
-
-import { vec3, mat4, quat } from 'gl-matrix';
 
 const TYPE = {
     PERSPECTIVE: 'perspective',
