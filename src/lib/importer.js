@@ -10,69 +10,122 @@ import primitive from './mesh/primitive';
 import accessor from './mesh/accessor';
 import bufferView from './mesh/bufferView';
 
+const SUPPORTED_VERSION = '2.0'.split('.').map(a => parseInt(a));
+
 export default (raw) => {
 
     const gltf = JSON.parse(raw);
+
+    // Version check:
+
+    let version = (gltf.asset.minVersion ? gltf.asset.minVersion : gltf.asset.version).split('.').map(a => parseInt(a));
+
+    if (SUPPORTED_VERSION[0] !== version[0]) {
+        // TODO: give feedback, major version is incompatible.
+        return null;
+    }
+
+    if (gltf.asset.minVersion && SUPPORTED_VERSION[1] < version[1]) {
+        // TODO: give feedback, minor version is incompatible.
+        return null;
+    }
+
+
+    // Parsing:
+
     const buffers = gltf.buffers.map((b) => base64ToArrayBuffer.decode(b.uri.replace(/^(data:application\/octet-stream;base64,)/, '')));
 
-    function createBufferView(index) {
-        let rbv = gltf.bufferViews[index];
+    const bufferViews = gltf.bufferViews.map(({
+        buffer: bufferIndex,
+        byteLength,
+        byteOffset,
+        target,
+        byteStride
+    }) => {
 
-        return bufferView(buffers[rbv.buffer], rbv.byteLength, rbv.byteOffset, rbv.target);
-    }
+        return bufferView(buffers[bufferIndex], byteLength, byteOffset, target, byteStride);
 
-    function createAccessor(index) {
+    });
 
-        if (typeof index !== 'undefined') {
-            return null;
-        }
+    const accessors = gltf.accessors.map(({
+        bufferView: bufferViewIndex,
+        componentType,
+        type,
+        count,
+        min,
+        max,
+        byteOffset
+    }) => {
 
-        let ra = gltf.accessors[index];
+        return accessor(bufferViews[bufferViewIndex], componentType, type, count, min, max, byteOffset);
 
-        return accessor(createBufferView(ra.bufferView), ra.componentType, ra.type, ra.count, ra.min, ra.max, ra.byteOffset);
-    }
+    });
 
-    function createPrimitive(props) {
+    function createPrimitive({ attributes: attributeIndices, mode, indices: indicesIndex }) {
 
         let attributes = {};
 
-        for (let attribute in props.attributes) {
-            attributes[attribute] = createAccessor(props.attributes[attribute]);
+        for (let key in attributeIndices) {
+            attributes[key] = accessors[attributeIndices[key]];
         }
 
-        return primitive(attributes, props.mode, null, createAccessor(props.indices));
+        // TODO: add material.
+        return primitive(attributes, mode, null, accessors[indicesIndex]);
+
     }
 
-    function createMesh(index) {
+    const meshes = gltf.meshes.map(({
+        primitives: primitiveObjects,
+        name
+    }) => {
 
-        if (typeof index === 'undefined') {
-            return null;
-        }
+        let primitives = primitiveObjects.map((object) => createPrimitive(object));
 
-        let {
-            name,
-            primitives: primitiveProperties
-        } = gltf.meshes[index];
+        return mesh(primitives, name);
 
-        return mesh(primitiveProperties.map((props) => createPrimitive(props)), name);
-    }
+    });
 
-    function createCamera(index) {
-
-        if (typeof index === 'undefined') {
-            return null;
-        }
-
-        let {
-            name,
-            type,
-            perspective,
-            orthographic
-        } = gltf.cameras[index];
+    const cameras = gltf.cameras.map(({
+        name,
+        type,
+        perspective,
+        orthographic
+    }) => {
 
         return camera({ type, name, perspective, orthographic });
-    }
 
+    });
+
+    // const nodes = gltf.nodes.map(({
+    //     name,
+
+    //     rotation,
+    //     translation,
+    //     scale,
+    //     matrix,
+
+    //     mesh: meshIndex,
+    //     camera: cameraIndex,
+
+    //     children: childIndices = []
+
+    // }) => {
+
+    //     return node({
+    //         name,
+    //         mesh: meshes[meshIndex],
+    //         camera: cameras[cameraIndex],
+    //         rotation,
+    //         translation,
+    //         scale,
+    //         matrix,
+    //         children: childIndices.map((index) => createNode(index))
+    //     });
+
+    // });
+
+    // Note:
+    // We assume that the nodes form a disjoint union of strict trees, as described in the specification.
     function createNode(index) {
         let {
             name,
@@ -91,21 +144,30 @@ export default (raw) => {
 
         return node({
             name,
-            mesh: createMesh(meshIndex),
-            camera: createCamera(cameraIndex),
+            mesh: meshes[meshIndex],
+            camera: cameras[cameraIndex],
             rotation,
             translation,
             scale,
             matrix,
+
+            // recusively create nodes for the children.
             children: childIndices.map((index) => createNode(index))
         });
+
     }
 
-    const result = {
-        scenes: gltf.scenes.map((s) => scene(s.nodes.map((n) => createNode(n)), s.name))
+    const scenes = gltf.scenes.map(({
+        nodes: nodeIndices,
+        name
+    }) => {
+
+        return scene(nodeIndices.map((index) => createNode(index)), name);
+
+    });
+
+    return {
+        scene: scenes[gltf.scene],
+        scenes
     };
-
-    result.scene = result.scenes[gltf.scene];
-
-    return result;
 };
