@@ -24,6 +24,22 @@ export const COMPONENT = Object.freeze({
         UNSIGNED_SHORT: 5123,
         UNSIGNED_INT: 5125,
         FLOAT: 5126
+    }),
+    ARRAY_TYPE: Object.freeze({
+        '5120': Int8Array,
+        '5121': Uint8Array,
+        '5122': Int16Array,
+        '5123': Uint16Array,
+        '5125': Uint32Array,
+        '5126': Float32Array
+    }),
+    ID: Object.freeze({
+        '5120': 'BYTE',
+        '5121': 'UNSIGNED_BYTE',
+        '5122': 'SHORT',
+        '5123': 'UNSIGNED_SHORT',
+        '5125': 'UNSIGNED_INT',
+        '5126': 'FLOAT'
     })
 });
 
@@ -37,6 +53,29 @@ export const TYPE = Object.freeze({
     MAT4: 16
 });
 
+export const PROJECTION = Object.freeze({
+    ORTHOGRAPHIC: 'orthographic',
+    PERSPECTIVE: 'perspective'
+});
 
-export const POSITION_LOCATION = 0;
-export const UV_LOCATION = 1;
+export const ATTRIBUTE_LOCATION = Object.freeze({
+    POSITION: 0,
+    NORMAL: 1,
+    TEXCOORD_0: 2,
+    JOINTS_0: 3,
+    JOINTS_1: 5,
+    WEIGHTS_0: 4,
+    WEIGHTS_1: 6,
+    TANGENT: 7
+});
+
+export const VALID_ACCESSOR_TYPES = Object.freeze({
+    POSITION: { type: ['VEC3'], componentType: [COMPONENT.TYPE.FLOAT] },
+    NORMAL: { type: ['VEC3'], componentType: [COMPONENT.TYPE.FLOAT] },
+    TANGENT: { type: ['VEC4'], componentType: [COMPONENT.TYPE.FLOAT] },
+    TEXCOORD_0: { type: ['VEC2'], componentType: [COMPONENT.TYPE.FLOAT, COMPONENT.TYPE.UNSIGNED_BYTE, COMPONENT.TYPE.UNSIGNED_SHORT] },
+    TEXCOORD_1: { type: ['VEC2'], componentType: [COMPONENT.TYPE.FLOAT, COMPONENT.TYPE.UNSIGNED_BYTE, COMPONENT.TYPE.UNSIGNED_SHORT] },
+    COLOR_0: { type: ['VEC3', 'VEC4'], componentType: [COMPONENT.TYPE.FLOAT, COMPONENT.TYPE.UNSIGNED_BYTE, COMPONENT.TYPE.UNSIGNED_SHORT] },
+    JOINTS_0: { type: ['VEC4'], componentType: [COMPONENT.TYPE.UNSIGNED_BYTE, COMPONENT.TYPE.UNSIGNED_SHORT] },
+    WEIGHTS_0: { type: ['VEC4'], componentType: [COMPONENT.TYPE.FLOAT, COMPONENT.TYPE.UNSIGNED_BYTE, COMPONENT.TYPE.UNSIGNED_SHORT] }
+});

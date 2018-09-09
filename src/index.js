@@ -21,8 +21,18 @@
 
 
 import { default as importer } from './lib/importer';
+import { default as renderer } from './lib/core/renderer';
+
+import { default as node } from './lib/graph/node';
+
+import { default as orthographic } from './lib/camera/orthographic';
+import { default as perspective } from './lib/camera/perspective';
 
 
 export default {
-    importer
+    node,
+    importer,
+    renderer,
+    perspectiveCamera: perspective,
+    orthographicCamera: orthographic
 };

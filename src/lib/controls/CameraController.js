@@ -29,7 +29,7 @@ export default class CameraController {
 
         vec3.scale(this.longitudinalDirection, this.longitudinalDirection, -longitudinal);
 
-        this.camera.translate(...this.longitudinalDirection);
+        this.camera.applyTranslation(...this.longitudinalDirection);
 
         // lateral movement:
         vec3.transformQuat(this.lateralDirection, this.LD, this.camera.rotation);
@@ -37,7 +37,7 @@ export default class CameraController {
 
         vec3.scale(this.lateralDirection, this.lateralDirection, -lateral);
 
-        this.camera.translate(...this.lateralDirection);
+        this.camera.applyTranslation(...this.lateralDirection);
 
     }
 }

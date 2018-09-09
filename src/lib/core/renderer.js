@@ -1,7 +1,13 @@
 
-import { mat4, vec4 } from 'gl-matrix';
+import { mat4 } from 'gl-matrix';
 
-// import { POSITION_LOCATION, UV_LOCATION } from './core/constants';
+import { ATTRIBUTE_LOCATION, TYPE } from './constants';
+
+import buildShaderFromSource from '../shading/shader';
+
+import basicVertexShaderSource from '../shading/shaders/basic-vertex-shader.glsl';
+import basicFragmentShaderSource from '../shading/shaders/basic-fragment-shader.glsl';
+
 
 export default (width, height) => {
 
@@ -17,12 +23,19 @@ export default (width, height) => {
     }
 
     gl.viewport(0, 0, domElement.width, domElement.height);
-    gl.clearColor(1.0, 1.0, 1.0, 1.0);
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.CULL_FACE);
 
+    const program = buildShaderFromSource(gl, basicVertexShaderSource, basicFragmentShaderSource);
+
+    gl.useProgram(program);
+
 
     const renderer = {
+
+        domElement,
+        gl,
 
         setSize(width, height) {
             domElement.width = width;
@@ -31,61 +44,181 @@ export default (width, height) => {
             gl.clearColor(1.0, 1.0, 1.0, 1.0);
         },
 
-        render(scene, camera) {
-            gl.clearColor(...scene.background);
-            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        draw(meshNode, viewMatrix) {
 
-            // TODO: replace with UBO.
-            this.shaders.forEach((shader) => {
-                gl.useProgram(shader.program);
-                gl.uniformMatrix4fv(shader.uniformLocations.projectionMatrix, false, camera.projectionMatrix);
-            });
+            let modelViewMatrix = mat4.multiply(mat4.create(), viewMatrix, meshNode.worldMatrix);
 
-            gl.useProgram(null);
+            gl.uniformMatrix4fv(gl.getUniformLocation(program, 'modelViewMatrix'), false, modelViewMatrix);
 
-            let entities = scene.getEntities();
+            let mesh = meshNode.mesh;
 
-            let forceInitialize = false;
-            if (entities.lights.length !== this.numberOfLights) { // if number of lights in scene has changed we need to reinitalize the shaders.
-                forceInitialize = true;
-                this.numberOfLights = entities.lights.length;
+
+            for (let i = 0; i < mesh.primitives.length; i++) {
+
+                let primitive = mesh.primitives[i];
+
+                if (primitive._vao) {
+                    // already loaded.
+                    //console.log('The primitive is already loaded.');
+                } else {
+
+                    // setup VAO:
+                    let vao = gl.createVertexArray();
+
+                    gl.bindVertexArray(vao);
+
+                    if (primitive.indices) {
+
+                        let accessor = primitive.indices;
+                        let bufferView = accessor.bufferView;
+
+                        if (bufferView._buffer) {
+                            // already loaded.
+                            bufferView._bufferAccessCount += 1;
+                        } else {
+
+                            // Create buffer and upload data.
+                            let buffer = gl.createBuffer();
+                            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer);
+
+                            let dataView = new DataView(bufferView.buffer, bufferView.byteOffset, bufferView.byteLength);
+
+                            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, dataView, gl.STATIC_DRAW);
+
+                            bufferView._buffer = buffer;
+                            bufferView._bufferAccessCount = 1; // number of primitives linking to this buffer.
+
+                        }
+
+                    }
+
+                    for (let name in primitive.attributes) {
+
+                        let accessor = primitive.attributes[name];
+                        let bufferView = accessor.bufferView;
+
+                        if (bufferView._buffer) {
+                            // already loaded.
+                            bufferView._bufferAccessCount += 1;
+                        } else {
+
+                            // Create buffer and upload data.
+                            let buffer = gl.createBuffer();
+                            gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+
+                            let dataView = new DataView(bufferView.buffer, bufferView.byteOffset, bufferView.byteLength);
+
+                            gl.bufferData(gl.ARRAY_BUFFER, dataView, gl.STATIC_DRAW);
+
+                            gl.vertexAttribPointer(ATTRIBUTE_LOCATION[name], TYPE[accessor.type], accessor.componentType, accessor.normalized, bufferView.byteStride, accessor.byteOffset);
+                            gl.enableVertexAttribArray(ATTRIBUTE_LOCATION[name]);
+
+                            bufferView._buffer = buffer;
+                            bufferView._bufferAccessCount = 1; // number of primitives linking to this buffer.
+
+                        }
+                    }
+
+                    primitive._vao = vao;
+
+                }
+
+                if (primitive.indices) {
+                    gl.drawElements(primitive.mode, primitive.indices.count, primitive.indices.componentType, primitive.indices.byteOffset);
+                }
+
             }
 
-            let initProperties = {
-                numberOfLights: this.numberOfLights,
-            };
 
-            // setup lights.
-            let lights = {
-                position: [],
-                diffuse: [],
-                specular: []
-            };
+        },
 
-            entities.lights.forEach((light) => {
-                let lightPosition = vec4.transformMat4(vec4.create(), vec4.create(), (mat4.multiply(mat4.create(), camera.viewMatrix, light.worldMatrix)));
-                lights.position.push(lightPosition);
-                lights.diffuse.push(light.diffuse);
-                lights.specular.push(light.specular);
-            });
+        render(scene, cameraNode) {
+            gl.clearColor(1.0, 1.0, 1.0, 1.0);
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-            entities.meshes.forEach((mesh) => {
-                // check if there exists a drawable for the mesh.
-                let drawable;
-                if (forceInitialize === false) {
-                    if (mesh.drawable instanceof Drawable && mesh.uuid === mesh.drawable.uuid) {
-                        // we need to check if the uuid is correct too, incase the mesh is being rendered in two different renderers.
-                        drawable = mesh.drawable;
-                    } else {
-                        drawable = this.drawables.find(drawable => drawable.uuid === mesh.uuid);
+            gl.uniformMatrix4fv(gl.getUniformLocation(program, 'projectionMatrix'), false, cameraNode.camera.projectionMatrix);
+
+            const viewMatrix = mat4.invert(mat4.create(), cameraNode.worldMatrix);
+
+            let meshNodes = [];
+
+            function getMesh(node) {
+                if (node.mesh) {
+                    meshNodes.push(node);
+                }
+                node.children.map(getMesh);
+            }
+
+            scene.nodes.forEach(node => getMesh(node));
+
+            for (let i = 0; i < meshNodes.length; i++) {
+                this.draw(meshNodes[i], viewMatrix);
+            }
+        },
+
+        load(mesh) {
+            mesh.primitives.forEach((primitive) => {
+                if (primitive._vao) {
+                    // already loaded.
+                    console.log('The primitive is already loaded.');
+                } else {
+
+                    // setup VAO:
+                    let vao = gl.createVertexArray();
+
+                    gl.bindVertexArray(vao);
+
+                    if (primitive.indices) {
+
+                        let accessor = primitive.indices;
+                        let bufferView = accessor.bufferView;
+
+                        if (bufferView._buffer) {
+                            // already loaded.
+                            bufferView._bufferAccessCount += 1;
+                        } else {
+
+                            // Create buffer and upload data.
+                            let buffer = gl.createBuffer();
+                            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer);
+
+                            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, bufferView.buffer, gl.STATIC_DRAW, bufferView.byteOffset, bufferView.byteLength);
+
+                            bufferView._buffer = buffer;
+                            bufferView._bufferAccessCount = 1; // number of primitives linking to this buffer.
+
+                        }
+
                     }
-                }
 
-                if (drawable === undefined) {
-                    drawable = this._initDrawable(mesh, initProperties); // create drawable before rendering.
-                }
+                    for (let name in primitive.attributes) {
 
-                this._draw(mesh, drawable, camera, lights); // use drawable to render the mesh.
+                        let accessor = primitive.attributes[name];
+                        let bufferView = accessor.bufferView;
+
+                        if (bufferView._buffer) {
+                            // already loaded.
+                            bufferView._bufferAccessCount += 1;
+                        } else {
+
+                            // Create buffer and upload data.
+                            let buffer = gl.createBuffer();
+                            gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+
+                            gl.bufferData(gl.ARRAY_BUFFER, bufferView.buffer, gl.STATIC_DRAW, bufferView.byteOffset, bufferView.byteLength);
+
+
+                            gl.vertexAttribPointer(ATTRIBUTE_LOCATION[name], TYPE[accessor.type], accessor.componentType, accessor.normalized, bufferView.byteStride, accessor.byteOffset);
+                            gl.enableVertexAttribArray(ATTRIBUTE_LOCATION[name]);
+
+                            bufferView._buffer = buffer;
+                            bufferView._bufferAccessCount = 1; // number of primitives linking to this buffer.
+
+                        }
+                    }
+
+                    primitive._vao = vao;
+                }
             });
         }
     };

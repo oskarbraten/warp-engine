@@ -1,5 +1,5 @@
 
-import { GLTF_VERSION, COMPONENT } from './core/constants';
+import { GLTF_VERSION, COMPONENT, VALID_ACCESSOR_TYPES } from './core/constants';
 import scene from './graph/scene';
 import node from './graph/node';
 
@@ -12,6 +12,7 @@ import accessor from './mesh/accessor';
 import bufferView from './mesh/bufferView';
 
 const SUPPORTED_VERSION = GLTF_VERSION.split('.').map(a => parseInt(a));
+
 
 export default async (raw) => {
 
@@ -28,7 +29,7 @@ export default async (raw) => {
         // TODO: give feedback, minor version is incompatible.
         return null;
     }
-    
+
 
     const buffers = await Promise.all(gltf.buffers.map(({ uri }) => {
         return fetch(uri).then(res => res.arrayBuffer()); // use fetch to get data from uri.
@@ -70,7 +71,19 @@ export default async (raw) => {
         let attributes = {};
 
         for (let key in attributeIndices) {
-            attributes[key] = accessors[attributeIndices[key]];
+
+            let accessor = accessors[attributeIndices[key]];
+
+            attributes[key] = accessor;
+
+            if (
+                (VALID_ACCESSOR_TYPES[key] &&
+                VALID_ACCESSOR_TYPES[key].type.includes(accessor.type) &&
+                VALID_ACCESSOR_TYPES[key].componentType.includes(accessor.componentType))
+                === false
+            ) {
+                throw Error('GLTF2.0: Accessor is invalid.');
+            }
         }
 
         // TODO: add material.
