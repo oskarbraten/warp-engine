@@ -1,5 +1,5 @@
 
-import { GLTF_VERSION, COMPONENT, VALID_ACCESSOR_TYPES } from './core/constants';
+import { GLTF_VERSION, COMPONENT, VALID_ACCESSOR_TYPES, PROJECTION, TARGET } from './core/constants';
 import scene from './graph/scene';
 import node from './graph/node';
 
@@ -32,7 +32,7 @@ export default async (raw) => {
 
 
     const buffers = await Promise.all(gltf.buffers.map(({ uri }) => {
-        return fetch(uri).then(res => res.arrayBuffer()); // use fetch to get data from uri.
+        return fetch(uri).then(res => res.arrayBuffer()); // use fetch to gelt data from uri.
     }));
 
     const bufferViews = gltf.bufferViews.map(({
@@ -86,8 +86,20 @@ export default async (raw) => {
             }
         }
 
+        const indices = accessors[indicesIndex];
+
+        if (!VALID_ACCESSOR_TYPES.INDEX.type.includes(indices.type) || !VALID_ACCESSOR_TYPES.INDEX.componentType.includes(indices.componentType)) {
+            throw Error('GLTF2.0: Indices accessor should have componentType { 5121, 5123, 5125 }, and type "SCALAR".');
+        }
+
+        const ibv = indices.bufferView;
+
+        if (ibv.target && ibv.target !== TARGET.ELEMENT_ARRAY_BUFFER) {
+            throw Error('GLTF2.0: Indices accessor should have a target equal to 34963 (ELEMENT_ARRAY_BUFFER).');
+        }
+
         // TODO: add material.
-        return primitive(attributes, mode, null, accessors[indicesIndex]);
+        return primitive(attributes, mode, null, indices);
 
     }
 
@@ -109,9 +121,9 @@ export default async (raw) => {
         perspective: perspectiveProperties
     }) => {
 
-        if (type === 'orthograpic') {
+        if (type === PROJECTION.ORTHOGRAPHIC) {
             return orthographic(orthographicProperties, name);
-        } else if (type === 'perspective') {
+        } else if (type === PROJECTION.PERSPECTIVE) {
             return perspective(perspectiveProperties, name);
         } else {
             // TODO: type not defined, throw?

@@ -12,6 +12,8 @@ Warp.importer(rawGltf).then((data) => {
 
     let scene = data.scene;
 
+    renderer.load(scene);
+
     let camera = Warp.perspectiveCamera({ aspectRatio: (window.innerWidth / window.innerHeight), yfov: 70, zfar: 5000, znear: 0.1 });
 
     window.addEventListener('resize', () => {

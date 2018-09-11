@@ -9,7 +9,8 @@ export default (attributes, mode = 4, material, indices = null) => {
         attributes,
         indices, // if defined use drawElements, else drawArrays
         material,
-        mode
+        mode,
+        extras: {}
     };
     
 };
