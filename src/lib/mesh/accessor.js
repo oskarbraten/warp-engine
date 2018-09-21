@@ -23,7 +23,7 @@
 //     MAT4: 16
 // };
 
-export default (bufferView, componentType, type, count, min, max, byteOffset = 0) => {
+export default (bufferView, componentType, type, count, min, max, byteOffset = 0, normalized = false) => {
 
     return {
         bufferView,
@@ -35,7 +35,9 @@ export default (bufferView, componentType, type, count, min, max, byteOffset = 0
         count,
 
         min,
-        max
+        max,
+
+        normalized
     };
 
 };
