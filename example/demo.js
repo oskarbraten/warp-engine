@@ -1,6 +1,6 @@
-import Warp from './index';
+import Warp from '../src/index';
 
-import CameraController from './lib/controls/CameraController';
+import CameraController from './controls/CameraController';
 
 import rawGltf from './misc/test-instances.gltf';
 

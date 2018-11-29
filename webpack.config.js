@@ -6,7 +6,7 @@ module.exports = {
     mode: process.env.WEBPACK_SERVE ? 'development' : 'production',
     entry: {
         warp: './src/index.js',
-        demo: './src/demo.js'
+        demo: './example/demo.js'
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
@@ -46,7 +46,7 @@ module.exports = {
         new HtmlWebpackPlugin({
             inject: true,
             hash: false,
-            template: './src/index.html',
+            template: './example/index.html',
             filename: 'index.html'
         })
     ],
