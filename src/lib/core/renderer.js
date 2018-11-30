@@ -65,6 +65,10 @@ export default (width, height) => {
                         const offset = primitive.indices.byteOffset / COMPONENT.SIZE[primitive.indices.componentType];
                         gl.drawElements(primitive.mode, primitive.indices.count, primitive.indices.componentType, offset);
 
+                    } else {
+
+                        gl.drawArrays(gl.TRIANGLES, 0, primitive.attributes.POSITION.count / 3);
+
                     }
 
                 } else {
@@ -304,87 +308,6 @@ export default (width, height) => {
     };
 
     return renderer;
-
-
-    // _draw(mesh, drawable, camera, lights) {
-    //     // this is where the magic happens, baby.
-
-
-    //     //let material = mesh.material; // contains all uniforms.
-    //     let shader = drawable.shader;
-    //     let geometryBuffer = drawable.geometryBuffer;
-
-    //     // TODO: use one mat4 for each draw.
-    //     let modelViewMatrix = mat4.multiply(mat4.create(), camera.viewMatrix, mesh.worldMatrix);
-
-    //     // Activate program
-    //     this.gl.useProgram(shader.program);
-
-    //     // Bind buffer:
-    //     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, geometryBuffer.buffer);
-
-    //     // bind vPosition attribute.
-    //     this.gl.vertexAttribPointer(POSITION_LOCATION, 4, this.gl.FLOAT, false, 0, 0);
-    //     this.gl.enableVertexAttribArray(POSITION_LOCATION);
-
-    //     if (shader.attributeLocations.vNormal > -1) {
-    //         this.gl.vertexAttribPointer(shader.attributeLocations.vNormal, 3, this.gl.FLOAT, false, 0, geometryBuffer.bufferNormalsOffset);
-    //         this.gl.enableVertexAttribArray(shader.attributeLocations.vNormal);
-    //     }
-
-    //     if (shader.attributeLocations.vTextureCoordinate > -1) {
-    //         this.gl.vertexAttribPointer(UV_LOCATION, 2, this.gl.FLOAT, false, 0, geometryBuffer.bufferUvsOffset);
-    //         this.gl.enableVertexAttribArray(UV_LOCATION);
-    //     }
-
-    //     if (shader.attributeLocations.vTangent > -1) {
-    //         this.gl.vertexAttribPointer(shader.attributeLocations.vTangent, 3, this.gl.FLOAT, false, 0, geometryBuffer.bufferTangentsOffset);
-    //         this.gl.enableVertexAttribArray(shader.attributeLocations.vTangent);
-    //     }
-
-    //     // Upload modelViewMatrix:
-    //     this.gl.uniformMatrix4fv(shader.uniformLocations.modelViewMatrix, false, modelViewMatrix);
-
-    //     // TODO: Generalize pipline.
-    //     if (shader instanceof BasicShader) {
-    //         this.gl.uniform4fv(shader.uniformLocations.color, mesh.material.uniforms.color);
-
-
-    //         this.gl.uniform1i(shader.uniformLocations.hasMap, mesh.material.uniforms.hasMap);
-
-    //         if (mesh.material.uniforms.hasMap) {
-    //             this.gl.activeTexture(this.gl.TEXTURE0);
-    //             this.gl.bindTexture(this.gl.TEXTURE_2D, mesh.material.uniforms.map);
-    //             this.gl.uniform1i(shader.uniformLocations.map, 0);
-    //         }
-    //     } else {
-    //         throw Error('WarpGL: Unknown shader type. : ' + shader);
-    //     }
-
-
-    //     if (geometryBuffer.indexed) {
-    //         this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, geometryBuffer.elementArrayBuffer);
-    //         this.gl.drawElements(this.gl.TRIANGLES, geometryBuffer.numberOfElements, geometryBuffer.indexType, 0);
-    //     } else {
-    //         this.gl.drawArrays(this.gl.TRIANGLES, 0, geometryBuffer.numberOfVertices);
-    //     }
-
-    //     this.gl.disableVertexAttribArray(shader.attributeLocations.vPosition);
-
-    //     if (shader.attributeLocations.vNormal > -1) {
-    //         this.gl.disableVertexAttribArray(shader.attributeLocations.vNormal);
-    //     }
-
-    //     if (shader.attributeLocations.vTextureCoordinate > -1) {
-    //         this.gl.disableVertexAttribArray(shader.attributeLocations.vTextureCoordinate);
-    //     }
-
-    //     if (shader.attributeLocations.vTangent > -1) {
-    //         this.gl.disableVertexAttribArray(shader.attributeLocations.vTangent);
-    //     }
-    // }
-
-
 
     // loadTexture(url) {
     //     let image = new Image();
