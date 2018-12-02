@@ -247,7 +247,7 @@ export default (width, height) => {
 
                 } else {
 
-                    gl.drawArrays(gl.TRIANGLES, 0, primitive.attributes.POSITION.count / 3);
+                    gl.drawArrays(gl.TRIANGLES, 0, this.accessors[primitive.attributes.POSITION].count / 3);
 
                 }
 

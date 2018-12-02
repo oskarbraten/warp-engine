@@ -17,8 +17,18 @@ Warp.importGLTF(gltf_document).then((document) => {
     console.log(realm);
     console.log(realm.acquireRenderQueue());
 
+    let then = 0;
+    function loop(now) {
 
-    realm.render(realm.acquireRenderQueue(), realm.nodes[0]);
+        const delta = now - then;
+        then = now;
+
+        realm.render(realm.acquireRenderQueue(), realm.nodes[0]);
+
+        window.requestAnimationFrame(loop);
+    }
+
+    window.requestAnimationFrame(loop);
 
 
     // window.addEventListener('resize', () => {
