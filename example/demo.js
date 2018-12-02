@@ -1,135 +1,139 @@
 import Warp from '../src/index';
-
 import CameraController from './controls/CameraController';
 
-import rawGltf from './misc/test-instances.gltf';
+import gltf_document from './misc/test-instances.gltf';
 
-Warp.importer(rawGltf).then((data) => {
-    console.log(data);
+const realm = Warp.realm(window.innerWidth, window.innerHeight);
 
-    const renderer = Warp.renderer(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+document.body.appendChild(realm.gl.canvas);
 
-    let scene = data.scene;
+Warp.importGLTF(gltf_document).then((document) => {
 
-    renderer.load(scene);
+    console.log(document);
+    realm.loadFromGLTF(document, true);
 
-    let camera = Warp.perspectiveCamera({ aspectRatio: (window.innerWidth / window.innerHeight), yfov: 70, zfar: 5000, znear: 0.1 });
+    realm.updateTransforms();
 
-    window.addEventListener('resize', () => {
-        camera.perspective.aspectRatio = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-
-        renderer.setSize(window.innerWidth, window.innerHeight);
-    }, false);
-
-    let cameraNode = Warp.node({ name: 'Camera', camera });
-
-    scene.nodes.push(cameraNode);
-
-    let cameraController = new CameraController(cameraNode);
-
-    let canvas = renderer.domElement;
-
-    canvas.addEventListener('click', () => {
-        canvas.requestPointerLock();
-    });
-
-    let yaw = 0;
-    let pitch = 0;
-
-    function updateCamRotation(event) {
-        yaw += event.movementX * 0.001;
-        pitch += event.movementY * 0.001;
-    }
-
-    document.addEventListener('pointerlockchange', () => {
-        if (document.pointerLockElement === canvas) {
-            canvas.addEventListener('mousemove', updateCamRotation, false);
-        } else {
-            canvas.removeEventListener('mousemove', updateCamRotation, false);
-        }
-    });
-
-    let move = {
-        forward: false,
-        backward: false,
-        left: false,
-        right: false,
-        speed: 0.01
-    };
+    console.log(realm);
+    console.log(realm.acquireRenderQueue());
 
 
-    window.addEventListener('keydown', (e) => {
-        e.preventDefault();
-        if (e.code === 'KeyW') {
-            move.forward = true;
-        } else if (e.code === 'KeyS') {
-            move.backward = true;
-        } else if (e.code === 'KeyA') {
-            move.left = true;
-        } else if (e.code === 'KeyD') {
-            move.right = true;
-        }
-    });
-
-    window.addEventListener('keyup', (e) => {
-        e.preventDefault();
-        if (e.code === 'KeyW') {
-            move.forward = false;
-        } else if (e.code === 'KeyS') {
-            move.backward = false;
-        } else if (e.code === 'KeyA') {
-            move.left = false;
-        } else if (e.code === 'KeyD') {
-            move.right = false;
-        }
-    });
+    realm.render(realm.acquireRenderQueue(), realm.nodes[0]);
 
 
-    let then = 0;
-    function loop(now) {
+    // window.addEventListener('resize', () => {
+    //     camera.perspective.aspectRatio = window.innerWidth / window.innerHeight;
+    //     camera.updateProjectionMatrix();
 
-        const delta = now - then;
-        then = now;
+    // }, false);
 
-        const moveSpeed = move.speed * delta;
+    // let cameraNode = Warp.node({ name: 'Camera', camera });
 
-        let longitudinal = 0;
-        let lateral = 0;
+    // scene.nodes.push(cameraNode);
 
-        if (move.forward) {
-            longitudinal += moveSpeed;
-        }
+    // let cameraController = new CameraController(cameraNode);
 
-        if (move.backward) {
-            longitudinal -= moveSpeed;
-        }
+    // let canvas = renderer.domElement;
 
-        if (move.left) {
-            lateral += moveSpeed;
-        }
+    // canvas.addEventListener('click', () => {
+    //     canvas.requestPointerLock();
+    // });
 
-        if (move.right) {
-            lateral -= moveSpeed;
-        }
+    // let yaw = 0;
+    // let pitch = 0;
 
-        cameraController.update(pitch, yaw, longitudinal, lateral);
+    // function updateCamRotation(event) {
+    //     yaw += event.movementX * 0.001;
+    //     pitch += event.movementY * 0.001;
+    // }
 
-        // reset movement buffers.
-        yaw = 0;
-        pitch = 0;
+    // document.addEventListener('pointerlockchange', () => {
+    //     if (document.pointerLockElement === canvas) {
+    //         canvas.addEventListener('mousemove', updateCamRotation, false);
+    //     } else {
+    //         canvas.removeEventListener('mousemove', updateCamRotation, false);
+    //     }
+    // });
 
-        scene.nodes.forEach((node) => node.tick());
+    // let move = {
+    //     forward: false,
+    //     backward: false,
+    //     left: false,
+    //     right: false,
+    //     speed: 0.01
+    // };
 
-        renderer.render(data.scene, cameraNode);
+
+    // window.addEventListener('keydown', (e) => {
+    //     e.preventDefault();
+    //     if (e.code === 'KeyW') {
+    //         move.forward = true;
+    //     } else if (e.code === 'KeyS') {
+    //         move.backward = true;
+    //     } else if (e.code === 'KeyA') {
+    //         move.left = true;
+    //     } else if (e.code === 'KeyD') {
+    //         move.right = true;
+    //     }
+    // });
+
+    // window.addEventListener('keyup', (e) => {
+    //     e.preventDefault();
+    //     if (e.code === 'KeyW') {
+    //         move.forward = false;
+    //     } else if (e.code === 'KeyS') {
+    //         move.backward = false;
+    //     } else if (e.code === 'KeyA') {
+    //         move.left = false;
+    //     } else if (e.code === 'KeyD') {
+    //         move.right = false;
+    //     }
+    // });
 
 
-        window.requestAnimationFrame(loop);
-    }
+    // let then = 0;
+    // function loop(now) {
 
-    window.requestAnimationFrame(loop);
+    //     const delta = now - then;
+    //     then = now;
 
-}).catch((error) => {
-    console.log(error);
+    //     const moveSpeed = move.speed * delta;
+
+    //     let longitudinal = 0;
+    //     let lateral = 0;
+
+    //     if (move.forward) {
+    //         longitudinal += moveSpeed;
+    //     }
+
+    //     if (move.backward) {
+    //         longitudinal -= moveSpeed;
+    //     }
+
+    //     if (move.left) {
+    //         lateral += moveSpeed;
+    //     }
+
+    //     if (move.right) {
+    //         lateral -= moveSpeed;
+    //     }
+
+    //     cameraController.update(pitch, yaw, longitudinal, lateral);
+
+    //     // reset movement buffers.
+    //     yaw = 0;
+    //     pitch = 0;
+
+    //     scene.nodes.forEach((node) => node.tick());
+
+    //     renderer.render(data.scene, cameraNode);
+
+
+    //     window.requestAnimationFrame(loop);
+    // }
+
+    // window.requestAnimationFrame(loop);
+
+}).catch((err) => {
+    console.log(err);
 });

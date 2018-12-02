@@ -3,11 +3,9 @@ import { mat4 } from 'gl-matrix';
 
 import { ATTRIBUTE_LOCATION, TYPE, COMPONENT } from './constants';
 
-import buildShaderFromSource from '../shading/shader';
-
-import basicVertexShaderSource from '../shading/shaders/basic-vertex-shader.glsl';
-import basicFragmentShaderSource from '../shading/shaders/basic-fragment-shader.glsl';
-
+import buildShaderFromSource from './shader-builder';
+import basicVertexShaderSource from '../shaders/basic-vertex-shader.glsl';
+import basicFragmentShaderSource from '../shaders/basic-fragment-shader.glsl';
 
 export default (width, height) => {
 
@@ -56,9 +54,9 @@ export default (width, height) => {
 
                 let primitive = mesh.primitives[i];
 
-                if (primitive.extras.vao) {
+                if (primitive.vao) {
 
-                    gl.bindVertexArray(primitive.extras.vao);
+                    gl.bindVertexArray(primitive.vao);
 
                     if (primitive.indices) {
 
@@ -81,7 +79,7 @@ export default (width, height) => {
 
         },
 
-        render(scene, cameraNode) {
+        render(meshes, cameraNode) {
 
             gl.clearColor(1.0, 1.0, 1.0, 1.0);
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -110,201 +108,159 @@ export default (width, height) => {
         /**
          *
          *
-         * @param {*} n Scene, node, or mesh.
+         * @param {*} n Primitive
          */
-        load(n) {
+        load(primitive, realm) {
 
-            if (n.primitives) {
+            if (primitive.vao) {
 
-                for (let i = 0; i < n.primitives.length; i++) {
+                // the primitive has already been loaded.
+                return;
 
-                    let primitive = n.primitives[i];
+            }
 
-                    if (primitive.extras.vao) {
+            // setup VAO:
 
-                        // the primitive has already been loaded.
-                        continue;
+            let vao = gl.createVertexArray();
+            gl.bindVertexArray(vao);
 
-                    }
+            if (primitive.indices) {
 
-                    // setup VAO:
+                let accessor = realm.accessors[primitive.indices];
+                let bufferView = realm.bufferViews[accessor.bufferView];
 
-                    let vao = gl.createVertexArray();
-                    gl.bindVertexArray(vao);
+                if (bufferView.element_array_buffer) {
 
-                    if (primitive.indices) {
+                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, bufferView.element_array_buffer);
 
-                        let accessor = primitive.indices;
-                        let bufferView = accessor.bufferView;
+                    // the bufferView is already loaded, increment access count.
+                    bufferView.bufferAccessCount += 1;
 
-                        if (bufferView.extras.element_array_buffer) {
+                } else {
 
-                            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, bufferView.extras.element_array_buffer);
+                    // create buffer and upload data.
 
-                            // the bufferView is already loaded, increment access count.
-                            bufferView.extras.bufferAccessCount += 1;
+                    let buffer = gl.createBuffer();
+                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer);
 
-                        } else {
+                    let dataView = new DataView(realm.buffers[bufferView.buffer], bufferView.byteOffset, bufferView.byteLength);
 
-                            // create buffer and upload data.
+                    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, dataView, gl.STATIC_DRAW);
 
-                            let buffer = gl.createBuffer();
-                            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer);
-
-                            let dataView = new DataView(bufferView.buffer, bufferView.byteOffset, bufferView.byteLength);
-
-                            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, dataView, gl.STATIC_DRAW);
-
-                            bufferView.extras.element_array_buffer = buffer;
-                            bufferView.extras.bufferAccessCount = 1; // number of accessors linking to this buffer.
-
-                        }
-
-                    }
-
-                    // create and link attribute accessors, and possibly upload bufferView to GPU.
-
-                    for (let name in primitive.attributes) {
-
-                        let accessor = primitive.attributes[name];
-                        let bufferView = accessor.bufferView;
-
-                        if (bufferView.extras.array_buffer) {
-
-                            gl.bindBuffer(gl.ARRAY_BUFFER, bufferView.extras.array_buffer);
-
-                            // the bufferView is already loaded, increment access count.
-                            bufferView.extras.bufferAccessCount += 1;
-
-                        } else {
-
-                            // create buffer and upload data.
-
-                            let buffer = gl.createBuffer();
-                            gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-
-                            let dataView = new DataView(bufferView.buffer, bufferView.byteOffset, bufferView.byteLength);
-
-                            gl.bufferData(gl.ARRAY_BUFFER, dataView, gl.STATIC_DRAW);
-
-                            // setup and enable vertex attributes (Using the predefined and constant locations.)
-                            gl.vertexAttribPointer(ATTRIBUTE_LOCATION[name], TYPE[accessor.type], accessor.componentType, accessor.normalized, bufferView.byteStride, accessor.byteOffset);
-                            gl.enableVertexAttribArray(ATTRIBUTE_LOCATION[name]);
-
-                            bufferView.extras.array_buffer = buffer;
-                            bufferView.extras.bufferAccessCount = 1; // number of accessors linking to this buffer.
-
-                        }
-                    }
-
-                    primitive.extras.vao = vao;
+                    bufferView.element_array_buffer = buffer;
+                    bufferView.bufferAccessCount = 1; // number of accessors linking to this buffer.
 
                 }
 
-            } else if (n.mesh) {
-
-                this.load(n.mesh);
-
-            } else if (n.children) {
-
-                n.children.forEach(this.load.bind(this));
-
-            } else if (n.nodes) {
-
-                n.nodes.forEach(this.load.bind(this));
-
             }
+
+            // create and link attribute accessors, and possibly upload bufferView to GPU.
+
+            for (let name in primitive.attributes) {
+
+                let accessor = realm.accessors[primitive.attributes[name]];
+                let bufferView = realm.bufferViews[accessor.bufferView];
+
+                console.log(accessor, bufferView);
+
+                if (bufferView.array_buffer) {
+
+                    gl.bindBuffer(gl.ARRAY_BUFFER, bufferView.array_buffer);
+
+                    // the bufferView is already loaded, increment access count.
+                    bufferView.bufferAccessCount += 1;
+
+                } else {
+
+                    // create buffer and upload data.
+
+                    let buffer = gl.createBuffer();
+                    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+
+                    let dataView = new DataView(realm.buffers[bufferView.buffer], bufferView.byteOffset, bufferView.byteLength);
+
+                    gl.bufferData(gl.ARRAY_BUFFER, dataView, gl.STATIC_DRAW);
+
+                    // setup and enable vertex attributes (Using the predefined and constant locations.)
+                    gl.vertexAttribPointer(ATTRIBUTE_LOCATION[name], TYPE[accessor.type], accessor.componentType, accessor.normalized, bufferView.byteStride, accessor.byteOffset);
+                    gl.enableVertexAttribArray(ATTRIBUTE_LOCATION[name]);
+
+                    bufferView.array_buffer = buffer;
+                    bufferView.bufferAccessCount = 1; // number of accessors linking to this buffer.
+
+                }
+            }
+
+            primitive.vao = vao;
+
         },
 
         /**
          *
          *
-         * @param {*} n Scene, node, or mesh.
+         * @param {*} n Mesh
          */
-        unload(n) {
+        unload(primitive, realm) {
 
-            if (n.primitives) {
-                console.log(n);
+            if (typeof primitive.vao === 'undefined') {
 
-                for (let i = 0; i < n.primitives.length; i++) {
+                // the primitive has already been unloaded.
+                return;
 
-                    let primitive = n.primitives[i];
+            }
 
-                    if (typeof primitive.extras.vao === 'undefined') {
+            if (primitive.indices) {
 
-                        // the primitive has already been unloaded.
-                        continue;
+                let accessor = primitive.indices;
+                let bufferView = accessor.bufferView;
 
-                    }
+                if (bufferView.element_array_buffer) {
 
-                    if (primitive.indices) {
+                    if (bufferView.bufferAccessCount > 1) {
 
-                        let accessor = primitive.indices;
-                        let bufferView = accessor.bufferView;
+                        // the bufferView is still used by another accessor, decrement access count.
+                        bufferView.bufferAccessCount -= 1;
 
-                        if (bufferView.extras.element_array_buffer) {
+                    } else {
 
-                            if (bufferView.extras.bufferAccessCount > 1) {
-
-                                // the bufferView is still used by another accessor, decrement access count.
-                                bufferView.extras.bufferAccessCount -= 1;
-
-                            } else {
-
-                                gl.deleteBuffer(bufferView.extras.element_array_buffer);
-                                delete bufferView.extras.element_array_buffer;
-                                delete bufferView.extras.bufferAccessCount;
-
-                            }
-
-                        }
+                        gl.deleteBuffer(bufferView.element_array_buffer);
+                        delete bufferView.element_array_buffer;
+                        delete bufferView.bufferAccessCount;
 
                     }
-
-                    for (let name in primitive.attributes) {
-
-                        let accessor = primitive.attributes[name];
-                        let bufferView = accessor.bufferView;
-
-                        if (bufferView.extras.array_buffer) {
-
-                            if (bufferView.extras.bufferAccessCount > 1) {
-
-                                // the bufferView is still used by another accessor, decrement access count.
-                                bufferView.extras.bufferAccessCount -= 1;
-
-                            } else {
-
-                                gl.deleteBuffer(bufferView.extras.array_buffer);
-                                delete bufferView.extras.array_buffer;
-                                delete bufferView.extras.bufferAccessCount;
-
-                            }
-
-                        }
-
-                    }
-
-                    gl.deleteVertexArray(primitive.extras.vao);
-                    delete primitive.extras.vao;
 
                 }
 
-            } else if (n.mesh) {
+            }
 
-                this.unload(n.mesh);
+            for (let name in primitive.attributes) {
 
-            } else if (n.children) {
+                let accessor = primitive.attributes[name];
+                let bufferView = accessor.bufferView;
 
-                n.children.forEach(this.unload.bind(this));
+                if (bufferView.array_buffer) {
 
-            } else if (n.nodes) {
+                    if (bufferView.bufferAccessCount > 1) {
 
-                n.nodes.forEach(this.unload.bind(this));
+                        // the bufferView is still used by another accessor, decrement access count.
+                        bufferView.bufferAccessCount -= 1;
+
+                    } else {
+
+                        gl.deleteBuffer(bufferView.array_buffer);
+                        delete bufferView.array_buffer;
+                        delete bufferView.bufferAccessCount;
+
+                    }
+
+                }
 
             }
-        }
 
+            gl.deleteVertexArray(primitive.vao);
+            delete primitive.vao;
+
+        }
     };
 
     return renderer;

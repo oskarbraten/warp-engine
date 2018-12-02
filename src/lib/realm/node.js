@@ -3,7 +3,7 @@
  * A node in the node hierarchy.
  */
 
-import { vec3, mat4, quat } from 'gl-matrix';
+import { mat4, quat } from 'gl-matrix';
 
 export default ({
 
@@ -15,11 +15,11 @@ export default ({
     mesh = null,
     camera = null,
 
-    rotation = quat.create(),
-    translation = vec3.fromValues(0, 0, 0),
-    scale = vec3.fromValues(1, 1, 1),
+    rotation = null,
+    translation = null,
+    scale = null,
 
-    matrix = null
+    matrix = mat4.create()
 
 }) => {
 
@@ -27,17 +27,14 @@ export default ({
 
         name,
 
+        parent,
         children,
 
         mesh,
         camera,
 
-        localMatrix: mat4.create(),
+        matrix,
         worldMatrix: mat4.create(),
-
-        translation,
-        scale,
-        rotation, // quaternion
 
         add(child) {
             if (child && this.children.indexOf(child) === -1) {
@@ -54,34 +51,6 @@ export default ({
                     child.parent = null;
                 }
             }
-        },
-
-        tick(parentWorldMatrix = null) {
-            this.updateLocalMatrix(); // Recalculate this node's localMatrix.
-
-            // Do this if the node has a parent
-            if (parentWorldMatrix !== null) {
-
-                // Multiply the localMatrix of this node with the worldMatrix of its parent.
-                mat4.multiply(this.worldMatrix, parentWorldMatrix, this.localMatrix);
-
-            } else {
-
-                //Just set the localMatrix as the worldMatrix since this node does not have a parent
-                mat4.copy(this.worldMatrix, this.localMatrix);
-
-            }
-
-            // Propagate the update downwards in the scene tree 
-            //(the children will use this node's worldMatrix in the tick)
-            for (let i = 0; i < this.children.length; i++) {
-                this.children[i].tick(this.worldMatrix);
-            }
-
-        },
-
-        updateLocalMatrix() {
-            mat4.fromRotationTranslationScale(this.localMatrix, this.rotation, this.translation, this.scale);
         },
 
         setScale(x, y, z) {
@@ -125,14 +94,8 @@ export default ({
         }
     };
 
-    if (parent) {
-        parent.add(node);
-    }
-
-    if (matrix) {
-        mat4.getRotation(node.rotation, matrix);
-        mat4.getTranslation(node.translation, matrix);
-        mat4.getScaling(node.scale, matrix);
+    if (rotation !== null && translation !== null && scale !== null) {
+        mat4.fromRotationTranslationScale(node.matrix, rotation, translation, scale);
     }
 
     return node;

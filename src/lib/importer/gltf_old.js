@@ -1,15 +1,15 @@
+import { GLTF_VERSION, COMPONENT, VALID_ACCESSOR_TYPES, PROJECTION, TARGET } from '../../core/constants';
 
-import { GLTF_VERSION, COMPONENT, VALID_ACCESSOR_TYPES, PROJECTION, TARGET } from './core/constants';
-import scene from './graph/scene';
-import node from './graph/node';
+import scene from '../scene';
+import node from '../node';
 
-import orthographic from './camera/orthographic';
-import perspective from './camera/perspective';
+import orthographic from '../camera/orthographic';
+import perspective from '../camera/perspective';
 
-import mesh from './mesh/mesh';
-import primitive from './mesh/primitive';
-import accessor from './mesh/accessor';
-import bufferView from './mesh/bufferView';
+import mesh from '../mesh/mesh';
+import primitive from '../mesh/primitive';
+import accessor from '../mesh/accessor';
+import bufferView from '../mesh/bufferView';
 
 const SUPPORTED_VERSION = GLTF_VERSION.split('.').map(a => parseInt(a));
 

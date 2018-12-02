@@ -5,19 +5,10 @@
  * ported to webpack and gl-matrix, 07/06/2018
  */
 
-import { default as importer } from './lib/importer';
-import { default as renderer } from './lib/core/renderer';
-
-import { default as node } from './lib/graph/node';
-
-import { default as orthographic } from './lib/camera/orthographic';
-import { default as perspective } from './lib/camera/perspective';
-
+import realm from './lib/core/realm';
+import importGLTF from './lib/importer/gltf';
 
 export default {
-    node,
-    importer,
-    renderer,
-    perspectiveCamera: perspective,
-    orthographicCamera: orthographic
+    realm,
+    importGLTF
 };

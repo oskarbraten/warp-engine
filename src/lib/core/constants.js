@@ -1,6 +1,3 @@
-
-export const GLTF_VERSION = '2.0';
-
 export const COMPONENT = Object.freeze({
     SIZE: Object.freeze({
         '5120': 1,
