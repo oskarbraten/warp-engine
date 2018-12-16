@@ -1,36 +1,22 @@
 
-import { mat4 } from 'gl-matrix';
+import { mat3, mat4 } from 'gl-matrix';
 
 import { ATTRIBUTE_LOCATION, TYPE, COMPONENT } from './constants';
+import standardShader from '../shader/standard';
 
-import buildShaderFromSource from '../shading/shader';
+export default (context = null) => {
 
-import basicVertexShaderSource from '../shading/shaders/basic-vertex-shader.glsl';
-import basicFragmentShaderSource from '../shading/shaders/basic-fragment-shader.glsl';
-
-
-export default (width, height) => {
-
-    const domElement = document.createElement('canvas');
-    domElement.width = width;
-    domElement.height = height;
-
-    const gl = domElement.getContext('webgl2');
-
-    if (!gl) {
-        console.warn('WebGL 2.0 isn\'t available');
-        return null;
+    if (context === null) {
+        throw Error('You must pass a WebGL2 context to the renderer.');
     }
+
+    const gl = context;
+    const domElement = gl.canvas;
 
     gl.viewport(0, 0, domElement.width, domElement.height);
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.CULL_FACE);
-
-    const program = buildShaderFromSource(gl, basicVertexShaderSource, basicFragmentShaderSource);
-
-    gl.useProgram(program);
-
 
     const renderer = {
 
@@ -44,65 +30,64 @@ export default (width, height) => {
             gl.clearColor(1.0, 1.0, 1.0, 1.0);
         },
 
-        draw(node, viewMatrix) {
+        draw(renderable, viewMatrix, projectionMatrix) {
 
-            let modelViewMatrix = mat4.multiply(mat4.create(), viewMatrix, node.worldMatrix);
+            const [primitive, worldMatrix] = renderable;
 
-            gl.uniformMatrix4fv(gl.getUniformLocation(program, 'modelViewMatrix'), false, modelViewMatrix);
+            const material = primitive.material;
+            const shader = material.extras.shader;
+            gl.useProgram(shader.program);
 
-            let mesh = node.mesh;
+            // vertex uniforms: (TODO: calculate only per mesh.)
+            const modelViewMatrix = mat4.multiply(mat4.create(), viewMatrix, worldMatrix);
+            const modelViewProjectionMatrix = mat4.multiply(mat4.create(), projectionMatrix, modelViewMatrix);
+            const normalMatrix = mat3.normalFromMat4(mat3.create(), modelViewMatrix);
 
-            for (let i = 0; i < mesh.primitives.length; i++) {
+            gl.uniformMatrix4fv(shader.uniformLocations.modelMatrix, false, worldMatrix);
+            gl.uniformMatrix4fv(shader.uniformLocations.modelViewProjectionMatrix, false, modelViewProjectionMatrix);
+            gl.uniformMatrix4fv(shader.uniformLocations.normalMatrix, false, normalMatrix);
 
-                let primitive = mesh.primitives[i];
+            // material uniforms:
 
-                if (primitive.extras.vao) {
+            gl.uniform4fv(shader.uniformLocations.baseColorFactor, material.baseColorFactor);
 
-                    gl.bindVertexArray(primitive.extras.vao);
+            if (primitive.material.baseColorTexture !== null) {
+                gl.activeTexture(gl.TEXTURE0);
+                gl.bindTexture(gl.TEXTURE_2D, primitive.material.baseColorTexture.texture.extras.gl_texture);
+                gl.uniform1i(shader.uniformLocations.baseColorSampler, 0);
+            }
 
-                    if (primitive.indices) {
+            if (primitive.extras.vao) {
 
-                        const offset = primitive.indices.byteOffset / COMPONENT.SIZE[primitive.indices.componentType];
-                        gl.drawElements(primitive.mode, primitive.indices.count, primitive.indices.componentType, offset);
+                gl.bindVertexArray(primitive.extras.vao);
 
-                    } else {
+                if (primitive.indices) {
 
-                        gl.drawArrays(gl.TRIANGLES, 0, primitive.attributes.POSITION.count / 3);
-
-                    }
+                    const offset = primitive.indices.byteOffset / COMPONENT.SIZE[primitive.indices.componentType];
+                    gl.drawElements(primitive.mode, primitive.indices.count, primitive.indices.componentType, offset);
 
                 } else {
 
-                    throw Error('Attempted to draw primitive with no VAO (Is the mesh loaded?).');
+                    gl.drawArrays(gl.TRIANGLES, 0, primitive.attributes.POSITION.count / 3);
 
                 }
+
+            } else {
+
+                throw Error('Attempted to draw primitive with no VAO (Is the mesh loaded?).');
 
             }
 
         },
 
-        render(scene, cameraNode) {
+        render(renderQueue, cameraNode) {
 
-            gl.clearColor(1.0, 1.0, 1.0, 1.0);
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-            gl.uniformMatrix4fv(gl.getUniformLocation(program, 'projectionMatrix'), false, cameraNode.camera.projectionMatrix);
 
             const viewMatrix = mat4.invert(mat4.create(), cameraNode.worldMatrix);
 
-            let meshNodes = [];
-
-            function getMesh(node) {
-                if (node.mesh) {
-                    meshNodes.push(node);
-                }
-                node.children.map(getMesh);
-            }
-
-            scene.nodes.forEach(node => getMesh(node));
-
-            for (let i = 0; i < meshNodes.length; i++) {
-                this.draw(meshNodes[i], viewMatrix);
+            for (let i = 0; i < renderQueue.length; i++) {
+                this.draw(renderQueue[i], viewMatrix, cameraNode.camera.projectionMatrix);
             }
 
         },
@@ -112,108 +97,120 @@ export default (width, height) => {
          *
          * @param {*} n Scene, node, or mesh.
          */
-        load(n) {
+        load(primitive) {
 
-            if (n.primitives) {
+            if (primitive.extras.vao) {
 
-                for (let i = 0; i < n.primitives.length; i++) {
+                // the primitive has already been loaded.
+                return;
 
-                    let primitive = n.primitives[i];
+            }
 
-                    if (primitive.extras.vao) {
+            // setup VAO:
 
-                        // the primitive has already been loaded.
-                        continue;
+            let vao = gl.createVertexArray();
+            gl.bindVertexArray(vao);
 
-                    }
+            if (primitive.indices) {
 
-                    // setup VAO:
+                let accessor = primitive.indices;
+                let bufferView = accessor.bufferView;
 
-                    let vao = gl.createVertexArray();
-                    gl.bindVertexArray(vao);
+                if (bufferView.extras.element_array_buffer) {
 
-                    if (primitive.indices) {
+                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, bufferView.extras.element_array_buffer);
 
-                        let accessor = primitive.indices;
-                        let bufferView = accessor.bufferView;
+                    // the bufferView is already loaded, increment access count.
+                    bufferView.extras.bufferAccessCount += 1;
 
-                        if (bufferView.extras.element_array_buffer) {
+                } else {
 
-                            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, bufferView.extras.element_array_buffer);
+                    // create buffer and upload data.
 
-                            // the bufferView is already loaded, increment access count.
-                            bufferView.extras.bufferAccessCount += 1;
+                    let buffer = gl.createBuffer();
+                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer);
 
-                        } else {
+                    let dataView = new DataView(bufferView.buffer, bufferView.byteOffset, bufferView.byteLength);
 
-                            // create buffer and upload data.
+                    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, dataView, gl.STATIC_DRAW);
 
-                            let buffer = gl.createBuffer();
-                            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer);
-
-                            let dataView = new DataView(bufferView.buffer, bufferView.byteOffset, bufferView.byteLength);
-
-                            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, dataView, gl.STATIC_DRAW);
-
-                            bufferView.extras.element_array_buffer = buffer;
-                            bufferView.extras.bufferAccessCount = 1; // number of accessors linking to this buffer.
-
-                        }
-
-                    }
-
-                    // create and link attribute accessors, and possibly upload bufferView to GPU.
-
-                    for (let name in primitive.attributes) {
-
-                        let accessor = primitive.attributes[name];
-                        let bufferView = accessor.bufferView;
-
-                        if (bufferView.extras.array_buffer) {
-
-                            gl.bindBuffer(gl.ARRAY_BUFFER, bufferView.extras.array_buffer);
-
-                            // the bufferView is already loaded, increment access count.
-                            bufferView.extras.bufferAccessCount += 1;
-
-                        } else {
-
-                            // create buffer and upload data.
-
-                            let buffer = gl.createBuffer();
-                            gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-
-                            let dataView = new DataView(bufferView.buffer, bufferView.byteOffset, bufferView.byteLength);
-
-                            gl.bufferData(gl.ARRAY_BUFFER, dataView, gl.STATIC_DRAW);
-
-                            // setup and enable vertex attributes (Using the predefined and constant locations.)
-                            gl.vertexAttribPointer(ATTRIBUTE_LOCATION[name], TYPE[accessor.type], accessor.componentType, accessor.normalized, bufferView.byteStride, accessor.byteOffset);
-                            gl.enableVertexAttribArray(ATTRIBUTE_LOCATION[name]);
-
-                            bufferView.extras.array_buffer = buffer;
-                            bufferView.extras.bufferAccessCount = 1; // number of accessors linking to this buffer.
-
-                        }
-                    }
-
-                    primitive.extras.vao = vao;
+                    bufferView.extras.element_array_buffer = buffer;
+                    bufferView.extras.bufferAccessCount = 1; // number of accessors linking to this buffer.
 
                 }
 
-            } else if (n.mesh) {
+            }
 
-                this.load(n.mesh);
+            // create and link attribute accessors, and possibly upload bufferView to GPU.
 
-            } else if (n.children) {
+            for (let name in primitive.attributes) {
 
-                n.children.forEach(this.load.bind(this));
+                let accessor = primitive.attributes[name];
+                let bufferView = accessor.bufferView;
 
-            } else if (n.nodes) {
+                if (bufferView.extras.array_buffer) {
 
-                n.nodes.forEach(this.load.bind(this));
+                    gl.bindBuffer(gl.ARRAY_BUFFER, bufferView.extras.array_buffer);
+
+                    // the bufferView is already loaded, increment access count.
+                    bufferView.extras.bufferAccessCount += 1;
+
+                } else {
+
+                    // create buffer and upload data.
+
+                    let buffer = gl.createBuffer();
+                    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+
+                    let dataView = new DataView(bufferView.buffer, bufferView.byteOffset, bufferView.byteLength);
+
+                    gl.bufferData(gl.ARRAY_BUFFER, dataView, gl.STATIC_DRAW);
+
+                    // setup and enable vertex attributes (Using the predefined and constant locations.)
+                    gl.vertexAttribPointer(ATTRIBUTE_LOCATION[name], TYPE[accessor.type], accessor.componentType, accessor.normalized, bufferView.byteStride, accessor.byteOffset);
+                    gl.enableVertexAttribArray(ATTRIBUTE_LOCATION[name]);
+
+                    bufferView.extras.array_buffer = buffer;
+                    bufferView.extras.bufferAccessCount = 1; // number of accessors linking to this buffer.
+
+                }
+            }
+
+            primitive.extras.vao = vao;
+
+
+            const material = primitive.material;
+
+            if (material.extras.shader) {
+                return; // shaderprogram already compiled.
+            }
+
+            const shader = standardShader(gl, material);
+            material.extras.shader = shader;
+
+            if (material.baseColorTexture !== null) {
+
+                const sampler = material.baseColorTexture.texture.sampler;
+
+                const texture = gl.createTexture();
+
+                gl.activeTexture(gl.TEXTURE0);
+                gl.bindTexture(gl.TEXTURE_2D, texture);
+
+                gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE);
+
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, sampler.wrapS);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, sampler.wrapT);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, sampler.minFilter);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, sampler.magFilter);
+
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, material.baseColorTexture.texture.source);
+                gl.generateMipmap(gl.TEXTURE_2D);
+
+                material.baseColorTexture.texture.extras.gl_texture = texture;
 
             }
+
         },
 
         /**
@@ -221,88 +218,66 @@ export default (width, height) => {
          *
          * @param {*} n Scene, node, or mesh.
          */
-        unload(n) {
+        unload(primitive) {
 
-            if (n.primitives) {
-                console.log(n);
+            if (typeof primitive.extras.vao === 'undefined') {
 
-                for (let i = 0; i < n.primitives.length; i++) {
+                // the primitive has already been unloaded.
+                return;
 
-                    let primitive = n.primitives[i];
+            }
 
-                    if (typeof primitive.extras.vao === 'undefined') {
+            if (primitive.indices) {
 
-                        // the primitive has already been unloaded.
-                        continue;
+                let accessor = primitive.indices;
+                let bufferView = accessor.bufferView;
 
-                    }
+                if (bufferView.extras.element_array_buffer) {
 
-                    if (primitive.indices) {
+                    if (bufferView.extras.bufferAccessCount > 1) {
 
-                        let accessor = primitive.indices;
-                        let bufferView = accessor.bufferView;
+                        // the bufferView is still used by another accessor, decrement access count.
+                        bufferView.extras.bufferAccessCount -= 1;
 
-                        if (bufferView.extras.element_array_buffer) {
+                    } else {
 
-                            if (bufferView.extras.bufferAccessCount > 1) {
-
-                                // the bufferView is still used by another accessor, decrement access count.
-                                bufferView.extras.bufferAccessCount -= 1;
-
-                            } else {
-
-                                gl.deleteBuffer(bufferView.extras.element_array_buffer);
-                                delete bufferView.extras.element_array_buffer;
-                                delete bufferView.extras.bufferAccessCount;
-
-                            }
-
-                        }
+                        gl.deleteBuffer(bufferView.extras.element_array_buffer);
+                        delete bufferView.extras.element_array_buffer;
+                        delete bufferView.extras.bufferAccessCount;
 
                     }
-
-                    for (let name in primitive.attributes) {
-
-                        let accessor = primitive.attributes[name];
-                        let bufferView = accessor.bufferView;
-
-                        if (bufferView.extras.array_buffer) {
-
-                            if (bufferView.extras.bufferAccessCount > 1) {
-
-                                // the bufferView is still used by another accessor, decrement access count.
-                                bufferView.extras.bufferAccessCount -= 1;
-
-                            } else {
-
-                                gl.deleteBuffer(bufferView.extras.array_buffer);
-                                delete bufferView.extras.array_buffer;
-                                delete bufferView.extras.bufferAccessCount;
-
-                            }
-
-                        }
-
-                    }
-
-                    gl.deleteVertexArray(primitive.extras.vao);
-                    delete primitive.extras.vao;
 
                 }
 
-            } else if (n.mesh) {
+            }
 
-                this.unload(n.mesh);
+            for (let name in primitive.attributes) {
 
-            } else if (n.children) {
+                let accessor = primitive.attributes[name];
+                let bufferView = accessor.bufferView;
 
-                n.children.forEach(this.unload.bind(this));
+                if (bufferView.extras.array_buffer) {
 
-            } else if (n.nodes) {
+                    if (bufferView.extras.bufferAccessCount > 1) {
 
-                n.nodes.forEach(this.unload.bind(this));
+                        // the bufferView is still used by another accessor, decrement access count.
+                        bufferView.extras.bufferAccessCount -= 1;
+
+                    } else {
+
+                        gl.deleteBuffer(bufferView.extras.array_buffer);
+                        delete bufferView.extras.array_buffer;
+                        delete bufferView.extras.bufferAccessCount;
+
+                    }
+
+                }
 
             }
+
+            gl.deleteVertexArray(primitive.extras.vao);
+            delete primitive.extras.vao;
+
         }
 
     };
@@ -318,7 +293,7 @@ export default (width, height) => {
 
     //     this.gl.activeTexture(this.gl.TEXTURE0);
     //     this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
-    //     //this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
+    //     this.gl.pixelStorei(this.gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, this.gl.NONE);
 
     //     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
     //     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);

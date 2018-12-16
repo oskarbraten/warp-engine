@@ -1,18 +1,19 @@
 import Warp from '../src/index';
-
 import CameraController from './controls/CameraController';
 
-import rawGltf from './misc/test-instances.gltf';
+Warp.importer('./assets/cubes_textured.gltf').then(({ scene }) => {
 
-Warp.importer(rawGltf).then((data) => {
-    console.log(data);
+    console.log(scene);
 
-    const renderer = Warp.renderer(window.innerWidth, window.innerHeight);
+    const gl = document.createElement('canvas').getContext('webgl2');
+    const renderer = Warp.renderer(gl);
+
+    renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    let scene = data.scene;
-
-    renderer.load(scene);
+    scene.acquireRenderables().forEach(([primitive]) => {
+        renderer.load(primitive);
+    });
 
     let camera = Warp.perspectiveCamera({ aspectRatio: (window.innerWidth / window.innerHeight), yfov: 70, zfar: 5000, znear: 0.1 });
 
@@ -120,10 +121,9 @@ Warp.importer(rawGltf).then((data) => {
         yaw = 0;
         pitch = 0;
 
-        scene.nodes.forEach((node) => node.tick());
+        scene.updateTransforms();
 
-        renderer.render(data.scene, cameraNode);
-
+        renderer.render(scene.acquireRenderables(), cameraNode);
 
         window.requestAnimationFrame(loop);
     }

@@ -11,12 +11,17 @@ import primitive from './mesh/primitive';
 import accessor from './mesh/accessor';
 import bufferView from './mesh/bufferView';
 
+import sampler from './material/sampler';
+import texture from './material/texture';
+import material from './material/material';
+
 const SUPPORTED_VERSION = GLTF_VERSION.split('.').map(a => parseInt(a));
 
+export default async (url) => {
 
-export default async (raw) => {
+    const basePath = url.substring(0, url.lastIndexOf('/') + 1);
 
-    const gltf = JSON.parse(raw);
+    const gltf = await fetch(url).then(res => res.json());
 
     let version = (gltf.asset.minVersion ? gltf.asset.minVersion : gltf.asset.version).split('.').map(a => parseInt(a));
 
@@ -31,42 +36,198 @@ export default async (raw) => {
     }
 
 
-    const buffers = await Promise.all(gltf.buffers.map(({ uri }) => {
-        return fetch(uri).then(res => res.arrayBuffer()); // use fetch to gelt data from uri.
-    }));
+    let buffers = [];
+    if (gltf.buffers) {
+        buffers = await Promise.all(gltf.buffers.map(({ uri }) => {
+            if (uri.startsWith('data:')) {
+                return fetch(uri).then(res => res.arrayBuffer());
+            } else {
+                return fetch(basePath + uri).then(res => res.arrayBuffer());
+            }
+        }));
+    }
 
-    const bufferViews = gltf.bufferViews.map(({
-        buffer: bufferIndex,
-        byteLength,
-        byteOffset,
-        target,
-        byteStride
-    }) => {
+    let bufferViews = [];
+    if (gltf.bufferViews) {
 
-        return bufferView(buffers[bufferIndex], byteLength, byteOffset, target, byteStride);
+        bufferViews = gltf.bufferViews.map(({
+            buffer: bufferIndex,
+            byteLength,
+            byteOffset,
+            target,
+            byteStride
+        }) => {
 
-    });
+            return bufferView(buffers[bufferIndex], byteLength, byteOffset, target, byteStride);
 
-    const accessors = gltf.accessors.map(({
-        bufferView: bufferViewIndex,
-        componentType,
-        type,
-        count,
-        min,
-        max,
-        byteOffset
-    }) => {
+        });
+    }
 
-        if (componentType === COMPONENT.TYPE.FLOAT) {
-            min = min.map(a => Math.fround(a));
-            max = max.map(a => Math.fround(a));
-        }
+    let accessors = [];
+    if (gltf.accessors) {
+        accessors = gltf.accessors.map(({
+            bufferView: bufferViewIndex,
+            componentType,
+            type,
+            count,
+            min,
+            max,
+            byteOffset
+        }) => {
 
-        return accessor(bufferViews[bufferViewIndex], componentType, type, count, min, max, byteOffset);
+            if (componentType === COMPONENT.TYPE.FLOAT) {
+                if (min) {
+                    min = min.map(a => Math.fround(a));
+                }
+                if (max) {
+                    max = max.map(a => Math.fround(a));
+                }
+            }
 
-    });
+            return accessor(bufferViews[bufferViewIndex], componentType, type, count, min, max, byteOffset);
 
-    function createPrimitive({ attributes: attributeIndices, mode, indices: indicesIndex }) {
+        });
+    }
+
+    let images = [];
+    if (gltf.images) {
+        images = await Promise.all(gltf.images.map(({
+            uri,
+            bufferView,
+            mimeType
+        }) => {
+            if (uri && mimeType) {
+
+                const image = new Image();
+                image.src = basePath + uri;
+                return new Promise((resolve, reject) => {
+                    image.onload = resolve.bind(null, image);
+                    image.onerror = reject;
+                });
+
+                //return fetch(basePath + uri, { headers: { 'content-type': mimeType } }).then(res => res.blob());
+
+            } else {
+
+                const bv = bufferViews[bufferView];
+                const buffer = new DataView(bv.buffer, bv.byteOffset, bv.byteLength);
+                const blob = new Blob([ buffer ], { type: mimeType });
+
+                const image = new Image();
+                image.src = URL.createObjectURL(blob);
+                return new Promise((resolve, reject) => {
+                    image.onload = resolve.bind(null, image);
+                    image.onerror = reject;
+                });
+
+            }
+        }));
+    }
+
+    let samplers = [];
+    if (gltf.samplers) {
+        samplers = gltf.samplers.map(s => sampler(s));
+    }
+
+    let textures = [];
+    if (gltf.textures) {
+        textures = gltf.textures.map(({ source: sourceIndex, sampler: samplerIndex, name }) => {
+
+            const image = images[sourceIndex];
+
+            let sampler_instance = sampler();
+            if (samplerIndex) {
+                sampler_instance = samplers[samplerIndex];
+            }
+
+            return texture({ source: image, sampler: sampler_instance }, name);
+        });
+    }
+
+    let materials = [];
+    if (gltf.materials) {
+        materials = gltf.materials.map(({
+            pbrMetallicRoughness,
+            normalTexture,
+            occlusionTexture,
+            emissiveTexture,
+            emissiveFactor,
+            alphaMode,
+            alphaCutoff,
+            doubleSided,
+            name
+        }) => {
+
+            // extract pbr parameters.
+            const {
+                baseColorFactor,
+                baseColorTexture,
+                metallicFactor,
+                roughnessFactor,
+                metallicRoughnessTexture
+            } = pbrMetallicRoughness;
+
+            // setup base-params
+            const parameters = {
+                baseColorFactor,
+                metallicFactor,
+                roughnessFactor,
+                emissiveFactor,
+                alphaMode,
+                alphaCutoff,
+                doubleSided
+            };
+
+            // add textures if they are defined:
+
+            if (baseColorTexture) {
+                const { index, texCoord } = baseColorTexture;
+                parameters.baseColorTexture = {
+                    texCoord,
+                    texture: textures[index]
+                };
+            }
+
+            if (metallicRoughnessTexture) {
+                const { index, texCoord } = metallicRoughnessTexture;
+                parameters.metallicRoughnessTexture = {
+                    texCoord,
+                    texture: textures[index]
+                };
+            }
+
+            if (normalTexture) {
+                const { scale, index, texCoord } = normalTexture;
+                parameters.normalTexture = {
+                    scale,
+                    texCoord,
+                    texture: textures[index]
+                };
+            }
+
+            if (occlusionTexture) {
+                const { strength, index, texCoord } = occlusionTexture;
+                parameters.occlusionTexture = {
+                    strength,
+                    texCoord,
+                    texture: textures[index]
+                };
+            }
+
+            if (emissiveTexture) {
+                const { index, texCoord } = emissiveTexture;
+                parameters.emissiveTexture = {
+                    texCoord,
+                    texture: textures[index]
+                };
+            }
+
+            // finally construct a material instance.
+            return material(parameters, name);
+        });
+    }
+
+    function createPrimitive({ attributes: attributeIndices, mode, material: materialIndex, indices: indicesIndex }) {
 
         let attributes = {};
 
@@ -78,8 +239,8 @@ export default async (raw) => {
 
             if (
                 (VALID_ACCESSOR_TYPES[key] &&
-                VALID_ACCESSOR_TYPES[key].type.includes(accessor.type) &&
-                VALID_ACCESSOR_TYPES[key].componentType.includes(accessor.componentType))
+                    VALID_ACCESSOR_TYPES[key].type.includes(accessor.type) &&
+                    VALID_ACCESSOR_TYPES[key].componentType.includes(accessor.componentType))
                 === false
             ) {
                 throw Error('GLTF2.0: Accessor is invalid.');
@@ -95,42 +256,50 @@ export default async (raw) => {
         const ibv = indices.bufferView;
 
         if (ibv.target && ibv.target !== TARGET.ELEMENT_ARRAY_BUFFER) {
+            console.log(ibv.target);
             throw Error('GLTF2.0: Indices accessor should have a target equal to 34963 (ELEMENT_ARRAY_BUFFER).');
         }
 
-        // TODO: add material.
-        return primitive(attributes, mode, null, indices);
+
+        return primitive(attributes, mode, materials[materialIndex], indices);
 
     }
 
-    const meshes = gltf.meshes.map(({
-        primitives: primitiveObjects,
-        name
-    }) => {
+    let meshes = [];
+    if (gltf.meshes) {
+        meshes = gltf.meshes.map(({
+            primitives: primitiveObjects,
+            name
+        }) => {
 
-        let primitives = primitiveObjects.map((object) => createPrimitive(object));
+            let primitives = primitiveObjects.map((object) => createPrimitive(object));
 
-        return mesh(primitives, name);
+            return mesh(primitives, name);
 
-    });
+        });
+    }
 
-    const cameras = gltf.cameras.map(({
-        name,
-        type,
-        orthographic: orthographicProperties,
-        perspective: perspectiveProperties
-    }) => {
 
-        if (type === PROJECTION.ORTHOGRAPHIC) {
-            return orthographic(orthographicProperties, name);
-        } else if (type === PROJECTION.PERSPECTIVE) {
-            return perspective(perspectiveProperties, name);
-        } else {
-            // TODO: type not defined, throw?
-            return null;
-        }
+    let cameras = [];
+    if (gltf.cameras) {
+        cameras = gltf.cameras.map(({
+            name,
+            type,
+            orthographic: orthographicProperties,
+            perspective: perspectiveProperties
+        }) => {
 
-    });
+            if (type === PROJECTION.ORTHOGRAPHIC) {
+                return orthographic(orthographicProperties, name);
+            } else if (type === PROJECTION.PERSPECTIVE) {
+                return perspective(perspectiveProperties, name);
+            } else {
+                // TODO: type not defined, throw?
+                return null;
+            }
+
+        });
+    }
 
     // Note:
     // We assume that the nodes form a disjoint union of strict trees, as described in the specification.
@@ -151,7 +320,6 @@ export default async (raw) => {
         } = gltf.nodes[index];
 
         return node({
-            name,
             mesh: meshes[meshIndex],
             camera: cameras[cameraIndex],
             rotation,
@@ -161,18 +329,21 @@ export default async (raw) => {
 
             // recusively create nodes for the children.
             children: childIndices.map((index) => createNode(index))
-        });
+        }, name);
 
     }
 
-    const scenes = gltf.scenes.map(({
-        nodes: nodeIndices,
-        name
-    }) => {
+    let scenes = [];
+    if (gltf.scenes) {
+        scenes = gltf.scenes.map(({
+            nodes: nodeIndices,
+            name
+        }) => {
 
-        return scene(nodeIndices.map((index) => createNode(index)), name);
+            return scene(nodeIndices.map((index) => createNode(index)), name);
 
-    });
+        });
+    }
 
     return {
         scene: scenes[gltf.scene],

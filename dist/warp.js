@@ -1,2 +1,6469 @@
-!function(t,n){"object"==typeof exports&&"object"==typeof module?module.exports=n():"function"==typeof define&&define.amd?define([],n):"object"==typeof exports?exports.warp=n():t.warp=n()}(window,function(){return function(t){var n={};function r(e){if(n[e])return n[e].exports;var a=n[e]={i:e,l:!1,exports:{}};return t[e].call(a.exports,a,a.exports,r),a.l=!0,a.exports}return r.m=t,r.c=n,r.d=function(t,n,e){r.o(t,n)||Object.defineProperty(t,n,{enumerable:!0,get:e})},r.r=function(t){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(t,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(t,"__esModule",{value:!0})},r.t=function(t,n){if(1&n&&(t=r(t)),8&n)return t;if(4&n&&"object"==typeof t&&t&&t.__esModule)return t;var e=Object.create(null);if(r.r(e),Object.defineProperty(e,"default",{enumerable:!0,value:t}),2&n&&"string"!=typeof t)for(var a in t)r.d(e,a,function(n){return t[n]}.bind(null,a));return e},r.n=function(t){var n=t&&t.__esModule?function(){return t.default}:function(){return t};return r.d(n,"a",n),n},r.o=function(t,n){return Object.prototype.hasOwnProperty.call(t,n)},r.p="",r(r.s=6)}([function(t,n){t.exports="#version 300 es\r\n\r\nprecision highp float;\r\n\r\nlayout(location = 0) in vec4 vPosition;\r\n\r\nuniform mat4 projectionMatrix;\r\nuniform mat4 modelViewMatrix;\r\n\r\nvoid main() {\r\n    gl_Position = projectionMatrix * modelViewMatrix * vPosition;\r\n}"},function(t,n){t.exports="#version 300 es\r\n\r\nprecision highp float;\r\n\r\nuniform vec4 color;\r\n\r\nout vec4 fColor;\r\n\r\nvoid main() {\r\n    fColor = vec4(1.0, 0.0, 0.0, 1.0);\r\n}"},,,,,function(t,n,r){"use strict";r.r(n);var e={};r.r(e),r.d(e,"create",function(){return p}),r.d(e,"clone",function(){return m}),r.d(e,"copy",function(){return v}),r.d(e,"fromValues",function(){return b}),r.d(e,"set",function(){return E}),r.d(e,"identity",function(){return T}),r.d(e,"transpose",function(){return y}),r.d(e,"invert",function(){return x}),r.d(e,"adjoint",function(){return A}),r.d(e,"determinant",function(){return R}),r.d(e,"multiply",function(){return g}),r.d(e,"translate",function(){return _}),r.d(e,"scale",function(){return S}),r.d(e,"rotate",function(){return w}),r.d(e,"rotateX",function(){return O}),r.d(e,"rotateY",function(){return I}),r.d(e,"rotateZ",function(){return N}),r.d(e,"fromTranslation",function(){return P}),r.d(e,"fromScaling",function(){return F}),r.d(e,"fromRotation",function(){return Y}),r.d(e,"fromXRotation",function(){return C}),r.d(e,"fromYRotation",function(){return L}),r.d(e,"fromZRotation",function(){return V}),r.d(e,"fromRotationTranslation",function(){return D}),r.d(e,"fromQuat2",function(){return q}),r.d(e,"getTranslation",function(){return U}),r.d(e,"getScaling",function(){return B}),r.d(e,"getRotation",function(){return j}),r.d(e,"fromRotationTranslationScale",function(){return G}),r.d(e,"fromRotationTranslationScaleOrigin",function(){return z}),r.d(e,"fromQuat",function(){return H}),r.d(e,"frustum",function(){return X}),r.d(e,"perspective",function(){return Z}),r.d(e,"perspectiveFromFieldOfView",function(){return W}),r.d(e,"ortho",function(){return k}),r.d(e,"lookAt",function(){return J}),r.d(e,"targetTo",function(){return Q}),r.d(e,"str",function(){return K}),r.d(e,"frob",function(){return $}),r.d(e,"add",function(){return tt}),r.d(e,"subtract",function(){return nt}),r.d(e,"multiplyScalar",function(){return rt}),r.d(e,"multiplyScalarAndAdd",function(){return et}),r.d(e,"exactEquals",function(){return at}),r.d(e,"equals",function(){return ot}),r.d(e,"mul",function(){return it}),r.d(e,"sub",function(){return ut});var a={};r.r(a),r.d(a,"create",function(){return ct}),r.d(a,"clone",function(){return st}),r.d(a,"length",function(){return ft}),r.d(a,"fromValues",function(){return ht}),r.d(a,"copy",function(){return dt}),r.d(a,"set",function(){return lt}),r.d(a,"add",function(){return Mt}),r.d(a,"subtract",function(){return pt}),r.d(a,"multiply",function(){return mt}),r.d(a,"divide",function(){return vt}),r.d(a,"ceil",function(){return bt}),r.d(a,"floor",function(){return Et}),r.d(a,"min",function(){return Tt}),r.d(a,"max",function(){return yt}),r.d(a,"round",function(){return xt}),r.d(a,"scale",function(){return At}),r.d(a,"scaleAndAdd",function(){return Rt}),r.d(a,"distance",function(){return gt}),r.d(a,"squaredDistance",function(){return _t}),r.d(a,"squaredLength",function(){return St}),r.d(a,"negate",function(){return wt}),r.d(a,"inverse",function(){return Ot}),r.d(a,"normalize",function(){return It}),r.d(a,"dot",function(){return Nt}),r.d(a,"cross",function(){return Pt}),r.d(a,"lerp",function(){return Ft}),r.d(a,"hermite",function(){return Yt}),r.d(a,"bezier",function(){return Ct}),r.d(a,"random",function(){return Lt}),r.d(a,"transformMat4",function(){return Vt}),r.d(a,"transformMat3",function(){return Dt}),r.d(a,"transformQuat",function(){return qt}),r.d(a,"rotateX",function(){return Ut}),r.d(a,"rotateY",function(){return Bt}),r.d(a,"rotateZ",function(){return jt}),r.d(a,"angle",function(){return Gt}),r.d(a,"str",function(){return zt}),r.d(a,"exactEquals",function(){return Ht}),r.d(a,"equals",function(){return Xt}),r.d(a,"sub",function(){return Wt}),r.d(a,"mul",function(){return kt}),r.d(a,"div",function(){return Jt}),r.d(a,"dist",function(){return Qt}),r.d(a,"sqrDist",function(){return Kt}),r.d(a,"len",function(){return $t}),r.d(a,"sqrLen",function(){return tn}),r.d(a,"forEach",function(){return nn});var o={};r.r(o),r.d(o,"create",function(){return an}),r.d(o,"identity",function(){return on}),r.d(o,"setAxisAngle",function(){return un}),r.d(o,"getAxisAngle",function(){return cn}),r.d(o,"multiply",function(){return sn}),r.d(o,"rotateX",function(){return fn}),r.d(o,"rotateY",function(){return hn}),r.d(o,"rotateZ",function(){return dn}),r.d(o,"calculateW",function(){return ln}),r.d(o,"slerp",function(){return Mn}),r.d(o,"random",function(){return pn}),r.d(o,"invert",function(){return mn}),r.d(o,"conjugate",function(){return vn}),r.d(o,"fromMat3",function(){return bn}),r.d(o,"fromEuler",function(){return En}),r.d(o,"str",function(){return Tn}),r.d(o,"clone",function(){return wn}),r.d(o,"fromValues",function(){return On}),r.d(o,"copy",function(){return In}),r.d(o,"set",function(){return Nn}),r.d(o,"add",function(){return Pn}),r.d(o,"mul",function(){return Fn}),r.d(o,"scale",function(){return Yn}),r.d(o,"dot",function(){return Cn}),r.d(o,"lerp",function(){return Ln}),r.d(o,"length",function(){return Vn}),r.d(o,"len",function(){return Dn}),r.d(o,"squaredLength",function(){return qn}),r.d(o,"sqrLen",function(){return Un}),r.d(o,"normalize",function(){return Bn}),r.d(o,"exactEquals",function(){return jn}),r.d(o,"equals",function(){return Gn}),r.d(o,"rotationTo",function(){return zn}),r.d(o,"sqlerp",function(){return Hn}),r.d(o,"setAxes",function(){return Xn});const i=Object.freeze({SIZE:Object.freeze({5120:1,5121:1,5122:2,5123:2,5125:4,5126:4}),TYPE:Object.freeze({BYTE:5120,UNSIGNED_BYTE:5121,SHORT:5122,UNSIGNED_SHORT:5123,UNSIGNED_INT:5125,FLOAT:5126}),ID:Object.freeze({5120:"BYTE",5121:"UNSIGNED_BYTE",5122:"SHORT",5123:"UNSIGNED_SHORT",5125:"UNSIGNED_INT",5126:"FLOAT"})}),u=Object.freeze({SCALAR:1,VEC2:2,VEC3:3,VEC4:4,MAT2:4,MAT3:9,MAT4:16}),c=Object.freeze({ORTHOGRAPHIC:"orthographic",PERSPECTIVE:"perspective"}),s=Object.freeze({POSITION:0,NORMAL:1,TEXCOORD_0:2,JOINTS_0:3,JOINTS_1:5,WEIGHTS_0:4,WEIGHTS_1:6,TANGENT:7}),f=Object.freeze({INDEX:{type:["SCALAR"],componentType:[i.TYPE.UNSIGNED_BYTE,i.TYPE.UNSIGNED_SHORT,i.TYPE.UNSIGNED_INT]},POSITION:{type:["VEC3"],componentType:[i.TYPE.FLOAT]},NORMAL:{type:["VEC3"],componentType:[i.TYPE.FLOAT]},TANGENT:{type:["VEC4"],componentType:[i.TYPE.FLOAT]},TEXCOORD_0:{type:["VEC2"],componentType:[i.TYPE.FLOAT,i.TYPE.UNSIGNED_BYTE,i.TYPE.UNSIGNED_SHORT]},TEXCOORD_1:{type:["VEC2"],componentType:[i.TYPE.FLOAT,i.TYPE.UNSIGNED_BYTE,i.TYPE.UNSIGNED_SHORT]},COLOR_0:{type:["VEC3","VEC4"],componentType:[i.TYPE.FLOAT,i.TYPE.UNSIGNED_BYTE,i.TYPE.UNSIGNED_SHORT]},JOINTS_0:{type:["VEC4"],componentType:[i.TYPE.UNSIGNED_BYTE,i.TYPE.UNSIGNED_SHORT]},WEIGHTS_0:{type:["VEC4"],componentType:[i.TYPE.FLOAT,i.TYPE.UNSIGNED_BYTE,i.TYPE.UNSIGNED_SHORT]}}),h=Object.freeze({ELEMENT_ARRAY_BUFFER:34963,ARRAY_BUFFER:34962});var d=1e-6,l="undefined"!=typeof Float32Array?Float32Array:Array,M=Math.random;Math.PI;function p(){var t=new l(16);return l!=Float32Array&&(t[1]=0,t[2]=0,t[3]=0,t[4]=0,t[6]=0,t[7]=0,t[8]=0,t[9]=0,t[11]=0,t[12]=0,t[13]=0,t[14]=0),t[0]=1,t[5]=1,t[10]=1,t[15]=1,t}function m(t){var n=new l(16);return n[0]=t[0],n[1]=t[1],n[2]=t[2],n[3]=t[3],n[4]=t[4],n[5]=t[5],n[6]=t[6],n[7]=t[7],n[8]=t[8],n[9]=t[9],n[10]=t[10],n[11]=t[11],n[12]=t[12],n[13]=t[13],n[14]=t[14],n[15]=t[15],n}function v(t,n){return t[0]=n[0],t[1]=n[1],t[2]=n[2],t[3]=n[3],t[4]=n[4],t[5]=n[5],t[6]=n[6],t[7]=n[7],t[8]=n[8],t[9]=n[9],t[10]=n[10],t[11]=n[11],t[12]=n[12],t[13]=n[13],t[14]=n[14],t[15]=n[15],t}function b(t,n,r,e,a,o,i,u,c,s,f,h,d,M,p,m){var v=new l(16);return v[0]=t,v[1]=n,v[2]=r,v[3]=e,v[4]=a,v[5]=o,v[6]=i,v[7]=u,v[8]=c,v[9]=s,v[10]=f,v[11]=h,v[12]=d,v[13]=M,v[14]=p,v[15]=m,v}function E(t,n,r,e,a,o,i,u,c,s,f,h,d,l,M,p,m){return t[0]=n,t[1]=r,t[2]=e,t[3]=a,t[4]=o,t[5]=i,t[6]=u,t[7]=c,t[8]=s,t[9]=f,t[10]=h,t[11]=d,t[12]=l,t[13]=M,t[14]=p,t[15]=m,t}function T(t){return t[0]=1,t[1]=0,t[2]=0,t[3]=0,t[4]=0,t[5]=1,t[6]=0,t[7]=0,t[8]=0,t[9]=0,t[10]=1,t[11]=0,t[12]=0,t[13]=0,t[14]=0,t[15]=1,t}function y(t,n){if(t===n){var r=n[1],e=n[2],a=n[3],o=n[6],i=n[7],u=n[11];t[1]=n[4],t[2]=n[8],t[3]=n[12],t[4]=r,t[6]=n[9],t[7]=n[13],t[8]=e,t[9]=o,t[11]=n[14],t[12]=a,t[13]=i,t[14]=u}else t[0]=n[0],t[1]=n[4],t[2]=n[8],t[3]=n[12],t[4]=n[1],t[5]=n[5],t[6]=n[9],t[7]=n[13],t[8]=n[2],t[9]=n[6],t[10]=n[10],t[11]=n[14],t[12]=n[3],t[13]=n[7],t[14]=n[11],t[15]=n[15];return t}function x(t,n){var r=n[0],e=n[1],a=n[2],o=n[3],i=n[4],u=n[5],c=n[6],s=n[7],f=n[8],h=n[9],d=n[10],l=n[11],M=n[12],p=n[13],m=n[14],v=n[15],b=r*u-e*i,E=r*c-a*i,T=r*s-o*i,y=e*c-a*u,x=e*s-o*u,A=a*s-o*c,R=f*p-h*M,g=f*m-d*M,_=f*v-l*M,S=h*m-d*p,w=h*v-l*p,O=d*v-l*m,I=b*O-E*w+T*S+y*_-x*g+A*R;return I?(I=1/I,t[0]=(u*O-c*w+s*S)*I,t[1]=(a*w-e*O-o*S)*I,t[2]=(p*A-m*x+v*y)*I,t[3]=(d*x-h*A-l*y)*I,t[4]=(c*_-i*O-s*g)*I,t[5]=(r*O-a*_+o*g)*I,t[6]=(m*T-M*A-v*E)*I,t[7]=(f*A-d*T+l*E)*I,t[8]=(i*w-u*_+s*R)*I,t[9]=(e*_-r*w-o*R)*I,t[10]=(M*x-p*T+v*b)*I,t[11]=(h*T-f*x-l*b)*I,t[12]=(u*g-i*S-c*R)*I,t[13]=(r*S-e*g+a*R)*I,t[14]=(p*E-M*y-m*b)*I,t[15]=(f*y-h*E+d*b)*I,t):null}function A(t,n){var r=n[0],e=n[1],a=n[2],o=n[3],i=n[4],u=n[5],c=n[6],s=n[7],f=n[8],h=n[9],d=n[10],l=n[11],M=n[12],p=n[13],m=n[14],v=n[15];return t[0]=u*(d*v-l*m)-h*(c*v-s*m)+p*(c*l-s*d),t[1]=-(e*(d*v-l*m)-h*(a*v-o*m)+p*(a*l-o*d)),t[2]=e*(c*v-s*m)-u*(a*v-o*m)+p*(a*s-o*c),t[3]=-(e*(c*l-s*d)-u*(a*l-o*d)+h*(a*s-o*c)),t[4]=-(i*(d*v-l*m)-f*(c*v-s*m)+M*(c*l-s*d)),t[5]=r*(d*v-l*m)-f*(a*v-o*m)+M*(a*l-o*d),t[6]=-(r*(c*v-s*m)-i*(a*v-o*m)+M*(a*s-o*c)),t[7]=r*(c*l-s*d)-i*(a*l-o*d)+f*(a*s-o*c),t[8]=i*(h*v-l*p)-f*(u*v-s*p)+M*(u*l-s*h),t[9]=-(r*(h*v-l*p)-f*(e*v-o*p)+M*(e*l-o*h)),t[10]=r*(u*v-s*p)-i*(e*v-o*p)+M*(e*s-o*u),t[11]=-(r*(u*l-s*h)-i*(e*l-o*h)+f*(e*s-o*u)),t[12]=-(i*(h*m-d*p)-f*(u*m-c*p)+M*(u*d-c*h)),t[13]=r*(h*m-d*p)-f*(e*m-a*p)+M*(e*d-a*h),t[14]=-(r*(u*m-c*p)-i*(e*m-a*p)+M*(e*c-a*u)),t[15]=r*(u*d-c*h)-i*(e*d-a*h)+f*(e*c-a*u),t}function R(t){var n=t[0],r=t[1],e=t[2],a=t[3],o=t[4],i=t[5],u=t[6],c=t[7],s=t[8],f=t[9],h=t[10],d=t[11],l=t[12],M=t[13],p=t[14],m=t[15];return(n*i-r*o)*(h*m-d*p)-(n*u-e*o)*(f*m-d*M)+(n*c-a*o)*(f*p-h*M)+(r*u-e*i)*(s*m-d*l)-(r*c-a*i)*(s*p-h*l)+(e*c-a*u)*(s*M-f*l)}function g(t,n,r){var e=n[0],a=n[1],o=n[2],i=n[3],u=n[4],c=n[5],s=n[6],f=n[7],h=n[8],d=n[9],l=n[10],M=n[11],p=n[12],m=n[13],v=n[14],b=n[15],E=r[0],T=r[1],y=r[2],x=r[3];return t[0]=E*e+T*u+y*h+x*p,t[1]=E*a+T*c+y*d+x*m,t[2]=E*o+T*s+y*l+x*v,t[3]=E*i+T*f+y*M+x*b,E=r[4],T=r[5],y=r[6],x=r[7],t[4]=E*e+T*u+y*h+x*p,t[5]=E*a+T*c+y*d+x*m,t[6]=E*o+T*s+y*l+x*v,t[7]=E*i+T*f+y*M+x*b,E=r[8],T=r[9],y=r[10],x=r[11],t[8]=E*e+T*u+y*h+x*p,t[9]=E*a+T*c+y*d+x*m,t[10]=E*o+T*s+y*l+x*v,t[11]=E*i+T*f+y*M+x*b,E=r[12],T=r[13],y=r[14],x=r[15],t[12]=E*e+T*u+y*h+x*p,t[13]=E*a+T*c+y*d+x*m,t[14]=E*o+T*s+y*l+x*v,t[15]=E*i+T*f+y*M+x*b,t}function _(t,n,r){var e=r[0],a=r[1],o=r[2],i=void 0,u=void 0,c=void 0,s=void 0,f=void 0,h=void 0,d=void 0,l=void 0,M=void 0,p=void 0,m=void 0,v=void 0;return n===t?(t[12]=n[0]*e+n[4]*a+n[8]*o+n[12],t[13]=n[1]*e+n[5]*a+n[9]*o+n[13],t[14]=n[2]*e+n[6]*a+n[10]*o+n[14],t[15]=n[3]*e+n[7]*a+n[11]*o+n[15]):(i=n[0],u=n[1],c=n[2],s=n[3],f=n[4],h=n[5],d=n[6],l=n[7],M=n[8],p=n[9],m=n[10],v=n[11],t[0]=i,t[1]=u,t[2]=c,t[3]=s,t[4]=f,t[5]=h,t[6]=d,t[7]=l,t[8]=M,t[9]=p,t[10]=m,t[11]=v,t[12]=i*e+f*a+M*o+n[12],t[13]=u*e+h*a+p*o+n[13],t[14]=c*e+d*a+m*o+n[14],t[15]=s*e+l*a+v*o+n[15]),t}function S(t,n,r){var e=r[0],a=r[1],o=r[2];return t[0]=n[0]*e,t[1]=n[1]*e,t[2]=n[2]*e,t[3]=n[3]*e,t[4]=n[4]*a,t[5]=n[5]*a,t[6]=n[6]*a,t[7]=n[7]*a,t[8]=n[8]*o,t[9]=n[9]*o,t[10]=n[10]*o,t[11]=n[11]*o,t[12]=n[12],t[13]=n[13],t[14]=n[14],t[15]=n[15],t}function w(t,n,r,e){var a,o,i,u,c,s,f,h,l,M,p,m,v,b,E,T,y,x,A,R,g,_,S,w,O=e[0],I=e[1],N=e[2],P=Math.sqrt(O*O+I*I+N*N);return P<d?null:(O*=P=1/P,I*=P,N*=P,a=Math.sin(r),i=1-(o=Math.cos(r)),u=n[0],c=n[1],s=n[2],f=n[3],h=n[4],l=n[5],M=n[6],p=n[7],m=n[8],v=n[9],b=n[10],E=n[11],T=O*O*i+o,y=I*O*i+N*a,x=N*O*i-I*a,A=O*I*i-N*a,R=I*I*i+o,g=N*I*i+O*a,_=O*N*i+I*a,S=I*N*i-O*a,w=N*N*i+o,t[0]=u*T+h*y+m*x,t[1]=c*T+l*y+v*x,t[2]=s*T+M*y+b*x,t[3]=f*T+p*y+E*x,t[4]=u*A+h*R+m*g,t[5]=c*A+l*R+v*g,t[6]=s*A+M*R+b*g,t[7]=f*A+p*R+E*g,t[8]=u*_+h*S+m*w,t[9]=c*_+l*S+v*w,t[10]=s*_+M*S+b*w,t[11]=f*_+p*S+E*w,n!==t&&(t[12]=n[12],t[13]=n[13],t[14]=n[14],t[15]=n[15]),t)}function O(t,n,r){var e=Math.sin(r),a=Math.cos(r),o=n[4],i=n[5],u=n[6],c=n[7],s=n[8],f=n[9],h=n[10],d=n[11];return n!==t&&(t[0]=n[0],t[1]=n[1],t[2]=n[2],t[3]=n[3],t[12]=n[12],t[13]=n[13],t[14]=n[14],t[15]=n[15]),t[4]=o*a+s*e,t[5]=i*a+f*e,t[6]=u*a+h*e,t[7]=c*a+d*e,t[8]=s*a-o*e,t[9]=f*a-i*e,t[10]=h*a-u*e,t[11]=d*a-c*e,t}function I(t,n,r){var e=Math.sin(r),a=Math.cos(r),o=n[0],i=n[1],u=n[2],c=n[3],s=n[8],f=n[9],h=n[10],d=n[11];return n!==t&&(t[4]=n[4],t[5]=n[5],t[6]=n[6],t[7]=n[7],t[12]=n[12],t[13]=n[13],t[14]=n[14],t[15]=n[15]),t[0]=o*a-s*e,t[1]=i*a-f*e,t[2]=u*a-h*e,t[3]=c*a-d*e,t[8]=o*e+s*a,t[9]=i*e+f*a,t[10]=u*e+h*a,t[11]=c*e+d*a,t}function N(t,n,r){var e=Math.sin(r),a=Math.cos(r),o=n[0],i=n[1],u=n[2],c=n[3],s=n[4],f=n[5],h=n[6],d=n[7];return n!==t&&(t[8]=n[8],t[9]=n[9],t[10]=n[10],t[11]=n[11],t[12]=n[12],t[13]=n[13],t[14]=n[14],t[15]=n[15]),t[0]=o*a+s*e,t[1]=i*a+f*e,t[2]=u*a+h*e,t[3]=c*a+d*e,t[4]=s*a-o*e,t[5]=f*a-i*e,t[6]=h*a-u*e,t[7]=d*a-c*e,t}function P(t,n){return t[0]=1,t[1]=0,t[2]=0,t[3]=0,t[4]=0,t[5]=1,t[6]=0,t[7]=0,t[8]=0,t[9]=0,t[10]=1,t[11]=0,t[12]=n[0],t[13]=n[1],t[14]=n[2],t[15]=1,t}function F(t,n){return t[0]=n[0],t[1]=0,t[2]=0,t[3]=0,t[4]=0,t[5]=n[1],t[6]=0,t[7]=0,t[8]=0,t[9]=0,t[10]=n[2],t[11]=0,t[12]=0,t[13]=0,t[14]=0,t[15]=1,t}function Y(t,n,r){var e,a,o,i=r[0],u=r[1],c=r[2],s=Math.sqrt(i*i+u*u+c*c);return s<d?null:(i*=s=1/s,u*=s,c*=s,e=Math.sin(n),o=1-(a=Math.cos(n)),t[0]=i*i*o+a,t[1]=u*i*o+c*e,t[2]=c*i*o-u*e,t[3]=0,t[4]=i*u*o-c*e,t[5]=u*u*o+a,t[6]=c*u*o+i*e,t[7]=0,t[8]=i*c*o+u*e,t[9]=u*c*o-i*e,t[10]=c*c*o+a,t[11]=0,t[12]=0,t[13]=0,t[14]=0,t[15]=1,t)}function C(t,n){var r=Math.sin(n),e=Math.cos(n);return t[0]=1,t[1]=0,t[2]=0,t[3]=0,t[4]=0,t[5]=e,t[6]=r,t[7]=0,t[8]=0,t[9]=-r,t[10]=e,t[11]=0,t[12]=0,t[13]=0,t[14]=0,t[15]=1,t}function L(t,n){var r=Math.sin(n),e=Math.cos(n);return t[0]=e,t[1]=0,t[2]=-r,t[3]=0,t[4]=0,t[5]=1,t[6]=0,t[7]=0,t[8]=r,t[9]=0,t[10]=e,t[11]=0,t[12]=0,t[13]=0,t[14]=0,t[15]=1,t}function V(t,n){var r=Math.sin(n),e=Math.cos(n);return t[0]=e,t[1]=r,t[2]=0,t[3]=0,t[4]=-r,t[5]=e,t[6]=0,t[7]=0,t[8]=0,t[9]=0,t[10]=1,t[11]=0,t[12]=0,t[13]=0,t[14]=0,t[15]=1,t}function D(t,n,r){var e=n[0],a=n[1],o=n[2],i=n[3],u=e+e,c=a+a,s=o+o,f=e*u,h=e*c,d=e*s,l=a*c,M=a*s,p=o*s,m=i*u,v=i*c,b=i*s;return t[0]=1-(l+p),t[1]=h+b,t[2]=d-v,t[3]=0,t[4]=h-b,t[5]=1-(f+p),t[6]=M+m,t[7]=0,t[8]=d+v,t[9]=M-m,t[10]=1-(f+l),t[11]=0,t[12]=r[0],t[13]=r[1],t[14]=r[2],t[15]=1,t}function q(t,n){var r=new l(3),e=-n[0],a=-n[1],o=-n[2],i=n[3],u=n[4],c=n[5],s=n[6],f=n[7],h=e*e+a*a+o*o+i*i;return h>0?(r[0]=2*(u*i+f*e+c*o-s*a)/h,r[1]=2*(c*i+f*a+s*e-u*o)/h,r[2]=2*(s*i+f*o+u*a-c*e)/h):(r[0]=2*(u*i+f*e+c*o-s*a),r[1]=2*(c*i+f*a+s*e-u*o),r[2]=2*(s*i+f*o+u*a-c*e)),D(t,n,r),t}function U(t,n){return t[0]=n[12],t[1]=n[13],t[2]=n[14],t}function B(t,n){var r=n[0],e=n[1],a=n[2],o=n[4],i=n[5],u=n[6],c=n[8],s=n[9],f=n[10];return t[0]=Math.sqrt(r*r+e*e+a*a),t[1]=Math.sqrt(o*o+i*i+u*u),t[2]=Math.sqrt(c*c+s*s+f*f),t}function j(t,n){var r=n[0]+n[5]+n[10],e=0;return r>0?(e=2*Math.sqrt(r+1),t[3]=.25*e,t[0]=(n[6]-n[9])/e,t[1]=(n[8]-n[2])/e,t[2]=(n[1]-n[4])/e):n[0]>n[5]&&n[0]>n[10]?(e=2*Math.sqrt(1+n[0]-n[5]-n[10]),t[3]=(n[6]-n[9])/e,t[0]=.25*e,t[1]=(n[1]+n[4])/e,t[2]=(n[8]+n[2])/e):n[5]>n[10]?(e=2*Math.sqrt(1+n[5]-n[0]-n[10]),t[3]=(n[8]-n[2])/e,t[0]=(n[1]+n[4])/e,t[1]=.25*e,t[2]=(n[6]+n[9])/e):(e=2*Math.sqrt(1+n[10]-n[0]-n[5]),t[3]=(n[1]-n[4])/e,t[0]=(n[8]+n[2])/e,t[1]=(n[6]+n[9])/e,t[2]=.25*e),t}function G(t,n,r,e){var a=n[0],o=n[1],i=n[2],u=n[3],c=a+a,s=o+o,f=i+i,h=a*c,d=a*s,l=a*f,M=o*s,p=o*f,m=i*f,v=u*c,b=u*s,E=u*f,T=e[0],y=e[1],x=e[2];return t[0]=(1-(M+m))*T,t[1]=(d+E)*T,t[2]=(l-b)*T,t[3]=0,t[4]=(d-E)*y,t[5]=(1-(h+m))*y,t[6]=(p+v)*y,t[7]=0,t[8]=(l+b)*x,t[9]=(p-v)*x,t[10]=(1-(h+M))*x,t[11]=0,t[12]=r[0],t[13]=r[1],t[14]=r[2],t[15]=1,t}function z(t,n,r,e,a){var o=n[0],i=n[1],u=n[2],c=n[3],s=o+o,f=i+i,h=u+u,d=o*s,l=o*f,M=o*h,p=i*f,m=i*h,v=u*h,b=c*s,E=c*f,T=c*h,y=e[0],x=e[1],A=e[2],R=a[0],g=a[1],_=a[2],S=(1-(p+v))*y,w=(l+T)*y,O=(M-E)*y,I=(l-T)*x,N=(1-(d+v))*x,P=(m+b)*x,F=(M+E)*A,Y=(m-b)*A,C=(1-(d+p))*A;return t[0]=S,t[1]=w,t[2]=O,t[3]=0,t[4]=I,t[5]=N,t[6]=P,t[7]=0,t[8]=F,t[9]=Y,t[10]=C,t[11]=0,t[12]=r[0]+R-(S*R+I*g+F*_),t[13]=r[1]+g-(w*R+N*g+Y*_),t[14]=r[2]+_-(O*R+P*g+C*_),t[15]=1,t}function H(t,n){var r=n[0],e=n[1],a=n[2],o=n[3],i=r+r,u=e+e,c=a+a,s=r*i,f=e*i,h=e*u,d=a*i,l=a*u,M=a*c,p=o*i,m=o*u,v=o*c;return t[0]=1-h-M,t[1]=f+v,t[2]=d-m,t[3]=0,t[4]=f-v,t[5]=1-s-M,t[6]=l+p,t[7]=0,t[8]=d+m,t[9]=l-p,t[10]=1-s-h,t[11]=0,t[12]=0,t[13]=0,t[14]=0,t[15]=1,t}function X(t,n,r,e,a,o,i){var u=1/(r-n),c=1/(a-e),s=1/(o-i);return t[0]=2*o*u,t[1]=0,t[2]=0,t[3]=0,t[4]=0,t[5]=2*o*c,t[6]=0,t[7]=0,t[8]=(r+n)*u,t[9]=(a+e)*c,t[10]=(i+o)*s,t[11]=-1,t[12]=0,t[13]=0,t[14]=i*o*2*s,t[15]=0,t}function Z(t,n,r,e,a){var o=1/Math.tan(n/2),i=void 0;return t[0]=o/r,t[1]=0,t[2]=0,t[3]=0,t[4]=0,t[5]=o,t[6]=0,t[7]=0,t[8]=0,t[9]=0,t[11]=-1,t[12]=0,t[13]=0,t[15]=0,null!=a&&a!==1/0?(i=1/(e-a),t[10]=(a+e)*i,t[14]=2*a*e*i):(t[10]=-1,t[14]=-2*e),t}function W(t,n,r,e){var a=Math.tan(n.upDegrees*Math.PI/180),o=Math.tan(n.downDegrees*Math.PI/180),i=Math.tan(n.leftDegrees*Math.PI/180),u=Math.tan(n.rightDegrees*Math.PI/180),c=2/(i+u),s=2/(a+o);return t[0]=c,t[1]=0,t[2]=0,t[3]=0,t[4]=0,t[5]=s,t[6]=0,t[7]=0,t[8]=-(i-u)*c*.5,t[9]=(a-o)*s*.5,t[10]=e/(r-e),t[11]=-1,t[12]=0,t[13]=0,t[14]=e*r/(r-e),t[15]=0,t}function k(t,n,r,e,a,o,i){var u=1/(n-r),c=1/(e-a),s=1/(o-i);return t[0]=-2*u,t[1]=0,t[2]=0,t[3]=0,t[4]=0,t[5]=-2*c,t[6]=0,t[7]=0,t[8]=0,t[9]=0,t[10]=2*s,t[11]=0,t[12]=(n+r)*u,t[13]=(a+e)*c,t[14]=(i+o)*s,t[15]=1,t}function J(t,n,r,e){var a=void 0,o=void 0,i=void 0,u=void 0,c=void 0,s=void 0,f=void 0,h=void 0,l=void 0,M=void 0,p=n[0],m=n[1],v=n[2],b=e[0],E=e[1],y=e[2],x=r[0],A=r[1],R=r[2];return Math.abs(p-x)<d&&Math.abs(m-A)<d&&Math.abs(v-R)<d?T(t):(f=p-x,h=m-A,l=v-R,a=E*(l*=M=1/Math.sqrt(f*f+h*h+l*l))-y*(h*=M),o=y*(f*=M)-b*l,i=b*h-E*f,(M=Math.sqrt(a*a+o*o+i*i))?(a*=M=1/M,o*=M,i*=M):(a=0,o=0,i=0),u=h*i-l*o,c=l*a-f*i,s=f*o-h*a,(M=Math.sqrt(u*u+c*c+s*s))?(u*=M=1/M,c*=M,s*=M):(u=0,c=0,s=0),t[0]=a,t[1]=u,t[2]=f,t[3]=0,t[4]=o,t[5]=c,t[6]=h,t[7]=0,t[8]=i,t[9]=s,t[10]=l,t[11]=0,t[12]=-(a*p+o*m+i*v),t[13]=-(u*p+c*m+s*v),t[14]=-(f*p+h*m+l*v),t[15]=1,t)}function Q(t,n,r,e){var a=n[0],o=n[1],i=n[2],u=e[0],c=e[1],s=e[2],f=a-r[0],h=o-r[1],d=i-r[2],l=f*f+h*h+d*d;l>0&&(f*=l=1/Math.sqrt(l),h*=l,d*=l);var M=c*d-s*h,p=s*f-u*d,m=u*h-c*f;return(l=M*M+p*p+m*m)>0&&(M*=l=1/Math.sqrt(l),p*=l,m*=l),t[0]=M,t[1]=p,t[2]=m,t[3]=0,t[4]=h*m-d*p,t[5]=d*M-f*m,t[6]=f*p-h*M,t[7]=0,t[8]=f,t[9]=h,t[10]=d,t[11]=0,t[12]=a,t[13]=o,t[14]=i,t[15]=1,t}function K(t){return"mat4("+t[0]+", "+t[1]+", "+t[2]+", "+t[3]+", "+t[4]+", "+t[5]+", "+t[6]+", "+t[7]+", "+t[8]+", "+t[9]+", "+t[10]+", "+t[11]+", "+t[12]+", "+t[13]+", "+t[14]+", "+t[15]+")"}function $(t){return Math.sqrt(Math.pow(t[0],2)+Math.pow(t[1],2)+Math.pow(t[2],2)+Math.pow(t[3],2)+Math.pow(t[4],2)+Math.pow(t[5],2)+Math.pow(t[6],2)+Math.pow(t[7],2)+Math.pow(t[8],2)+Math.pow(t[9],2)+Math.pow(t[10],2)+Math.pow(t[11],2)+Math.pow(t[12],2)+Math.pow(t[13],2)+Math.pow(t[14],2)+Math.pow(t[15],2))}function tt(t,n,r){return t[0]=n[0]+r[0],t[1]=n[1]+r[1],t[2]=n[2]+r[2],t[3]=n[3]+r[3],t[4]=n[4]+r[4],t[5]=n[5]+r[5],t[6]=n[6]+r[6],t[7]=n[7]+r[7],t[8]=n[8]+r[8],t[9]=n[9]+r[9],t[10]=n[10]+r[10],t[11]=n[11]+r[11],t[12]=n[12]+r[12],t[13]=n[13]+r[13],t[14]=n[14]+r[14],t[15]=n[15]+r[15],t}function nt(t,n,r){return t[0]=n[0]-r[0],t[1]=n[1]-r[1],t[2]=n[2]-r[2],t[3]=n[3]-r[3],t[4]=n[4]-r[4],t[5]=n[5]-r[5],t[6]=n[6]-r[6],t[7]=n[7]-r[7],t[8]=n[8]-r[8],t[9]=n[9]-r[9],t[10]=n[10]-r[10],t[11]=n[11]-r[11],t[12]=n[12]-r[12],t[13]=n[13]-r[13],t[14]=n[14]-r[14],t[15]=n[15]-r[15],t}function rt(t,n,r){return t[0]=n[0]*r,t[1]=n[1]*r,t[2]=n[2]*r,t[3]=n[3]*r,t[4]=n[4]*r,t[5]=n[5]*r,t[6]=n[6]*r,t[7]=n[7]*r,t[8]=n[8]*r,t[9]=n[9]*r,t[10]=n[10]*r,t[11]=n[11]*r,t[12]=n[12]*r,t[13]=n[13]*r,t[14]=n[14]*r,t[15]=n[15]*r,t}function et(t,n,r,e){return t[0]=n[0]+r[0]*e,t[1]=n[1]+r[1]*e,t[2]=n[2]+r[2]*e,t[3]=n[3]+r[3]*e,t[4]=n[4]+r[4]*e,t[5]=n[5]+r[5]*e,t[6]=n[6]+r[6]*e,t[7]=n[7]+r[7]*e,t[8]=n[8]+r[8]*e,t[9]=n[9]+r[9]*e,t[10]=n[10]+r[10]*e,t[11]=n[11]+r[11]*e,t[12]=n[12]+r[12]*e,t[13]=n[13]+r[13]*e,t[14]=n[14]+r[14]*e,t[15]=n[15]+r[15]*e,t}function at(t,n){return t[0]===n[0]&&t[1]===n[1]&&t[2]===n[2]&&t[3]===n[3]&&t[4]===n[4]&&t[5]===n[5]&&t[6]===n[6]&&t[7]===n[7]&&t[8]===n[8]&&t[9]===n[9]&&t[10]===n[10]&&t[11]===n[11]&&t[12]===n[12]&&t[13]===n[13]&&t[14]===n[14]&&t[15]===n[15]}function ot(t,n){var r=t[0],e=t[1],a=t[2],o=t[3],i=t[4],u=t[5],c=t[6],s=t[7],f=t[8],h=t[9],l=t[10],M=t[11],p=t[12],m=t[13],v=t[14],b=t[15],E=n[0],T=n[1],y=n[2],x=n[3],A=n[4],R=n[5],g=n[6],_=n[7],S=n[8],w=n[9],O=n[10],I=n[11],N=n[12],P=n[13],F=n[14],Y=n[15];return Math.abs(r-E)<=d*Math.max(1,Math.abs(r),Math.abs(E))&&Math.abs(e-T)<=d*Math.max(1,Math.abs(e),Math.abs(T))&&Math.abs(a-y)<=d*Math.max(1,Math.abs(a),Math.abs(y))&&Math.abs(o-x)<=d*Math.max(1,Math.abs(o),Math.abs(x))&&Math.abs(i-A)<=d*Math.max(1,Math.abs(i),Math.abs(A))&&Math.abs(u-R)<=d*Math.max(1,Math.abs(u),Math.abs(R))&&Math.abs(c-g)<=d*Math.max(1,Math.abs(c),Math.abs(g))&&Math.abs(s-_)<=d*Math.max(1,Math.abs(s),Math.abs(_))&&Math.abs(f-S)<=d*Math.max(1,Math.abs(f),Math.abs(S))&&Math.abs(h-w)<=d*Math.max(1,Math.abs(h),Math.abs(w))&&Math.abs(l-O)<=d*Math.max(1,Math.abs(l),Math.abs(O))&&Math.abs(M-I)<=d*Math.max(1,Math.abs(M),Math.abs(I))&&Math.abs(p-N)<=d*Math.max(1,Math.abs(p),Math.abs(N))&&Math.abs(m-P)<=d*Math.max(1,Math.abs(m),Math.abs(P))&&Math.abs(v-F)<=d*Math.max(1,Math.abs(v),Math.abs(F))&&Math.abs(b-Y)<=d*Math.max(1,Math.abs(b),Math.abs(Y))}var it=g,ut=nt;function ct(){var t=new l(3);return l!=Float32Array&&(t[0]=0,t[1]=0,t[2]=0),t}function st(t){var n=new l(3);return n[0]=t[0],n[1]=t[1],n[2]=t[2],n}function ft(t){var n=t[0],r=t[1],e=t[2];return Math.sqrt(n*n+r*r+e*e)}function ht(t,n,r){var e=new l(3);return e[0]=t,e[1]=n,e[2]=r,e}function dt(t,n){return t[0]=n[0],t[1]=n[1],t[2]=n[2],t}function lt(t,n,r,e){return t[0]=n,t[1]=r,t[2]=e,t}function Mt(t,n,r){return t[0]=n[0]+r[0],t[1]=n[1]+r[1],t[2]=n[2]+r[2],t}function pt(t,n,r){return t[0]=n[0]-r[0],t[1]=n[1]-r[1],t[2]=n[2]-r[2],t}function mt(t,n,r){return t[0]=n[0]*r[0],t[1]=n[1]*r[1],t[2]=n[2]*r[2],t}function vt(t,n,r){return t[0]=n[0]/r[0],t[1]=n[1]/r[1],t[2]=n[2]/r[2],t}function bt(t,n){return t[0]=Math.ceil(n[0]),t[1]=Math.ceil(n[1]),t[2]=Math.ceil(n[2]),t}function Et(t,n){return t[0]=Math.floor(n[0]),t[1]=Math.floor(n[1]),t[2]=Math.floor(n[2]),t}function Tt(t,n,r){return t[0]=Math.min(n[0],r[0]),t[1]=Math.min(n[1],r[1]),t[2]=Math.min(n[2],r[2]),t}function yt(t,n,r){return t[0]=Math.max(n[0],r[0]),t[1]=Math.max(n[1],r[1]),t[2]=Math.max(n[2],r[2]),t}function xt(t,n){return t[0]=Math.round(n[0]),t[1]=Math.round(n[1]),t[2]=Math.round(n[2]),t}function At(t,n,r){return t[0]=n[0]*r,t[1]=n[1]*r,t[2]=n[2]*r,t}function Rt(t,n,r,e){return t[0]=n[0]+r[0]*e,t[1]=n[1]+r[1]*e,t[2]=n[2]+r[2]*e,t}function gt(t,n){var r=n[0]-t[0],e=n[1]-t[1],a=n[2]-t[2];return Math.sqrt(r*r+e*e+a*a)}function _t(t,n){var r=n[0]-t[0],e=n[1]-t[1],a=n[2]-t[2];return r*r+e*e+a*a}function St(t){var n=t[0],r=t[1],e=t[2];return n*n+r*r+e*e}function wt(t,n){return t[0]=-n[0],t[1]=-n[1],t[2]=-n[2],t}function Ot(t,n){return t[0]=1/n[0],t[1]=1/n[1],t[2]=1/n[2],t}function It(t,n){var r=n[0],e=n[1],a=n[2],o=r*r+e*e+a*a;return o>0&&(o=1/Math.sqrt(o),t[0]=n[0]*o,t[1]=n[1]*o,t[2]=n[2]*o),t}function Nt(t,n){return t[0]*n[0]+t[1]*n[1]+t[2]*n[2]}function Pt(t,n,r){var e=n[0],a=n[1],o=n[2],i=r[0],u=r[1],c=r[2];return t[0]=a*c-o*u,t[1]=o*i-e*c,t[2]=e*u-a*i,t}function Ft(t,n,r,e){var a=n[0],o=n[1],i=n[2];return t[0]=a+e*(r[0]-a),t[1]=o+e*(r[1]-o),t[2]=i+e*(r[2]-i),t}function Yt(t,n,r,e,a,o){var i=o*o,u=i*(2*o-3)+1,c=i*(o-2)+o,s=i*(o-1),f=i*(3-2*o);return t[0]=n[0]*u+r[0]*c+e[0]*s+a[0]*f,t[1]=n[1]*u+r[1]*c+e[1]*s+a[1]*f,t[2]=n[2]*u+r[2]*c+e[2]*s+a[2]*f,t}function Ct(t,n,r,e,a,o){var i=1-o,u=i*i,c=o*o,s=u*i,f=3*o*u,h=3*c*i,d=c*o;return t[0]=n[0]*s+r[0]*f+e[0]*h+a[0]*d,t[1]=n[1]*s+r[1]*f+e[1]*h+a[1]*d,t[2]=n[2]*s+r[2]*f+e[2]*h+a[2]*d,t}function Lt(t,n){n=n||1;var r=2*M()*Math.PI,e=2*M()-1,a=Math.sqrt(1-e*e)*n;return t[0]=Math.cos(r)*a,t[1]=Math.sin(r)*a,t[2]=e*n,t}function Vt(t,n,r){var e=n[0],a=n[1],o=n[2],i=r[3]*e+r[7]*a+r[11]*o+r[15];return i=i||1,t[0]=(r[0]*e+r[4]*a+r[8]*o+r[12])/i,t[1]=(r[1]*e+r[5]*a+r[9]*o+r[13])/i,t[2]=(r[2]*e+r[6]*a+r[10]*o+r[14])/i,t}function Dt(t,n,r){var e=n[0],a=n[1],o=n[2];return t[0]=e*r[0]+a*r[3]+o*r[6],t[1]=e*r[1]+a*r[4]+o*r[7],t[2]=e*r[2]+a*r[5]+o*r[8],t}function qt(t,n,r){var e=r[0],a=r[1],o=r[2],i=r[3],u=n[0],c=n[1],s=n[2],f=a*s-o*c,h=o*u-e*s,d=e*c-a*u,l=a*d-o*h,M=o*f-e*d,p=e*h-a*f,m=2*i;return f*=m,h*=m,d*=m,l*=2,M*=2,p*=2,t[0]=u+f+l,t[1]=c+h+M,t[2]=s+d+p,t}function Ut(t,n,r,e){var a=[],o=[];return a[0]=n[0]-r[0],a[1]=n[1]-r[1],a[2]=n[2]-r[2],o[0]=a[0],o[1]=a[1]*Math.cos(e)-a[2]*Math.sin(e),o[2]=a[1]*Math.sin(e)+a[2]*Math.cos(e),t[0]=o[0]+r[0],t[1]=o[1]+r[1],t[2]=o[2]+r[2],t}function Bt(t,n,r,e){var a=[],o=[];return a[0]=n[0]-r[0],a[1]=n[1]-r[1],a[2]=n[2]-r[2],o[0]=a[2]*Math.sin(e)+a[0]*Math.cos(e),o[1]=a[1],o[2]=a[2]*Math.cos(e)-a[0]*Math.sin(e),t[0]=o[0]+r[0],t[1]=o[1]+r[1],t[2]=o[2]+r[2],t}function jt(t,n,r,e){var a=[],o=[];return a[0]=n[0]-r[0],a[1]=n[1]-r[1],a[2]=n[2]-r[2],o[0]=a[0]*Math.cos(e)-a[1]*Math.sin(e),o[1]=a[0]*Math.sin(e)+a[1]*Math.cos(e),o[2]=a[2],t[0]=o[0]+r[0],t[1]=o[1]+r[1],t[2]=o[2]+r[2],t}function Gt(t,n){var r=ht(t[0],t[1],t[2]),e=ht(n[0],n[1],n[2]);It(r,r),It(e,e);var a=Nt(r,e);return a>1?0:a<-1?Math.PI:Math.acos(a)}function zt(t){return"vec3("+t[0]+", "+t[1]+", "+t[2]+")"}function Ht(t,n){return t[0]===n[0]&&t[1]===n[1]&&t[2]===n[2]}function Xt(t,n){var r=t[0],e=t[1],a=t[2],o=n[0],i=n[1],u=n[2];return Math.abs(r-o)<=d*Math.max(1,Math.abs(r),Math.abs(o))&&Math.abs(e-i)<=d*Math.max(1,Math.abs(e),Math.abs(i))&&Math.abs(a-u)<=d*Math.max(1,Math.abs(a),Math.abs(u))}var Zt,Wt=pt,kt=mt,Jt=vt,Qt=gt,Kt=_t,$t=ft,tn=St,nn=(Zt=ct(),function(t,n,r,e,a,o){var i=void 0,u=void 0;for(n||(n=3),r||(r=0),u=e?Math.min(e*n+r,t.length):t.length,i=r;i<u;i+=n)Zt[0]=t[i],Zt[1]=t[i+1],Zt[2]=t[i+2],a(Zt,Zt,o),t[i]=Zt[0],t[i+1]=Zt[1],t[i+2]=Zt[2];return t});function rn(t){var n=t[0],r=t[1],e=t[2],a=t[3];return Math.sqrt(n*n+r*r+e*e+a*a)}function en(t){var n=t[0],r=t[1],e=t[2],a=t[3];return n*n+r*r+e*e+a*a}!function(){var t,n=(t=new l(4),l!=Float32Array&&(t[0]=0,t[1]=0,t[2]=0,t[3]=0),t)}();function an(){var t=new l(4);return l!=Float32Array&&(t[0]=0,t[1]=0,t[2]=0),t[3]=1,t}function on(t){return t[0]=0,t[1]=0,t[2]=0,t[3]=1,t}function un(t,n,r){r*=.5;var e=Math.sin(r);return t[0]=e*n[0],t[1]=e*n[1],t[2]=e*n[2],t[3]=Math.cos(r),t}function cn(t,n){var r=2*Math.acos(n[3]),e=Math.sin(r/2);return e>d?(t[0]=n[0]/e,t[1]=n[1]/e,t[2]=n[2]/e):(t[0]=1,t[1]=0,t[2]=0),r}function sn(t,n,r){var e=n[0],a=n[1],o=n[2],i=n[3],u=r[0],c=r[1],s=r[2],f=r[3];return t[0]=e*f+i*u+a*s-o*c,t[1]=a*f+i*c+o*u-e*s,t[2]=o*f+i*s+e*c-a*u,t[3]=i*f-e*u-a*c-o*s,t}function fn(t,n,r){r*=.5;var e=n[0],a=n[1],o=n[2],i=n[3],u=Math.sin(r),c=Math.cos(r);return t[0]=e*c+i*u,t[1]=a*c+o*u,t[2]=o*c-a*u,t[3]=i*c-e*u,t}function hn(t,n,r){r*=.5;var e=n[0],a=n[1],o=n[2],i=n[3],u=Math.sin(r),c=Math.cos(r);return t[0]=e*c-o*u,t[1]=a*c+i*u,t[2]=o*c+e*u,t[3]=i*c-a*u,t}function dn(t,n,r){r*=.5;var e=n[0],a=n[1],o=n[2],i=n[3],u=Math.sin(r),c=Math.cos(r);return t[0]=e*c+a*u,t[1]=a*c-e*u,t[2]=o*c+i*u,t[3]=i*c-o*u,t}function ln(t,n){var r=n[0],e=n[1],a=n[2];return t[0]=r,t[1]=e,t[2]=a,t[3]=Math.sqrt(Math.abs(1-r*r-e*e-a*a)),t}function Mn(t,n,r,e){var a=n[0],o=n[1],i=n[2],u=n[3],c=r[0],s=r[1],f=r[2],h=r[3],l=void 0,M=void 0,p=void 0,m=void 0,v=void 0;return(M=a*c+o*s+i*f+u*h)<0&&(M=-M,c=-c,s=-s,f=-f,h=-h),1-M>d?(l=Math.acos(M),p=Math.sin(l),m=Math.sin((1-e)*l)/p,v=Math.sin(e*l)/p):(m=1-e,v=e),t[0]=m*a+v*c,t[1]=m*o+v*s,t[2]=m*i+v*f,t[3]=m*u+v*h,t}function pn(t){var n=M(),r=M(),e=M(),a=Math.sqrt(1-n),o=Math.sqrt(n);return t[0]=a*Math.sin(2*Math.PI*r),t[1]=a*Math.cos(2*Math.PI*r),t[2]=o*Math.sin(2*Math.PI*e),t[3]=o*Math.cos(2*Math.PI*e),t}function mn(t,n){var r=n[0],e=n[1],a=n[2],o=n[3],i=r*r+e*e+a*a+o*o,u=i?1/i:0;return t[0]=-r*u,t[1]=-e*u,t[2]=-a*u,t[3]=o*u,t}function vn(t,n){return t[0]=-n[0],t[1]=-n[1],t[2]=-n[2],t[3]=n[3],t}function bn(t,n){var r=n[0]+n[4]+n[8],e=void 0;if(r>0)e=Math.sqrt(r+1),t[3]=.5*e,e=.5/e,t[0]=(n[5]-n[7])*e,t[1]=(n[6]-n[2])*e,t[2]=(n[1]-n[3])*e;else{var a=0;n[4]>n[0]&&(a=1),n[8]>n[3*a+a]&&(a=2);var o=(a+1)%3,i=(a+2)%3;e=Math.sqrt(n[3*a+a]-n[3*o+o]-n[3*i+i]+1),t[a]=.5*e,e=.5/e,t[3]=(n[3*o+i]-n[3*i+o])*e,t[o]=(n[3*o+a]+n[3*a+o])*e,t[i]=(n[3*i+a]+n[3*a+i])*e}return t}function En(t,n,r,e){var a=.5*Math.PI/180;n*=a,r*=a,e*=a;var o=Math.sin(n),i=Math.cos(n),u=Math.sin(r),c=Math.cos(r),s=Math.sin(e),f=Math.cos(e);return t[0]=o*c*f-i*u*s,t[1]=i*u*f+o*c*s,t[2]=i*c*s-o*u*f,t[3]=i*c*f+o*u*s,t}function Tn(t){return"quat("+t[0]+", "+t[1]+", "+t[2]+", "+t[3]+")"}var yn,xn,An,Rn,gn,_n,Sn,wn=function(t){var n=new l(4);return n[0]=t[0],n[1]=t[1],n[2]=t[2],n[3]=t[3],n},On=function(t,n,r,e){var a=new l(4);return a[0]=t,a[1]=n,a[2]=r,a[3]=e,a},In=function(t,n){return t[0]=n[0],t[1]=n[1],t[2]=n[2],t[3]=n[3],t},Nn=function(t,n,r,e,a){return t[0]=n,t[1]=r,t[2]=e,t[3]=a,t},Pn=function(t,n,r){return t[0]=n[0]+r[0],t[1]=n[1]+r[1],t[2]=n[2]+r[2],t[3]=n[3]+r[3],t},Fn=sn,Yn=function(t,n,r){return t[0]=n[0]*r,t[1]=n[1]*r,t[2]=n[2]*r,t[3]=n[3]*r,t},Cn=function(t,n){return t[0]*n[0]+t[1]*n[1]+t[2]*n[2]+t[3]*n[3]},Ln=function(t,n,r,e){var a=n[0],o=n[1],i=n[2],u=n[3];return t[0]=a+e*(r[0]-a),t[1]=o+e*(r[1]-o),t[2]=i+e*(r[2]-i),t[3]=u+e*(r[3]-u),t},Vn=rn,Dn=Vn,qn=en,Un=qn,Bn=function(t,n){var r=n[0],e=n[1],a=n[2],o=n[3],i=r*r+e*e+a*a+o*o;return i>0&&(i=1/Math.sqrt(i),t[0]=r*i,t[1]=e*i,t[2]=a*i,t[3]=o*i),t},jn=function(t,n){return t[0]===n[0]&&t[1]===n[1]&&t[2]===n[2]&&t[3]===n[3]},Gn=function(t,n){var r=t[0],e=t[1],a=t[2],o=t[3],i=n[0],u=n[1],c=n[2],s=n[3];return Math.abs(r-i)<=d*Math.max(1,Math.abs(r),Math.abs(i))&&Math.abs(e-u)<=d*Math.max(1,Math.abs(e),Math.abs(u))&&Math.abs(a-c)<=d*Math.max(1,Math.abs(a),Math.abs(c))&&Math.abs(o-s)<=d*Math.max(1,Math.abs(o),Math.abs(s))},zn=(yn=ct(),xn=ht(1,0,0),An=ht(0,1,0),function(t,n,r){var e=Nt(n,r);return e<-.999999?(Pt(yn,xn,n),$t(yn)<1e-6&&Pt(yn,An,n),It(yn,yn),un(t,yn,Math.PI),t):e>.999999?(t[0]=0,t[1]=0,t[2]=0,t[3]=1,t):(Pt(yn,n,r),t[0]=yn[0],t[1]=yn[1],t[2]=yn[2],t[3]=1+e,Bn(t,t))}),Hn=(Rn=an(),gn=an(),function(t,n,r,e,a,o){return Mn(Rn,n,a,o),Mn(gn,r,e,o),Mn(t,Rn,gn,2*o*(1-o)),t}),Xn=(_n=new l(9),l!=Float32Array&&(_n[1]=0,_n[2]=0,_n[3]=0,_n[5]=0,_n[6]=0,_n[7]=0),_n[0]=1,_n[4]=1,_n[8]=1,Sn=_n,function(t,n,r,e){return Sn[0]=r[0],Sn[3]=r[1],Sn[6]=r[2],Sn[1]=e[0],Sn[4]=e[1],Sn[7]=e[2],Sn[2]=-n[0],Sn[5]=-n[1],Sn[8]=-n[2],Bn(t,bn(t,Sn))}),Zn=({name:t=null,parent:n=null,children:r=[],mesh:i=null,camera:u=null,rotation:c=o.create(),translation:s=a.fromValues(0,0,0),scale:f=a.fromValues(1,1,1),matrix:h=null})=>{const d={name:t,children:r,mesh:i,camera:u,localMatrix:e.create(),worldMatrix:e.create(),translation:s,scale:f,rotation:c,add(t){t&&-1===this.children.indexOf(t)&&this.children.push(t)},remove(t){if(t){let n=this.children.indexOf(t);-1!==n&&(this.children.splice(n,1),t.parent=null)}},tick(t=null){this.updateLocalMatrix(),null!==t?e.multiply(this.worldMatrix,t,this.localMatrix):e.copy(this.worldMatrix,this.localMatrix);for(let t=0;t<this.children.length;t++)this.children[t].tick(this.worldMatrix)},updateLocalMatrix(){e.fromRotationTranslationScale(this.localMatrix,this.rotation,this.translation,this.scale)},setScale(t,n,r){this.scale[0]=t,this.scale[1]=n,this.scale[2]=r},applyScale(t,n,r){this.scale[0]*=t,this.scale[1]*=n,this.scale[2]*=r},setTranslation(t,n,r){this.translation[0]=t,this.translation[1]=n,this.translation[2]=r},applyTranslation(t,n,r){this.translation[0]+=t,this.translation[1]+=n,this.translation[2]+=r},setRotationFromEuler(t,n,r){o.fromEuler(this.rotation,t,n,r)},applyRotationX(t){o.rotateX(this.rotation,this.rotation,t)},applyRotationY(t){o.rotateY(this.rotation,this.rotation,t)},applyRotationZ(t){o.rotateZ(this.rotation,this.rotation,t)}};return n&&n.add(d),h&&(e.getRotation(d.rotation,h),e.getTranslation(d.translation,h),e.getScaling(d.scale,h)),d},Wn=({xmag:t=1,ymag:n=1,zfar:r=100,znear:a=0},o=null)=>({type:"orthographic",orthographic:{xmag:t,ymag:n,zfar:r,znear:a},perspective:null,name:o,projectionMatrix:e.ortho(e.create(),-t,t,-n,n,a,r),updateProjectionMatrix(){const{xmag:t,ymag:n,zfar:r,znear:a}=this.orthographic;this.projectionMatrix=e.ortho(this.projectionMatrix,-t,t,-n,n,a,r)}}),kn=({aspectRatio:t,yfov:n=1.0472,zfar:r=null,znear:a=1},o=null)=>({type:"perspective",perspective:{aspectRatio:t,yfov:n,zfar:r,znear:a},orthographic:null,name:o,projectionMatrix:e.perspective(e.create(),n,t,a,r),updateProjectionMatrix(){const{aspectRatio:t,yfov:n,zfar:r,znear:a}=this.perspective;this.projectionMatrix=e.perspective(e.create(),n,t,a,r)}}),Jn=(t,n=4,r,e=null)=>({attributes:t,indices:e,material:r,mode:n,extras:{}});const Qn="2.0".split(".").map(t=>parseInt(t));function Kn(t,n,r){let e=t.createShader(r);if(t.shaderSource(e,n),t.compileShader(e),!t.getShaderParameter(e,t.COMPILE_STATUS))throw Error(t.getShaderInfoLog(e));return e}var $n=r(0),tr=r.n($n),nr=r(1),rr=r.n(nr);n.default={node:Zn,importer:async t=>{const n=JSON.parse(t);let r=(n.asset.minVersion?n.asset.minVersion:n.asset.version).split(".").map(t=>parseInt(t));if(Qn[0]!==r[0])return null;if(n.asset.minVersion&&Qn[1]<r[1])return null;const e=await Promise.all(n.buffers.map(({uri:t})=>fetch(t).then(t=>t.arrayBuffer()))),a=n.bufferViews.map(({buffer:t,byteLength:n,byteOffset:r,target:a,byteStride:o})=>((t,n,r=0,e=e.ARRAY_BUFFER,a=0)=>({buffer:t,byteLength:n,byteOffset:r,byteStride:a,target:e,extras:{}}))(e[t],n,r,a,o)),o=n.accessors.map(({bufferView:t,componentType:n,type:r,count:e,min:o,max:u,byteOffset:c})=>(n===i.TYPE.FLOAT&&(o=o.map(t=>Math.fround(t)),u=u.map(t=>Math.fround(t))),((t,n,r,e,a,o,i=0,u=!1)=>({bufferView:t,type:r,componentType:n,byteOffset:i,count:e,min:a,max:o,normalized:u}))(a[t],n,r,e,o,u,c)));const u=n.meshes.map(({primitives:t,name:n})=>((t,n=null)=>({primitives:t,name:n}))(t.map(t=>(function({attributes:t,mode:n,indices:r}){let e={};for(let n in t){let r=o[t[n]];if(e[n]=r,!1===(f[n]&&f[n].type.includes(r.type)&&f[n].componentType.includes(r.componentType)))throw Error("GLTF2.0: Accessor is invalid.")}const a=o[r];if(!f.INDEX.type.includes(a.type)||!f.INDEX.componentType.includes(a.componentType))throw Error('GLTF2.0: Indices accessor should have componentType { 5121, 5123, 5125 }, and type "SCALAR".');const i=a.bufferView;if(i.target&&i.target!==h.ELEMENT_ARRAY_BUFFER)throw Error("GLTF2.0: Indices accessor should have a target equal to 34963 (ELEMENT_ARRAY_BUFFER).");return Jn(e,n,null,a)})(t)),n)),s=n.cameras.map(({name:t,type:n,orthographic:r,perspective:e})=>n===c.ORTHOGRAPHIC?Wn(r,t):n===c.PERSPECTIVE?kn(e,t):null);const d=n.scenes.map(({nodes:t,name:r})=>((t=[],n=null)=>({nodes:t,name:n}))(t.map(t=>(function t(r){let{name:e,rotation:a,translation:o,scale:i,matrix:c,mesh:f,camera:h,children:d=[]}=n.nodes[r];return Zn({name:e,mesh:u[f],camera:s[h],rotation:a,translation:o,scale:i,matrix:c,children:d.map(n=>t(n))})})(t)),r));return{scene:d[n.scene],scenes:d}},renderer:(t,n)=>{const r=document.createElement("canvas");r.width=t,r.height=n;const a=r.getContext("webgl2");if(!a)return console.warn("WebGL 2.0 isn't available"),null;a.viewport(0,0,r.width,r.height),a.clearColor(0,0,0,1),a.enable(a.DEPTH_TEST),a.enable(a.CULL_FACE);const o=((t,n,r)=>{let e=Kn(t,n,t.VERTEX_SHADER),a=Kn(t,r,t.FRAGMENT_SHADER),o=t.createProgram();if(t.attachShader(o,e),t.attachShader(o,a),t.linkProgram(o),!t.getProgramParameter(o,t.LINK_STATUS))throw Error("Error when building shaders.");return o})(a,tr.a,rr.a);return a.useProgram(o),{domElement:r,gl:a,setSize(t,n){r.width=t,r.height=n,a.viewport(0,0,r.width,r.height),a.clearColor(1,1,1,1)},draw(t,n){let r=e.multiply(e.create(),n,t.worldMatrix);a.uniformMatrix4fv(a.getUniformLocation(o,"modelViewMatrix"),!1,r);let u=t.mesh;for(let t=0;t<u.primitives.length;t++){let n=u.primitives[t];if(!n.extras.vao)throw Error("Attempted to draw primitive with no VAO (Is the mesh loaded?).");if(a.bindVertexArray(n.extras.vao),n.indices){const t=n.indices.byteOffset/i.SIZE[n.indices.componentType];a.drawElements(n.mode,n.indices.count,n.indices.componentType,t)}else a.drawArrays(a.TRIANGLES,0,n.attributes.POSITION.count/3)}},render(t,n){a.clearColor(1,1,1,1),a.clear(a.COLOR_BUFFER_BIT|a.DEPTH_BUFFER_BIT),a.uniformMatrix4fv(a.getUniformLocation(o,"projectionMatrix"),!1,n.camera.projectionMatrix);const r=e.invert(e.create(),n.worldMatrix);let i=[];function u(t){t.mesh&&i.push(t),t.children.map(u)}t.nodes.forEach(t=>u(t));for(let t=0;t<i.length;t++)this.draw(i[t],r)},load(t){if(t.primitives)for(let n=0;n<t.primitives.length;n++){let r=t.primitives[n];if(r.extras.vao)continue;let e=a.createVertexArray();if(a.bindVertexArray(e),r.indices){let t=r.indices.bufferView;if(t.extras.element_array_buffer)a.bindBuffer(a.ELEMENT_ARRAY_BUFFER,t.extras.element_array_buffer),t.extras.bufferAccessCount+=1;else{let n=a.createBuffer();a.bindBuffer(a.ELEMENT_ARRAY_BUFFER,n);let r=new DataView(t.buffer,t.byteOffset,t.byteLength);a.bufferData(a.ELEMENT_ARRAY_BUFFER,r,a.STATIC_DRAW),t.extras.element_array_buffer=n,t.extras.bufferAccessCount=1}}for(let t in r.attributes){let n=r.attributes[t],e=n.bufferView;if(e.extras.array_buffer)a.bindBuffer(a.ARRAY_BUFFER,e.extras.array_buffer),e.extras.bufferAccessCount+=1;else{let r=a.createBuffer();a.bindBuffer(a.ARRAY_BUFFER,r);let o=new DataView(e.buffer,e.byteOffset,e.byteLength);a.bufferData(a.ARRAY_BUFFER,o,a.STATIC_DRAW),a.vertexAttribPointer(s[t],u[n.type],n.componentType,n.normalized,e.byteStride,n.byteOffset),a.enableVertexAttribArray(s[t]),e.extras.array_buffer=r,e.extras.bufferAccessCount=1}}r.extras.vao=e}else t.mesh?this.load(t.mesh):t.children?t.children.forEach(this.load.bind(this)):t.nodes&&t.nodes.forEach(this.load.bind(this))},unload(t){if(t.primitives){console.log(t);for(let n=0;n<t.primitives.length;n++){let r=t.primitives[n];if(void 0!==r.extras.vao){if(r.indices){let t=r.indices.bufferView;t.extras.element_array_buffer&&(t.extras.bufferAccessCount>1?t.extras.bufferAccessCount-=1:(a.deleteBuffer(t.extras.element_array_buffer),delete t.extras.element_array_buffer,delete t.extras.bufferAccessCount))}for(let t in r.attributes){let n=r.attributes[t].bufferView;n.extras.array_buffer&&(n.extras.bufferAccessCount>1?n.extras.bufferAccessCount-=1:(a.deleteBuffer(n.extras.array_buffer),delete n.extras.array_buffer,delete n.extras.bufferAccessCount))}a.deleteVertexArray(r.extras.vao),delete r.extras.vao}}}else t.mesh?this.unload(t.mesh):t.children?t.children.forEach(this.unload.bind(this)):t.nodes&&t.nodes.forEach(this.unload.bind(this))}}},perspectiveCamera:kn,orthographicCamera:Wn}}])});
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory();
+	else if(typeof define === 'function' && define.amd)
+		define([], factory);
+	else if(typeof exports === 'object')
+		exports["warp"] = factory();
+	else
+		root["warp"] = factory();
+})(window, function() {
+return /******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// define __esModule on exports
+/******/ 	__webpack_require__.r = function(exports) {
+/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 		}
+/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/
+/******/ 	// create a fake namespace object
+/******/ 	// mode & 1: value is a module id, require it
+/******/ 	// mode & 2: merge all properties of value into the ns
+/******/ 	// mode & 4: return value when already ns object
+/******/ 	// mode & 8|1: behave like require
+/******/ 	__webpack_require__.t = function(value, mode) {
+/******/ 		if(mode & 1) value = __webpack_require__(value);
+/******/ 		if(mode & 8) return value;
+/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
+/******/ 		var ns = Object.create(null);
+/******/ 		__webpack_require__.r(ns);
+/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
+/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
+/******/ 		return ns;
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = 6);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ (function(module, exports) {
+
+module.exports = "#version 300 es\n\n__DEFINES__\n\nlayout(location = 0) in vec4 in_position;\nlayout(location = 1) in vec4 in_normal;\nlayout(location = 2) in vec4 in_tangent;\n\n#ifdef HAS_UV\nlayout(location = 3) in vec2 in_texcoord_0;\n#endif\n\nuniform mat4 modelViewProjectionMatrix;\nuniform mat4 modelMatrix;\nuniform mat4 normalMatrix;\n\nout vec3 position;\nout vec2 texcoord_0;\n\nout mat3 TBN;\nout vec3 normal;\n\nvoid main() {\n    vec4 pos = modelMatrix * in_position;\n    position = vec3(pos.xyz) / pos.w;\n    \n    vec3 normalW = normalize(vec3(normalMatrix * vec4(in_normal.xyz, 0.0)));\n    vec3 tangentW = normalize(vec3(modelMatrix * vec4(in_tangent.xyz, 0.0)));\n    vec3 bitangentW = cross(normalW, tangentW) * in_tangent.w;\n    TBN = mat3(tangentW, bitangentW, normalW);\n\n    #ifdef HAS_UV\n    texcoord_0 = in_texcoord_0;\n    #else\n    texcoord_0 = vec2(0., 0.);\n    #endif\n\n    gl_Position = modelViewProjectionMatrix * in_position; // needs w for proper perspective correction\n}\n"
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports) {
+
+module.exports = "#version 300 es\n\n__DEFINES__\n\nprecision highp float;\n\nconst vec3 u_LightDirection = vec3(0.5, 0.5, 0.0);\nconst vec3 u_LightColor = vec3(1.0, 1.0, 1.0);\n\n#ifdef USE_IBL\nuniform samplerCube u_DiffuseEnvSampler;\nuniform samplerCube u_SpecularEnvSampler;\nuniform sampler2D u_brdfLUT;\n#endif\n\n#ifdef HAS_BASECOLORMAP\nuniform sampler2D u_BaseColorSampler;\n#endif\n#ifdef HAS_NORMALMAP\nuniform sampler2D u_NormalSampler;\nuniform float u_NormalScale;\n#endif\n#ifdef HAS_EMISSIVEMAP\nuniform sampler2D u_EmissiveSampler;\nuniform vec3 u_EmissiveFactor;\n#endif\n#ifdef HAS_METALROUGHNESSMAP\nuniform sampler2D u_MetallicRoughnessSampler;\n#endif\n#ifdef HAS_OCCLUSIONMAP\nuniform sampler2D u_OcclusionSampler;\nuniform float u_OcclusionStrength;\n#endif\n\nuniform vec2 u_MetallicRoughnessValues;\nuniform vec4 u_BaseColorFactor;\n\nuniform vec3 u_Camera;\n\n// debugging flags used for shader output of intermediate PBR variables\n// uniform vec4 u_ScaleDiffBaseMR;\n// uniform vec4 u_ScaleFGDSpec;\n// uniform vec4 u_ScaleIBLAmbient;\n\nin vec3 position;\n\nin vec2 texcoord_0;\n\n#ifdef HAS_NORMALS\n#ifdef HAS_TANGENTS\nin mat3 TBN;\n#else\nin vec3 normal;\n#endif\n#endif\n\nout vec4 fColor;\n\n// Encapsulate the various inputs used by the various functions in the shading equation\n// We store values in this struct to simplify the integration of alternative implementations\n// of the shading terms, outlined in the Readme.MD Appendix.\nstruct PBRInfo\n{\n    float NdotL;                  // cos angle between normal and light direction\n    float NdotV;                  // cos angle between normal and view direction\n    float NdotH;                  // cos angle between normal and half vector\n    float LdotH;                  // cos angle between light direction and half vector\n    float VdotH;                  // cos angle between view direction and half vector\n    float perceptualRoughness;    // roughness value, as authored by the model creator (input to shader)\n    float metalness;              // metallic value at the surface\n    vec3 reflectance0;            // full reflectance color (normal incidence angle)\n    vec3 reflectance90;           // reflectance color at grazing angle\n    float alphaRoughness;         // roughness mapped to a more linear change in the roughness (proposed by [2])\n    vec3 diffuseColor;            // color contribution from diffuse lighting\n    vec3 specularColor;           // color contribution from specular lighting\n};\n\nconst float M_PI = 3.141592653589793;\nconst float c_MinRoughness = 0.04;\n\nvec4 SRGBtoLINEAR(vec4 srgbIn)\n{\n    #ifdef MANUAL_SRGB\n    #ifdef SRGB_FAST_APPROXIMATION\n    vec3 linOut = pow(srgbIn.xyz,vec3(2.2));\n    #else //SRGB_FAST_APPROXIMATION\n    vec3 bLess = step(vec3(0.04045),srgbIn.xyz);\n    vec3 linOut = mix( srgbIn.xyz/vec3(12.92), pow((srgbIn.xyz+vec3(0.055))/vec3(1.055),vec3(2.4)), bLess );\n    #endif //SRGB_FAST_APPROXIMATION\n    return vec4(linOut,srgbIn.w);;\n    #else //MANUAL_SRGB\n    return srgbIn;\n    #endif //MANUAL_SRGB\n}\n\n// Find the normal for this fragment, pulling either from a predefined normal map\n// or from the interpolated mesh normal and tangent attributes.\nvec3 getNormal()\n{\n    // Retrieve the tangent space matrix\n#ifndef HAS_TANGENTS\n    vec3 pos_dx = dFdx(position);\n    vec3 pos_dy = dFdy(position);\n    vec3 tex_dx = dFdx(vec3(texcoord_0, 0.0));\n    vec3 tex_dy = dFdy(vec3(texcoord_0, 0.0));\n    vec3 t = (tex_dy.t * pos_dx - tex_dx.t * pos_dy) / (tex_dx.s * tex_dy.t - tex_dy.s * tex_dx.t);\n\n#ifdef HAS_NORMALS\n    vec3 ng = normalize(normal);\n#else\n    vec3 ng = cross(pos_dx, pos_dy);\n#endif\n\n    t = normalize(t - ng * dot(ng, t));\n    vec3 b = normalize(cross(ng, t));\n    mat3 tbn = mat3(t, b, ng);\n#else // HAS_TANGENTS\n    mat3 tbn = TBN;\n#endif\n\n#ifdef HAS_NORMALMAP\n    vec3 n = texture(u_NormalSampler, texcoord_0).rgb;\n    n = normalize(tbn * ((2.0 * n - 1.0) * vec3(u_NormalScale, u_NormalScale, 1.0)));\n#else\n    // The tbn matrix is linearly interpolated, so we need to re-normalize\n    vec3 n = normalize(tbn[2].xyz);\n#endif\n\n    return n;\n}\n\n// Calculation of the lighting contribution from an optional Image Based Light source.\n// Precomputed Environment Maps are required uniform inputs and are computed as outlined in [1].\n// See our README.md on Environment Maps [3] for additional discussion.\n#ifdef USE_IBL\nvec3 getIBLContribution(PBRInfo pbrInputs, vec3 n, vec3 reflection)\n{\n    float mipCount = 9.0; // resolution of 512x512\n    float lod = (pbrInputs.perceptualRoughness * mipCount);\n    // retrieve a scale and bias to F0. See [1], Figure 3\n    vec3 brdf = SRGBtoLINEAR(texture(u_brdfLUT, vec2(pbrInputs.NdotV, 1.0 - pbrInputs.perceptualRoughness))).rgb;\n    vec3 diffuseLight = SRGBtoLINEAR(textureCube(u_DiffuseEnvSampler, n)).rgb;\n\n#ifdef USE_TEX_LOD\n    vec3 specularLight = SRGBtoLINEAR(textureCubeLodEXT(u_SpecularEnvSampler, reflection, lod)).rgb;\n#else\n    vec3 specularLight = SRGBtoLINEAR(textureCube(u_SpecularEnvSampler, reflection)).rgb;\n#endif\n\n    vec3 diffuse = diffuseLight * pbrInputs.diffuseColor;\n    vec3 specular = specularLight * (pbrInputs.specularColor * brdf.x + brdf.y);\n\n    // For presentation, this allows us to disable IBL terms\n    diffuse *= u_ScaleIBLAmbient.x;\n    specular *= u_ScaleIBLAmbient.y;\n\n    return diffuse + specular;\n}\n#endif\n\n// Basic Lambertian diffuse\n// Implementation from Lambert's Photometria https://archive.org/details/lambertsphotome00lambgoog\n// See also [1], Equation 1\nvec3 diffuse(PBRInfo pbrInputs)\n{\n    return pbrInputs.diffuseColor / M_PI;\n}\n\n// The following equation models the Fresnel reflectance term of the spec equation (aka F())\n// Implementation of fresnel from [4], Equation 15\nvec3 specularReflection(PBRInfo pbrInputs)\n{\n    return pbrInputs.reflectance0 + (pbrInputs.reflectance90 - pbrInputs.reflectance0) * pow(clamp(1.0 - pbrInputs.VdotH, 0.0, 1.0), 5.0);\n}\n\n// This calculates the specular geometric attenuation (aka G()),\n// where rougher material will reflect less light back to the viewer.\n// This implementation is based on [1] Equation 4, and we adopt their modifications to\n// alphaRoughness as input as originally proposed in [2].\nfloat geometricOcclusion(PBRInfo pbrInputs) {\n    float NdotL = pbrInputs.NdotL;\n    float NdotV = pbrInputs.NdotV;\n    float r = pbrInputs.alphaRoughness;\n\n    float attenuationL = 2.0 * NdotL / (NdotL + sqrt(r * r + (1.0 - r * r) * (NdotL * NdotL)));\n    float attenuationV = 2.0 * NdotV / (NdotV + sqrt(r * r + (1.0 - r * r) * (NdotV * NdotV)));\n    return attenuationL * attenuationV;\n}\n\n// The following equation(s) model the distribution of microfacet normals across the area being drawn (aka D())\n// Implementation from \"Average Irregularity Representation of a Roughened Surface for Ray Reflection\" by T. S. Trowbridge, and K. P. Reitz\n// Follows the distribution function recommended in the SIGGRAPH 2013 course notes from EPIC Games [1], Equation 3.\nfloat microfacetDistribution(PBRInfo pbrInputs) {\n    float roughnessSq = pbrInputs.alphaRoughness * pbrInputs.alphaRoughness;\n    float f = (pbrInputs.NdotH * roughnessSq - pbrInputs.NdotH) * pbrInputs.NdotH + 1.0;\n    return roughnessSq / (M_PI * f * f);\n}\n\nvoid main() {\n    // Metallic and Roughness material properties are packed together\n    // In glTF, these factors can be specified by fixed scalar values\n    // or from a metallic-roughness map\n    float perceptualRoughness = u_MetallicRoughnessValues.y;\n    float metallic = u_MetallicRoughnessValues.x;\n#ifdef HAS_METALROUGHNESSMAP\n    // Roughness is stored in the 'g' channel, metallic is stored in the 'b' channel.\n    // This layout intentionally reserves the 'r' channel for (optional) occlusion map data\n    vec4 mrSample = texture(u_MetallicRoughnessSampler, texcoord_0);\n    perceptualRoughness = mrSample.g * perceptualRoughness;\n    metallic = mrSample.b * metallic;\n#endif\n    perceptualRoughness = clamp(perceptualRoughness, c_MinRoughness, 1.0);\n    metallic = clamp(metallic, 0.0, 1.0);\n    // Roughness is authored as perceptual roughness; as is convention,\n    // convert to material roughness by squaring the perceptual roughness [2].\n    float alphaRoughness = perceptualRoughness * perceptualRoughness;\n\n    // The albedo may be defined from a base texture or a flat color\n#ifdef HAS_BASECOLORMAP\n    vec4 baseColor = SRGBtoLINEAR(texture(u_BaseColorSampler, texcoord_0)) * u_BaseColorFactor;\n#else\n    vec4 baseColor = u_BaseColorFactor;\n#endif\n\n    vec3 f0 = vec3(0.04);\n    vec3 diffuseColor = baseColor.rgb * (vec3(1.0) - f0);\n    diffuseColor *= 1.0 - metallic;\n    vec3 specularColor = mix(f0, baseColor.rgb, metallic);\n\n    // Compute reflectance.\n    float reflectance = max(max(specularColor.r, specularColor.g), specularColor.b);\n\n    // For typical incident reflectance range (between 4% to 100%) set the grazing reflectance to 100% for typical fresnel effect.\n    // For very low reflectance range on highly diffuse objects (below 4%), incrementally reduce grazing reflecance to 0%.\n    float reflectance90 = clamp(reflectance * 25.0, 0.0, 1.0);\n    vec3 specularEnvironmentR0 = specularColor.rgb;\n    vec3 specularEnvironmentR90 = vec3(1.0, 1.0, 1.0) * reflectance90;\n\n    vec3 n = getNormal();                             // normal at surface point\n    vec3 v = normalize(u_Camera - position);        // Vector from surface point to camera\n    vec3 l = normalize(u_LightDirection);             // Vector from surface point to light\n    vec3 h = normalize(l+v);                          // Half vector between both l and v\n    vec3 reflection = -normalize(reflect(v, n));\n\n    float NdotL = clamp(dot(n, l), 0.001, 1.0);\n    float NdotV = clamp(abs(dot(n, v)), 0.001, 1.0);\n    float NdotH = clamp(dot(n, h), 0.0, 1.0);\n    float LdotH = clamp(dot(l, h), 0.0, 1.0);\n    float VdotH = clamp(dot(v, h), 0.0, 1.0);\n\n    PBRInfo pbrInputs = PBRInfo(\n        NdotL,\n        NdotV,\n        NdotH,\n        LdotH,\n        VdotH,\n        perceptualRoughness,\n        metallic,\n        specularEnvironmentR0,\n        specularEnvironmentR90,\n        alphaRoughness,\n        diffuseColor,\n        specularColor\n    );\n\n    // Calculate the shading terms for the microfacet specular shading model\n    vec3 F = specularReflection(pbrInputs);\n    float G = geometricOcclusion(pbrInputs);\n    float D = microfacetDistribution(pbrInputs);\n\n    // Calculation of analytical lighting contribution\n    vec3 diffuseContrib = (1.0 - F) * diffuse(pbrInputs);\n    vec3 specContrib = F * G * D / (4.0 * NdotL * NdotV);\n    // Obtain final intensity as reflectance (BRDF) scaled by the energy of the light (cosine law)\n    vec3 color = NdotL * u_LightColor * (diffuseContrib + specContrib);\n\n    // Calculate lighting contribution from image based lighting source (IBL)\n#ifdef USE_IBL\n    color += getIBLContribution(pbrInputs, n, reflection);\n#endif\n\n    // Apply optional PBR terms for additional (optional) shading\n#ifdef HAS_OCCLUSIONMAP\n    float ao = texture(u_OcclusionSampler, texcoord_0).r;\n    color = mix(color, color * ao, u_OcclusionStrength);\n#endif\n\n#ifdef HAS_EMISSIVEMAP\n    vec3 emissive = SRGBtoLINEAR(texture(u_EmissiveSampler, texcoord_0)).rgb * u_EmissiveFactor;\n    color += emissive;\n#endif\n\n    // // This section uses mix to override final color for reference app visualization\n    // // of various parameters in the lighting equation.\n    // color = mix(color, F, u_ScaleFGDSpec.x);\n    // color = mix(color, vec3(G), u_ScaleFGDSpec.y);\n    // color = mix(color, vec3(D), u_ScaleFGDSpec.z);\n    // color = mix(color, specContrib, u_ScaleFGDSpec.w);\n\n    // color = mix(color, diffuseContrib, u_ScaleDiffBaseMR.x);\n    // color = mix(color, baseColor.rgb, u_ScaleDiffBaseMR.y);\n    // color = mix(color, vec3(metallic), u_ScaleDiffBaseMR.z);\n    // color = mix(color, vec3(perceptualRoughness), u_ScaleDiffBaseMR.w);\n\n    fColor = vec4(pow(color,vec3(1.0/2.2)), baseColor.a);\n}"
+
+/***/ }),
+/* 2 */,
+/* 3 */,
+/* 4 */,
+/* 5 */,
+/* 6 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+var mat3_namespaceObject = {};
+__webpack_require__.r(mat3_namespaceObject);
+__webpack_require__.d(mat3_namespaceObject, "create", function() { return create; });
+__webpack_require__.d(mat3_namespaceObject, "fromMat4", function() { return fromMat4; });
+__webpack_require__.d(mat3_namespaceObject, "clone", function() { return clone; });
+__webpack_require__.d(mat3_namespaceObject, "copy", function() { return copy; });
+__webpack_require__.d(mat3_namespaceObject, "fromValues", function() { return fromValues; });
+__webpack_require__.d(mat3_namespaceObject, "set", function() { return set; });
+__webpack_require__.d(mat3_namespaceObject, "identity", function() { return identity; });
+__webpack_require__.d(mat3_namespaceObject, "transpose", function() { return transpose; });
+__webpack_require__.d(mat3_namespaceObject, "invert", function() { return invert; });
+__webpack_require__.d(mat3_namespaceObject, "adjoint", function() { return adjoint; });
+__webpack_require__.d(mat3_namespaceObject, "determinant", function() { return determinant; });
+__webpack_require__.d(mat3_namespaceObject, "multiply", function() { return multiply; });
+__webpack_require__.d(mat3_namespaceObject, "translate", function() { return translate; });
+__webpack_require__.d(mat3_namespaceObject, "rotate", function() { return rotate; });
+__webpack_require__.d(mat3_namespaceObject, "scale", function() { return mat3_scale; });
+__webpack_require__.d(mat3_namespaceObject, "fromTranslation", function() { return fromTranslation; });
+__webpack_require__.d(mat3_namespaceObject, "fromRotation", function() { return fromRotation; });
+__webpack_require__.d(mat3_namespaceObject, "fromScaling", function() { return fromScaling; });
+__webpack_require__.d(mat3_namespaceObject, "fromMat2d", function() { return fromMat2d; });
+__webpack_require__.d(mat3_namespaceObject, "fromQuat", function() { return fromQuat; });
+__webpack_require__.d(mat3_namespaceObject, "normalFromMat4", function() { return normalFromMat4; });
+__webpack_require__.d(mat3_namespaceObject, "projection", function() { return projection; });
+__webpack_require__.d(mat3_namespaceObject, "str", function() { return str; });
+__webpack_require__.d(mat3_namespaceObject, "frob", function() { return frob; });
+__webpack_require__.d(mat3_namespaceObject, "add", function() { return add; });
+__webpack_require__.d(mat3_namespaceObject, "subtract", function() { return subtract; });
+__webpack_require__.d(mat3_namespaceObject, "multiplyScalar", function() { return multiplyScalar; });
+__webpack_require__.d(mat3_namespaceObject, "multiplyScalarAndAdd", function() { return multiplyScalarAndAdd; });
+__webpack_require__.d(mat3_namespaceObject, "exactEquals", function() { return exactEquals; });
+__webpack_require__.d(mat3_namespaceObject, "equals", function() { return mat3_equals; });
+__webpack_require__.d(mat3_namespaceObject, "mul", function() { return mul; });
+__webpack_require__.d(mat3_namespaceObject, "sub", function() { return sub; });
+var mat4_namespaceObject = {};
+__webpack_require__.r(mat4_namespaceObject);
+__webpack_require__.d(mat4_namespaceObject, "create", function() { return mat4_create; });
+__webpack_require__.d(mat4_namespaceObject, "clone", function() { return mat4_clone; });
+__webpack_require__.d(mat4_namespaceObject, "copy", function() { return mat4_copy; });
+__webpack_require__.d(mat4_namespaceObject, "fromValues", function() { return mat4_fromValues; });
+__webpack_require__.d(mat4_namespaceObject, "set", function() { return mat4_set; });
+__webpack_require__.d(mat4_namespaceObject, "identity", function() { return mat4_identity; });
+__webpack_require__.d(mat4_namespaceObject, "transpose", function() { return mat4_transpose; });
+__webpack_require__.d(mat4_namespaceObject, "invert", function() { return mat4_invert; });
+__webpack_require__.d(mat4_namespaceObject, "adjoint", function() { return mat4_adjoint; });
+__webpack_require__.d(mat4_namespaceObject, "determinant", function() { return mat4_determinant; });
+__webpack_require__.d(mat4_namespaceObject, "multiply", function() { return mat4_multiply; });
+__webpack_require__.d(mat4_namespaceObject, "translate", function() { return mat4_translate; });
+__webpack_require__.d(mat4_namespaceObject, "scale", function() { return mat4_scale; });
+__webpack_require__.d(mat4_namespaceObject, "rotate", function() { return mat4_rotate; });
+__webpack_require__.d(mat4_namespaceObject, "rotateX", function() { return rotateX; });
+__webpack_require__.d(mat4_namespaceObject, "rotateY", function() { return rotateY; });
+__webpack_require__.d(mat4_namespaceObject, "rotateZ", function() { return rotateZ; });
+__webpack_require__.d(mat4_namespaceObject, "fromTranslation", function() { return mat4_fromTranslation; });
+__webpack_require__.d(mat4_namespaceObject, "fromScaling", function() { return mat4_fromScaling; });
+__webpack_require__.d(mat4_namespaceObject, "fromRotation", function() { return mat4_fromRotation; });
+__webpack_require__.d(mat4_namespaceObject, "fromXRotation", function() { return fromXRotation; });
+__webpack_require__.d(mat4_namespaceObject, "fromYRotation", function() { return fromYRotation; });
+__webpack_require__.d(mat4_namespaceObject, "fromZRotation", function() { return fromZRotation; });
+__webpack_require__.d(mat4_namespaceObject, "fromRotationTranslation", function() { return fromRotationTranslation; });
+__webpack_require__.d(mat4_namespaceObject, "fromQuat2", function() { return fromQuat2; });
+__webpack_require__.d(mat4_namespaceObject, "getTranslation", function() { return getTranslation; });
+__webpack_require__.d(mat4_namespaceObject, "getScaling", function() { return getScaling; });
+__webpack_require__.d(mat4_namespaceObject, "getRotation", function() { return getRotation; });
+__webpack_require__.d(mat4_namespaceObject, "fromRotationTranslationScale", function() { return fromRotationTranslationScale; });
+__webpack_require__.d(mat4_namespaceObject, "fromRotationTranslationScaleOrigin", function() { return fromRotationTranslationScaleOrigin; });
+__webpack_require__.d(mat4_namespaceObject, "fromQuat", function() { return mat4_fromQuat; });
+__webpack_require__.d(mat4_namespaceObject, "frustum", function() { return frustum; });
+__webpack_require__.d(mat4_namespaceObject, "perspective", function() { return perspective; });
+__webpack_require__.d(mat4_namespaceObject, "perspectiveFromFieldOfView", function() { return perspectiveFromFieldOfView; });
+__webpack_require__.d(mat4_namespaceObject, "ortho", function() { return ortho; });
+__webpack_require__.d(mat4_namespaceObject, "lookAt", function() { return lookAt; });
+__webpack_require__.d(mat4_namespaceObject, "targetTo", function() { return targetTo; });
+__webpack_require__.d(mat4_namespaceObject, "str", function() { return mat4_str; });
+__webpack_require__.d(mat4_namespaceObject, "frob", function() { return mat4_frob; });
+__webpack_require__.d(mat4_namespaceObject, "add", function() { return mat4_add; });
+__webpack_require__.d(mat4_namespaceObject, "subtract", function() { return mat4_subtract; });
+__webpack_require__.d(mat4_namespaceObject, "multiplyScalar", function() { return mat4_multiplyScalar; });
+__webpack_require__.d(mat4_namespaceObject, "multiplyScalarAndAdd", function() { return mat4_multiplyScalarAndAdd; });
+__webpack_require__.d(mat4_namespaceObject, "exactEquals", function() { return mat4_exactEquals; });
+__webpack_require__.d(mat4_namespaceObject, "equals", function() { return mat4_equals; });
+__webpack_require__.d(mat4_namespaceObject, "mul", function() { return mat4_mul; });
+__webpack_require__.d(mat4_namespaceObject, "sub", function() { return mat4_sub; });
+var vec3_namespaceObject = {};
+__webpack_require__.r(vec3_namespaceObject);
+__webpack_require__.d(vec3_namespaceObject, "create", function() { return vec3_create; });
+__webpack_require__.d(vec3_namespaceObject, "clone", function() { return vec3_clone; });
+__webpack_require__.d(vec3_namespaceObject, "length", function() { return vec3_length; });
+__webpack_require__.d(vec3_namespaceObject, "fromValues", function() { return vec3_fromValues; });
+__webpack_require__.d(vec3_namespaceObject, "copy", function() { return vec3_copy; });
+__webpack_require__.d(vec3_namespaceObject, "set", function() { return vec3_set; });
+__webpack_require__.d(vec3_namespaceObject, "add", function() { return vec3_add; });
+__webpack_require__.d(vec3_namespaceObject, "subtract", function() { return vec3_subtract; });
+__webpack_require__.d(vec3_namespaceObject, "multiply", function() { return vec3_multiply; });
+__webpack_require__.d(vec3_namespaceObject, "divide", function() { return divide; });
+__webpack_require__.d(vec3_namespaceObject, "ceil", function() { return ceil; });
+__webpack_require__.d(vec3_namespaceObject, "floor", function() { return floor; });
+__webpack_require__.d(vec3_namespaceObject, "min", function() { return vec3_min; });
+__webpack_require__.d(vec3_namespaceObject, "max", function() { return vec3_max; });
+__webpack_require__.d(vec3_namespaceObject, "round", function() { return round; });
+__webpack_require__.d(vec3_namespaceObject, "scale", function() { return vec3_scale; });
+__webpack_require__.d(vec3_namespaceObject, "scaleAndAdd", function() { return scaleAndAdd; });
+__webpack_require__.d(vec3_namespaceObject, "distance", function() { return distance; });
+__webpack_require__.d(vec3_namespaceObject, "squaredDistance", function() { return squaredDistance; });
+__webpack_require__.d(vec3_namespaceObject, "squaredLength", function() { return squaredLength; });
+__webpack_require__.d(vec3_namespaceObject, "negate", function() { return negate; });
+__webpack_require__.d(vec3_namespaceObject, "inverse", function() { return inverse; });
+__webpack_require__.d(vec3_namespaceObject, "normalize", function() { return normalize; });
+__webpack_require__.d(vec3_namespaceObject, "dot", function() { return vec3_dot; });
+__webpack_require__.d(vec3_namespaceObject, "cross", function() { return cross; });
+__webpack_require__.d(vec3_namespaceObject, "lerp", function() { return lerp; });
+__webpack_require__.d(vec3_namespaceObject, "hermite", function() { return hermite; });
+__webpack_require__.d(vec3_namespaceObject, "bezier", function() { return bezier; });
+__webpack_require__.d(vec3_namespaceObject, "random", function() { return random; });
+__webpack_require__.d(vec3_namespaceObject, "transformMat4", function() { return transformMat4; });
+__webpack_require__.d(vec3_namespaceObject, "transformMat3", function() { return transformMat3; });
+__webpack_require__.d(vec3_namespaceObject, "transformQuat", function() { return transformQuat; });
+__webpack_require__.d(vec3_namespaceObject, "rotateX", function() { return vec3_rotateX; });
+__webpack_require__.d(vec3_namespaceObject, "rotateY", function() { return vec3_rotateY; });
+__webpack_require__.d(vec3_namespaceObject, "rotateZ", function() { return vec3_rotateZ; });
+__webpack_require__.d(vec3_namespaceObject, "angle", function() { return angle; });
+__webpack_require__.d(vec3_namespaceObject, "str", function() { return vec3_str; });
+__webpack_require__.d(vec3_namespaceObject, "exactEquals", function() { return vec3_exactEquals; });
+__webpack_require__.d(vec3_namespaceObject, "equals", function() { return vec3_equals; });
+__webpack_require__.d(vec3_namespaceObject, "sub", function() { return vec3_sub; });
+__webpack_require__.d(vec3_namespaceObject, "mul", function() { return vec3_mul; });
+__webpack_require__.d(vec3_namespaceObject, "div", function() { return div; });
+__webpack_require__.d(vec3_namespaceObject, "dist", function() { return dist; });
+__webpack_require__.d(vec3_namespaceObject, "sqrDist", function() { return sqrDist; });
+__webpack_require__.d(vec3_namespaceObject, "len", function() { return vec3_len; });
+__webpack_require__.d(vec3_namespaceObject, "sqrLen", function() { return sqrLen; });
+__webpack_require__.d(vec3_namespaceObject, "forEach", function() { return forEach; });
+var vec4_namespaceObject = {};
+__webpack_require__.r(vec4_namespaceObject);
+__webpack_require__.d(vec4_namespaceObject, "create", function() { return vec4_create; });
+__webpack_require__.d(vec4_namespaceObject, "clone", function() { return vec4_clone; });
+__webpack_require__.d(vec4_namespaceObject, "fromValues", function() { return vec4_fromValues; });
+__webpack_require__.d(vec4_namespaceObject, "copy", function() { return vec4_copy; });
+__webpack_require__.d(vec4_namespaceObject, "set", function() { return vec4_set; });
+__webpack_require__.d(vec4_namespaceObject, "add", function() { return vec4_add; });
+__webpack_require__.d(vec4_namespaceObject, "subtract", function() { return vec4_subtract; });
+__webpack_require__.d(vec4_namespaceObject, "multiply", function() { return vec4_multiply; });
+__webpack_require__.d(vec4_namespaceObject, "divide", function() { return vec4_divide; });
+__webpack_require__.d(vec4_namespaceObject, "ceil", function() { return vec4_ceil; });
+__webpack_require__.d(vec4_namespaceObject, "floor", function() { return vec4_floor; });
+__webpack_require__.d(vec4_namespaceObject, "min", function() { return vec4_min; });
+__webpack_require__.d(vec4_namespaceObject, "max", function() { return vec4_max; });
+__webpack_require__.d(vec4_namespaceObject, "round", function() { return vec4_round; });
+__webpack_require__.d(vec4_namespaceObject, "scale", function() { return vec4_scale; });
+__webpack_require__.d(vec4_namespaceObject, "scaleAndAdd", function() { return vec4_scaleAndAdd; });
+__webpack_require__.d(vec4_namespaceObject, "distance", function() { return vec4_distance; });
+__webpack_require__.d(vec4_namespaceObject, "squaredDistance", function() { return vec4_squaredDistance; });
+__webpack_require__.d(vec4_namespaceObject, "length", function() { return vec4_length; });
+__webpack_require__.d(vec4_namespaceObject, "squaredLength", function() { return vec4_squaredLength; });
+__webpack_require__.d(vec4_namespaceObject, "negate", function() { return vec4_negate; });
+__webpack_require__.d(vec4_namespaceObject, "inverse", function() { return vec4_inverse; });
+__webpack_require__.d(vec4_namespaceObject, "normalize", function() { return vec4_normalize; });
+__webpack_require__.d(vec4_namespaceObject, "dot", function() { return vec4_dot; });
+__webpack_require__.d(vec4_namespaceObject, "lerp", function() { return vec4_lerp; });
+__webpack_require__.d(vec4_namespaceObject, "random", function() { return vec4_random; });
+__webpack_require__.d(vec4_namespaceObject, "transformMat4", function() { return vec4_transformMat4; });
+__webpack_require__.d(vec4_namespaceObject, "transformQuat", function() { return vec4_transformQuat; });
+__webpack_require__.d(vec4_namespaceObject, "str", function() { return vec4_str; });
+__webpack_require__.d(vec4_namespaceObject, "exactEquals", function() { return vec4_exactEquals; });
+__webpack_require__.d(vec4_namespaceObject, "equals", function() { return vec4_equals; });
+__webpack_require__.d(vec4_namespaceObject, "sub", function() { return vec4_sub; });
+__webpack_require__.d(vec4_namespaceObject, "mul", function() { return vec4_mul; });
+__webpack_require__.d(vec4_namespaceObject, "div", function() { return vec4_div; });
+__webpack_require__.d(vec4_namespaceObject, "dist", function() { return vec4_dist; });
+__webpack_require__.d(vec4_namespaceObject, "sqrDist", function() { return vec4_sqrDist; });
+__webpack_require__.d(vec4_namespaceObject, "len", function() { return vec4_len; });
+__webpack_require__.d(vec4_namespaceObject, "sqrLen", function() { return vec4_sqrLen; });
+__webpack_require__.d(vec4_namespaceObject, "forEach", function() { return vec4_forEach; });
+var quat_namespaceObject = {};
+__webpack_require__.r(quat_namespaceObject);
+__webpack_require__.d(quat_namespaceObject, "create", function() { return quat_create; });
+__webpack_require__.d(quat_namespaceObject, "identity", function() { return quat_identity; });
+__webpack_require__.d(quat_namespaceObject, "setAxisAngle", function() { return setAxisAngle; });
+__webpack_require__.d(quat_namespaceObject, "getAxisAngle", function() { return getAxisAngle; });
+__webpack_require__.d(quat_namespaceObject, "multiply", function() { return quat_multiply; });
+__webpack_require__.d(quat_namespaceObject, "rotateX", function() { return quat_rotateX; });
+__webpack_require__.d(quat_namespaceObject, "rotateY", function() { return quat_rotateY; });
+__webpack_require__.d(quat_namespaceObject, "rotateZ", function() { return quat_rotateZ; });
+__webpack_require__.d(quat_namespaceObject, "calculateW", function() { return calculateW; });
+__webpack_require__.d(quat_namespaceObject, "slerp", function() { return slerp; });
+__webpack_require__.d(quat_namespaceObject, "random", function() { return quat_random; });
+__webpack_require__.d(quat_namespaceObject, "invert", function() { return quat_invert; });
+__webpack_require__.d(quat_namespaceObject, "conjugate", function() { return conjugate; });
+__webpack_require__.d(quat_namespaceObject, "fromMat3", function() { return fromMat3; });
+__webpack_require__.d(quat_namespaceObject, "fromEuler", function() { return fromEuler; });
+__webpack_require__.d(quat_namespaceObject, "str", function() { return quat_str; });
+__webpack_require__.d(quat_namespaceObject, "clone", function() { return quat_clone; });
+__webpack_require__.d(quat_namespaceObject, "fromValues", function() { return quat_fromValues; });
+__webpack_require__.d(quat_namespaceObject, "copy", function() { return quat_copy; });
+__webpack_require__.d(quat_namespaceObject, "set", function() { return quat_set; });
+__webpack_require__.d(quat_namespaceObject, "add", function() { return quat_add; });
+__webpack_require__.d(quat_namespaceObject, "mul", function() { return quat_mul; });
+__webpack_require__.d(quat_namespaceObject, "scale", function() { return quat_scale; });
+__webpack_require__.d(quat_namespaceObject, "dot", function() { return quat_dot; });
+__webpack_require__.d(quat_namespaceObject, "lerp", function() { return quat_lerp; });
+__webpack_require__.d(quat_namespaceObject, "length", function() { return quat_length; });
+__webpack_require__.d(quat_namespaceObject, "len", function() { return quat_len; });
+__webpack_require__.d(quat_namespaceObject, "squaredLength", function() { return quat_squaredLength; });
+__webpack_require__.d(quat_namespaceObject, "sqrLen", function() { return quat_sqrLen; });
+__webpack_require__.d(quat_namespaceObject, "normalize", function() { return quat_normalize; });
+__webpack_require__.d(quat_namespaceObject, "exactEquals", function() { return quat_exactEquals; });
+__webpack_require__.d(quat_namespaceObject, "equals", function() { return quat_equals; });
+__webpack_require__.d(quat_namespaceObject, "rotationTo", function() { return rotationTo; });
+__webpack_require__.d(quat_namespaceObject, "sqlerp", function() { return sqlerp; });
+__webpack_require__.d(quat_namespaceObject, "setAxes", function() { return setAxes; });
+
+// CONCATENATED MODULE: ./src/lib/core/constants.js
+
+const GLTF_VERSION = '2.0';
+
+const MAX_LIGHTS = 500;
+
+const ALPHA_MODE = {
+    OPAQUE: 0,
+    MASK: 1,
+    BLEND: 2
+};
+
+const COMPONENT = Object.freeze({
+    SIZE: Object.freeze({
+        '5120': 1,
+        '5121': 1,
+        '5122': 2,
+        '5123': 2,
+        '5125': 4,
+        '5126': 4
+    }),
+    TYPE: Object.freeze({
+        BYTE: 5120,
+        UNSIGNED_BYTE: 5121,
+        SHORT: 5122,
+        UNSIGNED_SHORT: 5123,
+        UNSIGNED_INT: 5125,
+        FLOAT: 5126
+    }),
+    ID: Object.freeze({
+        '5120': 'BYTE',
+        '5121': 'UNSIGNED_BYTE',
+        '5122': 'SHORT',
+        '5123': 'UNSIGNED_SHORT',
+        '5125': 'UNSIGNED_INT',
+        '5126': 'FLOAT'
+    })
+});
+
+const TYPE = Object.freeze({
+    SCALAR: 1,
+    VEC2: 2,
+    VEC3: 3,
+    VEC4: 4,
+    MAT2: 4,
+    MAT3: 9,
+    MAT4: 16
+});
+
+const PROJECTION = Object.freeze({
+    ORTHOGRAPHIC: 'orthographic',
+    PERSPECTIVE: 'perspective'
+});
+
+const ATTRIBUTE_LOCATION = Object.freeze({
+    POSITION: 0,
+    NORMAL: 1,
+    TEXCOORD_0: 2,
+    JOINTS_0: 3,
+    JOINTS_1: 5,
+    WEIGHTS_0: 4,
+    WEIGHTS_1: 6,
+    TANGENT: 7
+});
+
+const VALID_ACCESSOR_TYPES = Object.freeze({
+    INDEX: { type: ['SCALAR'], componentType: [COMPONENT.TYPE.UNSIGNED_BYTE, COMPONENT.TYPE.UNSIGNED_SHORT, COMPONENT.TYPE.UNSIGNED_INT] },
+    POSITION: { type: ['VEC3'], componentType: [COMPONENT.TYPE.FLOAT] },
+    NORMAL: { type: ['VEC3'], componentType: [COMPONENT.TYPE.FLOAT] },
+    TANGENT: { type: ['VEC4'], componentType: [COMPONENT.TYPE.FLOAT] },
+    TEXCOORD_0: { type: ['VEC2'], componentType: [COMPONENT.TYPE.FLOAT, COMPONENT.TYPE.UNSIGNED_BYTE, COMPONENT.TYPE.UNSIGNED_SHORT] },
+    TEXCOORD_1: { type: ['VEC2'], componentType: [COMPONENT.TYPE.FLOAT, COMPONENT.TYPE.UNSIGNED_BYTE, COMPONENT.TYPE.UNSIGNED_SHORT] },
+    COLOR_0: { type: ['VEC3', 'VEC4'], componentType: [COMPONENT.TYPE.FLOAT, COMPONENT.TYPE.UNSIGNED_BYTE, COMPONENT.TYPE.UNSIGNED_SHORT] },
+    JOINTS_0: { type: ['VEC4'], componentType: [COMPONENT.TYPE.UNSIGNED_BYTE, COMPONENT.TYPE.UNSIGNED_SHORT] },
+    WEIGHTS_0: { type: ['VEC4'], componentType: [COMPONENT.TYPE.FLOAT, COMPONENT.TYPE.UNSIGNED_BYTE, COMPONENT.TYPE.UNSIGNED_SHORT] }
+});
+
+const TARGET = Object.freeze({
+    ELEMENT_ARRAY_BUFFER: 34963,
+    ARRAY_BUFFER: 34962
+});
+// CONCATENATED MODULE: ./src/lib/graph/scene.js
+/**
+ * Scene
+ * A collection of root nodes of a scene.
+ */
+
+/* harmony default export */ var scene = ((nodes = [], name = null) => {
+
+    return {
+
+        nodes,
+        name,
+        
+        updateTransforms() {
+
+            for (let i = 0; i < this.nodes.length; i++) {
+                this.nodes[i].tick();
+            }
+
+        },
+
+        acquireRenderables() {
+
+            let renderables = [];
+
+
+            for (let i = 0; i < this.nodes.length; i++) {
+
+                const node = this.nodes[i];
+
+                if (node.mesh) {
+
+                    for (let j = 0; j < node.mesh.primitives.length; j++) {
+
+                        renderables.push([
+                            node.mesh.primitives[j],
+                            node.worldMatrix
+                        ]);
+    
+                    }
+
+                }
+
+            }
+
+            // TODO: perform frustum culling based on camera (passed as parameter)
+            // TODO: perform sorting, front to back, transparency, material-id, etc..
+
+            return renderables;
+
+        }
+        
+    };
+
+});
+// CONCATENATED MODULE: ./node_modules/gl-matrix/lib/gl-matrix/common.js
+/**
+ * Common utilities
+ * @module glMatrix
+ */
+
+// Configuration Constants
+var EPSILON = 0.000001;
+var ARRAY_TYPE = typeof Float32Array !== 'undefined' ? Float32Array : Array;
+var RANDOM = Math.random;
+
+/**
+ * Sets the type of array used when creating new vectors and matrices
+ *
+ * @param {Type} type Array type, such as Float32Array or Array
+ */
+function setMatrixArrayType(type) {
+  ARRAY_TYPE = type;
+}
+
+var degree = Math.PI / 180;
+
+/**
+ * Convert Degree To Radian
+ *
+ * @param {Number} a Angle in Degrees
+ */
+function toRadian(a) {
+  return a * degree;
+}
+
+/**
+ * Tests whether or not the arguments have approximately the same value, within an absolute
+ * or relative tolerance of glMatrix.EPSILON (an absolute tolerance is used for values less
+ * than or equal to 1.0, and a relative tolerance is used for larger values)
+ *
+ * @param {Number} a The first number to test.
+ * @param {Number} b The second number to test.
+ * @returns {Boolean} True if the numbers are approximately equal, false otherwise.
+ */
+function equals(a, b) {
+  return Math.abs(a - b) <= EPSILON * Math.max(1.0, Math.abs(a), Math.abs(b));
+}
+// CONCATENATED MODULE: ./node_modules/gl-matrix/lib/gl-matrix/mat3.js
+
+
+/**
+ * 3x3 Matrix
+ * @module mat3
+ */
+
+/**
+ * Creates a new identity mat3
+ *
+ * @returns {mat3} a new 3x3 matrix
+ */
+function create() {
+  var out = new ARRAY_TYPE(9);
+  if (ARRAY_TYPE != Float32Array) {
+    out[1] = 0;
+    out[2] = 0;
+    out[3] = 0;
+    out[5] = 0;
+    out[6] = 0;
+    out[7] = 0;
+  }
+  out[0] = 1;
+  out[4] = 1;
+  out[8] = 1;
+  return out;
+}
+
+/**
+ * Copies the upper-left 3x3 values into the given mat3.
+ *
+ * @param {mat3} out the receiving 3x3 matrix
+ * @param {mat4} a   the source 4x4 matrix
+ * @returns {mat3} out
+ */
+function fromMat4(out, a) {
+  out[0] = a[0];
+  out[1] = a[1];
+  out[2] = a[2];
+  out[3] = a[4];
+  out[4] = a[5];
+  out[5] = a[6];
+  out[6] = a[8];
+  out[7] = a[9];
+  out[8] = a[10];
+  return out;
+}
+
+/**
+ * Creates a new mat3 initialized with values from an existing matrix
+ *
+ * @param {mat3} a matrix to clone
+ * @returns {mat3} a new 3x3 matrix
+ */
+function clone(a) {
+  var out = new ARRAY_TYPE(9);
+  out[0] = a[0];
+  out[1] = a[1];
+  out[2] = a[2];
+  out[3] = a[3];
+  out[4] = a[4];
+  out[5] = a[5];
+  out[6] = a[6];
+  out[7] = a[7];
+  out[8] = a[8];
+  return out;
+}
+
+/**
+ * Copy the values from one mat3 to another
+ *
+ * @param {mat3} out the receiving matrix
+ * @param {mat3} a the source matrix
+ * @returns {mat3} out
+ */
+function copy(out, a) {
+  out[0] = a[0];
+  out[1] = a[1];
+  out[2] = a[2];
+  out[3] = a[3];
+  out[4] = a[4];
+  out[5] = a[5];
+  out[6] = a[6];
+  out[7] = a[7];
+  out[8] = a[8];
+  return out;
+}
+
+/**
+ * Create a new mat3 with the given values
+ *
+ * @param {Number} m00 Component in column 0, row 0 position (index 0)
+ * @param {Number} m01 Component in column 0, row 1 position (index 1)
+ * @param {Number} m02 Component in column 0, row 2 position (index 2)
+ * @param {Number} m10 Component in column 1, row 0 position (index 3)
+ * @param {Number} m11 Component in column 1, row 1 position (index 4)
+ * @param {Number} m12 Component in column 1, row 2 position (index 5)
+ * @param {Number} m20 Component in column 2, row 0 position (index 6)
+ * @param {Number} m21 Component in column 2, row 1 position (index 7)
+ * @param {Number} m22 Component in column 2, row 2 position (index 8)
+ * @returns {mat3} A new mat3
+ */
+function fromValues(m00, m01, m02, m10, m11, m12, m20, m21, m22) {
+  var out = new ARRAY_TYPE(9);
+  out[0] = m00;
+  out[1] = m01;
+  out[2] = m02;
+  out[3] = m10;
+  out[4] = m11;
+  out[5] = m12;
+  out[6] = m20;
+  out[7] = m21;
+  out[8] = m22;
+  return out;
+}
+
+/**
+ * Set the components of a mat3 to the given values
+ *
+ * @param {mat3} out the receiving matrix
+ * @param {Number} m00 Component in column 0, row 0 position (index 0)
+ * @param {Number} m01 Component in column 0, row 1 position (index 1)
+ * @param {Number} m02 Component in column 0, row 2 position (index 2)
+ * @param {Number} m10 Component in column 1, row 0 position (index 3)
+ * @param {Number} m11 Component in column 1, row 1 position (index 4)
+ * @param {Number} m12 Component in column 1, row 2 position (index 5)
+ * @param {Number} m20 Component in column 2, row 0 position (index 6)
+ * @param {Number} m21 Component in column 2, row 1 position (index 7)
+ * @param {Number} m22 Component in column 2, row 2 position (index 8)
+ * @returns {mat3} out
+ */
+function set(out, m00, m01, m02, m10, m11, m12, m20, m21, m22) {
+  out[0] = m00;
+  out[1] = m01;
+  out[2] = m02;
+  out[3] = m10;
+  out[4] = m11;
+  out[5] = m12;
+  out[6] = m20;
+  out[7] = m21;
+  out[8] = m22;
+  return out;
+}
+
+/**
+ * Set a mat3 to the identity matrix
+ *
+ * @param {mat3} out the receiving matrix
+ * @returns {mat3} out
+ */
+function identity(out) {
+  out[0] = 1;
+  out[1] = 0;
+  out[2] = 0;
+  out[3] = 0;
+  out[4] = 1;
+  out[5] = 0;
+  out[6] = 0;
+  out[7] = 0;
+  out[8] = 1;
+  return out;
+}
+
+/**
+ * Transpose the values of a mat3
+ *
+ * @param {mat3} out the receiving matrix
+ * @param {mat3} a the source matrix
+ * @returns {mat3} out
+ */
+function transpose(out, a) {
+  // If we are transposing ourselves we can skip a few steps but have to cache some values
+  if (out === a) {
+    var a01 = a[1],
+        a02 = a[2],
+        a12 = a[5];
+    out[1] = a[3];
+    out[2] = a[6];
+    out[3] = a01;
+    out[5] = a[7];
+    out[6] = a02;
+    out[7] = a12;
+  } else {
+    out[0] = a[0];
+    out[1] = a[3];
+    out[2] = a[6];
+    out[3] = a[1];
+    out[4] = a[4];
+    out[5] = a[7];
+    out[6] = a[2];
+    out[7] = a[5];
+    out[8] = a[8];
+  }
+
+  return out;
+}
+
+/**
+ * Inverts a mat3
+ *
+ * @param {mat3} out the receiving matrix
+ * @param {mat3} a the source matrix
+ * @returns {mat3} out
+ */
+function invert(out, a) {
+  var a00 = a[0],
+      a01 = a[1],
+      a02 = a[2];
+  var a10 = a[3],
+      a11 = a[4],
+      a12 = a[5];
+  var a20 = a[6],
+      a21 = a[7],
+      a22 = a[8];
+
+  var b01 = a22 * a11 - a12 * a21;
+  var b11 = -a22 * a10 + a12 * a20;
+  var b21 = a21 * a10 - a11 * a20;
+
+  // Calculate the determinant
+  var det = a00 * b01 + a01 * b11 + a02 * b21;
+
+  if (!det) {
+    return null;
+  }
+  det = 1.0 / det;
+
+  out[0] = b01 * det;
+  out[1] = (-a22 * a01 + a02 * a21) * det;
+  out[2] = (a12 * a01 - a02 * a11) * det;
+  out[3] = b11 * det;
+  out[4] = (a22 * a00 - a02 * a20) * det;
+  out[5] = (-a12 * a00 + a02 * a10) * det;
+  out[6] = b21 * det;
+  out[7] = (-a21 * a00 + a01 * a20) * det;
+  out[8] = (a11 * a00 - a01 * a10) * det;
+  return out;
+}
+
+/**
+ * Calculates the adjugate of a mat3
+ *
+ * @param {mat3} out the receiving matrix
+ * @param {mat3} a the source matrix
+ * @returns {mat3} out
+ */
+function adjoint(out, a) {
+  var a00 = a[0],
+      a01 = a[1],
+      a02 = a[2];
+  var a10 = a[3],
+      a11 = a[4],
+      a12 = a[5];
+  var a20 = a[6],
+      a21 = a[7],
+      a22 = a[8];
+
+  out[0] = a11 * a22 - a12 * a21;
+  out[1] = a02 * a21 - a01 * a22;
+  out[2] = a01 * a12 - a02 * a11;
+  out[3] = a12 * a20 - a10 * a22;
+  out[4] = a00 * a22 - a02 * a20;
+  out[5] = a02 * a10 - a00 * a12;
+  out[6] = a10 * a21 - a11 * a20;
+  out[7] = a01 * a20 - a00 * a21;
+  out[8] = a00 * a11 - a01 * a10;
+  return out;
+}
+
+/**
+ * Calculates the determinant of a mat3
+ *
+ * @param {mat3} a the source matrix
+ * @returns {Number} determinant of a
+ */
+function determinant(a) {
+  var a00 = a[0],
+      a01 = a[1],
+      a02 = a[2];
+  var a10 = a[3],
+      a11 = a[4],
+      a12 = a[5];
+  var a20 = a[6],
+      a21 = a[7],
+      a22 = a[8];
+
+  return a00 * (a22 * a11 - a12 * a21) + a01 * (-a22 * a10 + a12 * a20) + a02 * (a21 * a10 - a11 * a20);
+}
+
+/**
+ * Multiplies two mat3's
+ *
+ * @param {mat3} out the receiving matrix
+ * @param {mat3} a the first operand
+ * @param {mat3} b the second operand
+ * @returns {mat3} out
+ */
+function multiply(out, a, b) {
+  var a00 = a[0],
+      a01 = a[1],
+      a02 = a[2];
+  var a10 = a[3],
+      a11 = a[4],
+      a12 = a[5];
+  var a20 = a[6],
+      a21 = a[7],
+      a22 = a[8];
+
+  var b00 = b[0],
+      b01 = b[1],
+      b02 = b[2];
+  var b10 = b[3],
+      b11 = b[4],
+      b12 = b[5];
+  var b20 = b[6],
+      b21 = b[7],
+      b22 = b[8];
+
+  out[0] = b00 * a00 + b01 * a10 + b02 * a20;
+  out[1] = b00 * a01 + b01 * a11 + b02 * a21;
+  out[2] = b00 * a02 + b01 * a12 + b02 * a22;
+
+  out[3] = b10 * a00 + b11 * a10 + b12 * a20;
+  out[4] = b10 * a01 + b11 * a11 + b12 * a21;
+  out[5] = b10 * a02 + b11 * a12 + b12 * a22;
+
+  out[6] = b20 * a00 + b21 * a10 + b22 * a20;
+  out[7] = b20 * a01 + b21 * a11 + b22 * a21;
+  out[8] = b20 * a02 + b21 * a12 + b22 * a22;
+  return out;
+}
+
+/**
+ * Translate a mat3 by the given vector
+ *
+ * @param {mat3} out the receiving matrix
+ * @param {mat3} a the matrix to translate
+ * @param {vec2} v vector to translate by
+ * @returns {mat3} out
+ */
+function translate(out, a, v) {
+  var a00 = a[0],
+      a01 = a[1],
+      a02 = a[2],
+      a10 = a[3],
+      a11 = a[4],
+      a12 = a[5],
+      a20 = a[6],
+      a21 = a[7],
+      a22 = a[8],
+      x = v[0],
+      y = v[1];
+
+  out[0] = a00;
+  out[1] = a01;
+  out[2] = a02;
+
+  out[3] = a10;
+  out[4] = a11;
+  out[5] = a12;
+
+  out[6] = x * a00 + y * a10 + a20;
+  out[7] = x * a01 + y * a11 + a21;
+  out[8] = x * a02 + y * a12 + a22;
+  return out;
+}
+
+/**
+ * Rotates a mat3 by the given angle
+ *
+ * @param {mat3} out the receiving matrix
+ * @param {mat3} a the matrix to rotate
+ * @param {Number} rad the angle to rotate the matrix by
+ * @returns {mat3} out
+ */
+function rotate(out, a, rad) {
+  var a00 = a[0],
+      a01 = a[1],
+      a02 = a[2],
+      a10 = a[3],
+      a11 = a[4],
+      a12 = a[5],
+      a20 = a[6],
+      a21 = a[7],
+      a22 = a[8],
+      s = Math.sin(rad),
+      c = Math.cos(rad);
+
+  out[0] = c * a00 + s * a10;
+  out[1] = c * a01 + s * a11;
+  out[2] = c * a02 + s * a12;
+
+  out[3] = c * a10 - s * a00;
+  out[4] = c * a11 - s * a01;
+  out[5] = c * a12 - s * a02;
+
+  out[6] = a20;
+  out[7] = a21;
+  out[8] = a22;
+  return out;
+};
+
+/**
+ * Scales the mat3 by the dimensions in the given vec2
+ *
+ * @param {mat3} out the receiving matrix
+ * @param {mat3} a the matrix to rotate
+ * @param {vec2} v the vec2 to scale the matrix by
+ * @returns {mat3} out
+ **/
+function mat3_scale(out, a, v) {
+  var x = v[0],
+      y = v[1];
+
+  out[0] = x * a[0];
+  out[1] = x * a[1];
+  out[2] = x * a[2];
+
+  out[3] = y * a[3];
+  out[4] = y * a[4];
+  out[5] = y * a[5];
+
+  out[6] = a[6];
+  out[7] = a[7];
+  out[8] = a[8];
+  return out;
+}
+
+/**
+ * Creates a matrix from a vector translation
+ * This is equivalent to (but much faster than):
+ *
+ *     mat3.identity(dest);
+ *     mat3.translate(dest, dest, vec);
+ *
+ * @param {mat3} out mat3 receiving operation result
+ * @param {vec2} v Translation vector
+ * @returns {mat3} out
+ */
+function fromTranslation(out, v) {
+  out[0] = 1;
+  out[1] = 0;
+  out[2] = 0;
+  out[3] = 0;
+  out[4] = 1;
+  out[5] = 0;
+  out[6] = v[0];
+  out[7] = v[1];
+  out[8] = 1;
+  return out;
+}
+
+/**
+ * Creates a matrix from a given angle
+ * This is equivalent to (but much faster than):
+ *
+ *     mat3.identity(dest);
+ *     mat3.rotate(dest, dest, rad);
+ *
+ * @param {mat3} out mat3 receiving operation result
+ * @param {Number} rad the angle to rotate the matrix by
+ * @returns {mat3} out
+ */
+function fromRotation(out, rad) {
+  var s = Math.sin(rad),
+      c = Math.cos(rad);
+
+  out[0] = c;
+  out[1] = s;
+  out[2] = 0;
+
+  out[3] = -s;
+  out[4] = c;
+  out[5] = 0;
+
+  out[6] = 0;
+  out[7] = 0;
+  out[8] = 1;
+  return out;
+}
+
+/**
+ * Creates a matrix from a vector scaling
+ * This is equivalent to (but much faster than):
+ *
+ *     mat3.identity(dest);
+ *     mat3.scale(dest, dest, vec);
+ *
+ * @param {mat3} out mat3 receiving operation result
+ * @param {vec2} v Scaling vector
+ * @returns {mat3} out
+ */
+function fromScaling(out, v) {
+  out[0] = v[0];
+  out[1] = 0;
+  out[2] = 0;
+
+  out[3] = 0;
+  out[4] = v[1];
+  out[5] = 0;
+
+  out[6] = 0;
+  out[7] = 0;
+  out[8] = 1;
+  return out;
+}
+
+/**
+ * Copies the values from a mat2d into a mat3
+ *
+ * @param {mat3} out the receiving matrix
+ * @param {mat2d} a the matrix to copy
+ * @returns {mat3} out
+ **/
+function fromMat2d(out, a) {
+  out[0] = a[0];
+  out[1] = a[1];
+  out[2] = 0;
+
+  out[3] = a[2];
+  out[4] = a[3];
+  out[5] = 0;
+
+  out[6] = a[4];
+  out[7] = a[5];
+  out[8] = 1;
+  return out;
+}
+
+/**
+* Calculates a 3x3 matrix from the given quaternion
+*
+* @param {mat3} out mat3 receiving operation result
+* @param {quat} q Quaternion to create matrix from
+*
+* @returns {mat3} out
+*/
+function fromQuat(out, q) {
+  var x = q[0],
+      y = q[1],
+      z = q[2],
+      w = q[3];
+  var x2 = x + x;
+  var y2 = y + y;
+  var z2 = z + z;
+
+  var xx = x * x2;
+  var yx = y * x2;
+  var yy = y * y2;
+  var zx = z * x2;
+  var zy = z * y2;
+  var zz = z * z2;
+  var wx = w * x2;
+  var wy = w * y2;
+  var wz = w * z2;
+
+  out[0] = 1 - yy - zz;
+  out[3] = yx - wz;
+  out[6] = zx + wy;
+
+  out[1] = yx + wz;
+  out[4] = 1 - xx - zz;
+  out[7] = zy - wx;
+
+  out[2] = zx - wy;
+  out[5] = zy + wx;
+  out[8] = 1 - xx - yy;
+
+  return out;
+}
+
+/**
+* Calculates a 3x3 normal matrix (transpose inverse) from the 4x4 matrix
+*
+* @param {mat3} out mat3 receiving operation result
+* @param {mat4} a Mat4 to derive the normal matrix from
+*
+* @returns {mat3} out
+*/
+function normalFromMat4(out, a) {
+  var a00 = a[0],
+      a01 = a[1],
+      a02 = a[2],
+      a03 = a[3];
+  var a10 = a[4],
+      a11 = a[5],
+      a12 = a[6],
+      a13 = a[7];
+  var a20 = a[8],
+      a21 = a[9],
+      a22 = a[10],
+      a23 = a[11];
+  var a30 = a[12],
+      a31 = a[13],
+      a32 = a[14],
+      a33 = a[15];
+
+  var b00 = a00 * a11 - a01 * a10;
+  var b01 = a00 * a12 - a02 * a10;
+  var b02 = a00 * a13 - a03 * a10;
+  var b03 = a01 * a12 - a02 * a11;
+  var b04 = a01 * a13 - a03 * a11;
+  var b05 = a02 * a13 - a03 * a12;
+  var b06 = a20 * a31 - a21 * a30;
+  var b07 = a20 * a32 - a22 * a30;
+  var b08 = a20 * a33 - a23 * a30;
+  var b09 = a21 * a32 - a22 * a31;
+  var b10 = a21 * a33 - a23 * a31;
+  var b11 = a22 * a33 - a23 * a32;
+
+  // Calculate the determinant
+  var det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
+
+  if (!det) {
+    return null;
+  }
+  det = 1.0 / det;
+
+  out[0] = (a11 * b11 - a12 * b10 + a13 * b09) * det;
+  out[1] = (a12 * b08 - a10 * b11 - a13 * b07) * det;
+  out[2] = (a10 * b10 - a11 * b08 + a13 * b06) * det;
+
+  out[3] = (a02 * b10 - a01 * b11 - a03 * b09) * det;
+  out[4] = (a00 * b11 - a02 * b08 + a03 * b07) * det;
+  out[5] = (a01 * b08 - a00 * b10 - a03 * b06) * det;
+
+  out[6] = (a31 * b05 - a32 * b04 + a33 * b03) * det;
+  out[7] = (a32 * b02 - a30 * b05 - a33 * b01) * det;
+  out[8] = (a30 * b04 - a31 * b02 + a33 * b00) * det;
+
+  return out;
+}
+
+/**
+ * Generates a 2D projection matrix with the given bounds
+ *
+ * @param {mat3} out mat3 frustum matrix will be written into
+ * @param {number} width Width of your gl context
+ * @param {number} height Height of gl context
+ * @returns {mat3} out
+ */
+function projection(out, width, height) {
+  out[0] = 2 / width;
+  out[1] = 0;
+  out[2] = 0;
+  out[3] = 0;
+  out[4] = -2 / height;
+  out[5] = 0;
+  out[6] = -1;
+  out[7] = 1;
+  out[8] = 1;
+  return out;
+}
+
+/**
+ * Returns a string representation of a mat3
+ *
+ * @param {mat3} a matrix to represent as a string
+ * @returns {String} string representation of the matrix
+ */
+function str(a) {
+  return 'mat3(' + a[0] + ', ' + a[1] + ', ' + a[2] + ', ' + a[3] + ', ' + a[4] + ', ' + a[5] + ', ' + a[6] + ', ' + a[7] + ', ' + a[8] + ')';
+}
+
+/**
+ * Returns Frobenius norm of a mat3
+ *
+ * @param {mat3} a the matrix to calculate Frobenius norm of
+ * @returns {Number} Frobenius norm
+ */
+function frob(a) {
+  return Math.sqrt(Math.pow(a[0], 2) + Math.pow(a[1], 2) + Math.pow(a[2], 2) + Math.pow(a[3], 2) + Math.pow(a[4], 2) + Math.pow(a[5], 2) + Math.pow(a[6], 2) + Math.pow(a[7], 2) + Math.pow(a[8], 2));
+}
+
+/**
+ * Adds two mat3's
+ *
+ * @param {mat3} out the receiving matrix
+ * @param {mat3} a the first operand
+ * @param {mat3} b the second operand
+ * @returns {mat3} out
+ */
+function add(out, a, b) {
+  out[0] = a[0] + b[0];
+  out[1] = a[1] + b[1];
+  out[2] = a[2] + b[2];
+  out[3] = a[3] + b[3];
+  out[4] = a[4] + b[4];
+  out[5] = a[5] + b[5];
+  out[6] = a[6] + b[6];
+  out[7] = a[7] + b[7];
+  out[8] = a[8] + b[8];
+  return out;
+}
+
+/**
+ * Subtracts matrix b from matrix a
+ *
+ * @param {mat3} out the receiving matrix
+ * @param {mat3} a the first operand
+ * @param {mat3} b the second operand
+ * @returns {mat3} out
+ */
+function subtract(out, a, b) {
+  out[0] = a[0] - b[0];
+  out[1] = a[1] - b[1];
+  out[2] = a[2] - b[2];
+  out[3] = a[3] - b[3];
+  out[4] = a[4] - b[4];
+  out[5] = a[5] - b[5];
+  out[6] = a[6] - b[6];
+  out[7] = a[7] - b[7];
+  out[8] = a[8] - b[8];
+  return out;
+}
+
+/**
+ * Multiply each element of the matrix by a scalar.
+ *
+ * @param {mat3} out the receiving matrix
+ * @param {mat3} a the matrix to scale
+ * @param {Number} b amount to scale the matrix's elements by
+ * @returns {mat3} out
+ */
+function multiplyScalar(out, a, b) {
+  out[0] = a[0] * b;
+  out[1] = a[1] * b;
+  out[2] = a[2] * b;
+  out[3] = a[3] * b;
+  out[4] = a[4] * b;
+  out[5] = a[5] * b;
+  out[6] = a[6] * b;
+  out[7] = a[7] * b;
+  out[8] = a[8] * b;
+  return out;
+}
+
+/**
+ * Adds two mat3's after multiplying each element of the second operand by a scalar value.
+ *
+ * @param {mat3} out the receiving vector
+ * @param {mat3} a the first operand
+ * @param {mat3} b the second operand
+ * @param {Number} scale the amount to scale b's elements by before adding
+ * @returns {mat3} out
+ */
+function multiplyScalarAndAdd(out, a, b, scale) {
+  out[0] = a[0] + b[0] * scale;
+  out[1] = a[1] + b[1] * scale;
+  out[2] = a[2] + b[2] * scale;
+  out[3] = a[3] + b[3] * scale;
+  out[4] = a[4] + b[4] * scale;
+  out[5] = a[5] + b[5] * scale;
+  out[6] = a[6] + b[6] * scale;
+  out[7] = a[7] + b[7] * scale;
+  out[8] = a[8] + b[8] * scale;
+  return out;
+}
+
+/**
+ * Returns whether or not the matrices have exactly the same elements in the same position (when compared with ===)
+ *
+ * @param {mat3} a The first matrix.
+ * @param {mat3} b The second matrix.
+ * @returns {Boolean} True if the matrices are equal, false otherwise.
+ */
+function exactEquals(a, b) {
+  return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3] && a[4] === b[4] && a[5] === b[5] && a[6] === b[6] && a[7] === b[7] && a[8] === b[8];
+}
+
+/**
+ * Returns whether or not the matrices have approximately the same elements in the same position.
+ *
+ * @param {mat3} a The first matrix.
+ * @param {mat3} b The second matrix.
+ * @returns {Boolean} True if the matrices are equal, false otherwise.
+ */
+function mat3_equals(a, b) {
+  var a0 = a[0],
+      a1 = a[1],
+      a2 = a[2],
+      a3 = a[3],
+      a4 = a[4],
+      a5 = a[5],
+      a6 = a[6],
+      a7 = a[7],
+      a8 = a[8];
+  var b0 = b[0],
+      b1 = b[1],
+      b2 = b[2],
+      b3 = b[3],
+      b4 = b[4],
+      b5 = b[5],
+      b6 = b[6],
+      b7 = b[7],
+      b8 = b[8];
+  return Math.abs(a0 - b0) <= EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)) && Math.abs(a3 - b3) <= EPSILON * Math.max(1.0, Math.abs(a3), Math.abs(b3)) && Math.abs(a4 - b4) <= EPSILON * Math.max(1.0, Math.abs(a4), Math.abs(b4)) && Math.abs(a5 - b5) <= EPSILON * Math.max(1.0, Math.abs(a5), Math.abs(b5)) && Math.abs(a6 - b6) <= EPSILON * Math.max(1.0, Math.abs(a6), Math.abs(b6)) && Math.abs(a7 - b7) <= EPSILON * Math.max(1.0, Math.abs(a7), Math.abs(b7)) && Math.abs(a8 - b8) <= EPSILON * Math.max(1.0, Math.abs(a8), Math.abs(b8));
+}
+
+/**
+ * Alias for {@link mat3.multiply}
+ * @function
+ */
+var mul = multiply;
+
+/**
+ * Alias for {@link mat3.subtract}
+ * @function
+ */
+var sub = subtract;
+// CONCATENATED MODULE: ./node_modules/gl-matrix/lib/gl-matrix/mat4.js
+
+
+/**
+ * 4x4 Matrix<br>Format: column-major, when typed out it looks like row-major<br>The matrices are being post multiplied.
+ * @module mat4
+ */
+
+/**
+ * Creates a new identity mat4
+ *
+ * @returns {mat4} a new 4x4 matrix
+ */
+function mat4_create() {
+  var out = new ARRAY_TYPE(16);
+  if (ARRAY_TYPE != Float32Array) {
+    out[1] = 0;
+    out[2] = 0;
+    out[3] = 0;
+    out[4] = 0;
+    out[6] = 0;
+    out[7] = 0;
+    out[8] = 0;
+    out[9] = 0;
+    out[11] = 0;
+    out[12] = 0;
+    out[13] = 0;
+    out[14] = 0;
+  }
+  out[0] = 1;
+  out[5] = 1;
+  out[10] = 1;
+  out[15] = 1;
+  return out;
+}
+
+/**
+ * Creates a new mat4 initialized with values from an existing matrix
+ *
+ * @param {mat4} a matrix to clone
+ * @returns {mat4} a new 4x4 matrix
+ */
+function mat4_clone(a) {
+  var out = new ARRAY_TYPE(16);
+  out[0] = a[0];
+  out[1] = a[1];
+  out[2] = a[2];
+  out[3] = a[3];
+  out[4] = a[4];
+  out[5] = a[5];
+  out[6] = a[6];
+  out[7] = a[7];
+  out[8] = a[8];
+  out[9] = a[9];
+  out[10] = a[10];
+  out[11] = a[11];
+  out[12] = a[12];
+  out[13] = a[13];
+  out[14] = a[14];
+  out[15] = a[15];
+  return out;
+}
+
+/**
+ * Copy the values from one mat4 to another
+ *
+ * @param {mat4} out the receiving matrix
+ * @param {mat4} a the source matrix
+ * @returns {mat4} out
+ */
+function mat4_copy(out, a) {
+  out[0] = a[0];
+  out[1] = a[1];
+  out[2] = a[2];
+  out[3] = a[3];
+  out[4] = a[4];
+  out[5] = a[5];
+  out[6] = a[6];
+  out[7] = a[7];
+  out[8] = a[8];
+  out[9] = a[9];
+  out[10] = a[10];
+  out[11] = a[11];
+  out[12] = a[12];
+  out[13] = a[13];
+  out[14] = a[14];
+  out[15] = a[15];
+  return out;
+}
+
+/**
+ * Create a new mat4 with the given values
+ *
+ * @param {Number} m00 Component in column 0, row 0 position (index 0)
+ * @param {Number} m01 Component in column 0, row 1 position (index 1)
+ * @param {Number} m02 Component in column 0, row 2 position (index 2)
+ * @param {Number} m03 Component in column 0, row 3 position (index 3)
+ * @param {Number} m10 Component in column 1, row 0 position (index 4)
+ * @param {Number} m11 Component in column 1, row 1 position (index 5)
+ * @param {Number} m12 Component in column 1, row 2 position (index 6)
+ * @param {Number} m13 Component in column 1, row 3 position (index 7)
+ * @param {Number} m20 Component in column 2, row 0 position (index 8)
+ * @param {Number} m21 Component in column 2, row 1 position (index 9)
+ * @param {Number} m22 Component in column 2, row 2 position (index 10)
+ * @param {Number} m23 Component in column 2, row 3 position (index 11)
+ * @param {Number} m30 Component in column 3, row 0 position (index 12)
+ * @param {Number} m31 Component in column 3, row 1 position (index 13)
+ * @param {Number} m32 Component in column 3, row 2 position (index 14)
+ * @param {Number} m33 Component in column 3, row 3 position (index 15)
+ * @returns {mat4} A new mat4
+ */
+function mat4_fromValues(m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33) {
+  var out = new ARRAY_TYPE(16);
+  out[0] = m00;
+  out[1] = m01;
+  out[2] = m02;
+  out[3] = m03;
+  out[4] = m10;
+  out[5] = m11;
+  out[6] = m12;
+  out[7] = m13;
+  out[8] = m20;
+  out[9] = m21;
+  out[10] = m22;
+  out[11] = m23;
+  out[12] = m30;
+  out[13] = m31;
+  out[14] = m32;
+  out[15] = m33;
+  return out;
+}
+
+/**
+ * Set the components of a mat4 to the given values
+ *
+ * @param {mat4} out the receiving matrix
+ * @param {Number} m00 Component in column 0, row 0 position (index 0)
+ * @param {Number} m01 Component in column 0, row 1 position (index 1)
+ * @param {Number} m02 Component in column 0, row 2 position (index 2)
+ * @param {Number} m03 Component in column 0, row 3 position (index 3)
+ * @param {Number} m10 Component in column 1, row 0 position (index 4)
+ * @param {Number} m11 Component in column 1, row 1 position (index 5)
+ * @param {Number} m12 Component in column 1, row 2 position (index 6)
+ * @param {Number} m13 Component in column 1, row 3 position (index 7)
+ * @param {Number} m20 Component in column 2, row 0 position (index 8)
+ * @param {Number} m21 Component in column 2, row 1 position (index 9)
+ * @param {Number} m22 Component in column 2, row 2 position (index 10)
+ * @param {Number} m23 Component in column 2, row 3 position (index 11)
+ * @param {Number} m30 Component in column 3, row 0 position (index 12)
+ * @param {Number} m31 Component in column 3, row 1 position (index 13)
+ * @param {Number} m32 Component in column 3, row 2 position (index 14)
+ * @param {Number} m33 Component in column 3, row 3 position (index 15)
+ * @returns {mat4} out
+ */
+function mat4_set(out, m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33) {
+  out[0] = m00;
+  out[1] = m01;
+  out[2] = m02;
+  out[3] = m03;
+  out[4] = m10;
+  out[5] = m11;
+  out[6] = m12;
+  out[7] = m13;
+  out[8] = m20;
+  out[9] = m21;
+  out[10] = m22;
+  out[11] = m23;
+  out[12] = m30;
+  out[13] = m31;
+  out[14] = m32;
+  out[15] = m33;
+  return out;
+}
+
+/**
+ * Set a mat4 to the identity matrix
+ *
+ * @param {mat4} out the receiving matrix
+ * @returns {mat4} out
+ */
+function mat4_identity(out) {
+  out[0] = 1;
+  out[1] = 0;
+  out[2] = 0;
+  out[3] = 0;
+  out[4] = 0;
+  out[5] = 1;
+  out[6] = 0;
+  out[7] = 0;
+  out[8] = 0;
+  out[9] = 0;
+  out[10] = 1;
+  out[11] = 0;
+  out[12] = 0;
+  out[13] = 0;
+  out[14] = 0;
+  out[15] = 1;
+  return out;
+}
+
+/**
+ * Transpose the values of a mat4
+ *
+ * @param {mat4} out the receiving matrix
+ * @param {mat4} a the source matrix
+ * @returns {mat4} out
+ */
+function mat4_transpose(out, a) {
+  // If we are transposing ourselves we can skip a few steps but have to cache some values
+  if (out === a) {
+    var a01 = a[1],
+        a02 = a[2],
+        a03 = a[3];
+    var a12 = a[6],
+        a13 = a[7];
+    var a23 = a[11];
+
+    out[1] = a[4];
+    out[2] = a[8];
+    out[3] = a[12];
+    out[4] = a01;
+    out[6] = a[9];
+    out[7] = a[13];
+    out[8] = a02;
+    out[9] = a12;
+    out[11] = a[14];
+    out[12] = a03;
+    out[13] = a13;
+    out[14] = a23;
+  } else {
+    out[0] = a[0];
+    out[1] = a[4];
+    out[2] = a[8];
+    out[3] = a[12];
+    out[4] = a[1];
+    out[5] = a[5];
+    out[6] = a[9];
+    out[7] = a[13];
+    out[8] = a[2];
+    out[9] = a[6];
+    out[10] = a[10];
+    out[11] = a[14];
+    out[12] = a[3];
+    out[13] = a[7];
+    out[14] = a[11];
+    out[15] = a[15];
+  }
+
+  return out;
+}
+
+/**
+ * Inverts a mat4
+ *
+ * @param {mat4} out the receiving matrix
+ * @param {mat4} a the source matrix
+ * @returns {mat4} out
+ */
+function mat4_invert(out, a) {
+  var a00 = a[0],
+      a01 = a[1],
+      a02 = a[2],
+      a03 = a[3];
+  var a10 = a[4],
+      a11 = a[5],
+      a12 = a[6],
+      a13 = a[7];
+  var a20 = a[8],
+      a21 = a[9],
+      a22 = a[10],
+      a23 = a[11];
+  var a30 = a[12],
+      a31 = a[13],
+      a32 = a[14],
+      a33 = a[15];
+
+  var b00 = a00 * a11 - a01 * a10;
+  var b01 = a00 * a12 - a02 * a10;
+  var b02 = a00 * a13 - a03 * a10;
+  var b03 = a01 * a12 - a02 * a11;
+  var b04 = a01 * a13 - a03 * a11;
+  var b05 = a02 * a13 - a03 * a12;
+  var b06 = a20 * a31 - a21 * a30;
+  var b07 = a20 * a32 - a22 * a30;
+  var b08 = a20 * a33 - a23 * a30;
+  var b09 = a21 * a32 - a22 * a31;
+  var b10 = a21 * a33 - a23 * a31;
+  var b11 = a22 * a33 - a23 * a32;
+
+  // Calculate the determinant
+  var det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
+
+  if (!det) {
+    return null;
+  }
+  det = 1.0 / det;
+
+  out[0] = (a11 * b11 - a12 * b10 + a13 * b09) * det;
+  out[1] = (a02 * b10 - a01 * b11 - a03 * b09) * det;
+  out[2] = (a31 * b05 - a32 * b04 + a33 * b03) * det;
+  out[3] = (a22 * b04 - a21 * b05 - a23 * b03) * det;
+  out[4] = (a12 * b08 - a10 * b11 - a13 * b07) * det;
+  out[5] = (a00 * b11 - a02 * b08 + a03 * b07) * det;
+  out[6] = (a32 * b02 - a30 * b05 - a33 * b01) * det;
+  out[7] = (a20 * b05 - a22 * b02 + a23 * b01) * det;
+  out[8] = (a10 * b10 - a11 * b08 + a13 * b06) * det;
+  out[9] = (a01 * b08 - a00 * b10 - a03 * b06) * det;
+  out[10] = (a30 * b04 - a31 * b02 + a33 * b00) * det;
+  out[11] = (a21 * b02 - a20 * b04 - a23 * b00) * det;
+  out[12] = (a11 * b07 - a10 * b09 - a12 * b06) * det;
+  out[13] = (a00 * b09 - a01 * b07 + a02 * b06) * det;
+  out[14] = (a31 * b01 - a30 * b03 - a32 * b00) * det;
+  out[15] = (a20 * b03 - a21 * b01 + a22 * b00) * det;
+
+  return out;
+}
+
+/**
+ * Calculates the adjugate of a mat4
+ *
+ * @param {mat4} out the receiving matrix
+ * @param {mat4} a the source matrix
+ * @returns {mat4} out
+ */
+function mat4_adjoint(out, a) {
+  var a00 = a[0],
+      a01 = a[1],
+      a02 = a[2],
+      a03 = a[3];
+  var a10 = a[4],
+      a11 = a[5],
+      a12 = a[6],
+      a13 = a[7];
+  var a20 = a[8],
+      a21 = a[9],
+      a22 = a[10],
+      a23 = a[11];
+  var a30 = a[12],
+      a31 = a[13],
+      a32 = a[14],
+      a33 = a[15];
+
+  out[0] = a11 * (a22 * a33 - a23 * a32) - a21 * (a12 * a33 - a13 * a32) + a31 * (a12 * a23 - a13 * a22);
+  out[1] = -(a01 * (a22 * a33 - a23 * a32) - a21 * (a02 * a33 - a03 * a32) + a31 * (a02 * a23 - a03 * a22));
+  out[2] = a01 * (a12 * a33 - a13 * a32) - a11 * (a02 * a33 - a03 * a32) + a31 * (a02 * a13 - a03 * a12);
+  out[3] = -(a01 * (a12 * a23 - a13 * a22) - a11 * (a02 * a23 - a03 * a22) + a21 * (a02 * a13 - a03 * a12));
+  out[4] = -(a10 * (a22 * a33 - a23 * a32) - a20 * (a12 * a33 - a13 * a32) + a30 * (a12 * a23 - a13 * a22));
+  out[5] = a00 * (a22 * a33 - a23 * a32) - a20 * (a02 * a33 - a03 * a32) + a30 * (a02 * a23 - a03 * a22);
+  out[6] = -(a00 * (a12 * a33 - a13 * a32) - a10 * (a02 * a33 - a03 * a32) + a30 * (a02 * a13 - a03 * a12));
+  out[7] = a00 * (a12 * a23 - a13 * a22) - a10 * (a02 * a23 - a03 * a22) + a20 * (a02 * a13 - a03 * a12);
+  out[8] = a10 * (a21 * a33 - a23 * a31) - a20 * (a11 * a33 - a13 * a31) + a30 * (a11 * a23 - a13 * a21);
+  out[9] = -(a00 * (a21 * a33 - a23 * a31) - a20 * (a01 * a33 - a03 * a31) + a30 * (a01 * a23 - a03 * a21));
+  out[10] = a00 * (a11 * a33 - a13 * a31) - a10 * (a01 * a33 - a03 * a31) + a30 * (a01 * a13 - a03 * a11);
+  out[11] = -(a00 * (a11 * a23 - a13 * a21) - a10 * (a01 * a23 - a03 * a21) + a20 * (a01 * a13 - a03 * a11));
+  out[12] = -(a10 * (a21 * a32 - a22 * a31) - a20 * (a11 * a32 - a12 * a31) + a30 * (a11 * a22 - a12 * a21));
+  out[13] = a00 * (a21 * a32 - a22 * a31) - a20 * (a01 * a32 - a02 * a31) + a30 * (a01 * a22 - a02 * a21);
+  out[14] = -(a00 * (a11 * a32 - a12 * a31) - a10 * (a01 * a32 - a02 * a31) + a30 * (a01 * a12 - a02 * a11));
+  out[15] = a00 * (a11 * a22 - a12 * a21) - a10 * (a01 * a22 - a02 * a21) + a20 * (a01 * a12 - a02 * a11);
+  return out;
+}
+
+/**
+ * Calculates the determinant of a mat4
+ *
+ * @param {mat4} a the source matrix
+ * @returns {Number} determinant of a
+ */
+function mat4_determinant(a) {
+  var a00 = a[0],
+      a01 = a[1],
+      a02 = a[2],
+      a03 = a[3];
+  var a10 = a[4],
+      a11 = a[5],
+      a12 = a[6],
+      a13 = a[7];
+  var a20 = a[8],
+      a21 = a[9],
+      a22 = a[10],
+      a23 = a[11];
+  var a30 = a[12],
+      a31 = a[13],
+      a32 = a[14],
+      a33 = a[15];
+
+  var b00 = a00 * a11 - a01 * a10;
+  var b01 = a00 * a12 - a02 * a10;
+  var b02 = a00 * a13 - a03 * a10;
+  var b03 = a01 * a12 - a02 * a11;
+  var b04 = a01 * a13 - a03 * a11;
+  var b05 = a02 * a13 - a03 * a12;
+  var b06 = a20 * a31 - a21 * a30;
+  var b07 = a20 * a32 - a22 * a30;
+  var b08 = a20 * a33 - a23 * a30;
+  var b09 = a21 * a32 - a22 * a31;
+  var b10 = a21 * a33 - a23 * a31;
+  var b11 = a22 * a33 - a23 * a32;
+
+  // Calculate the determinant
+  return b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
+}
+
+/**
+ * Multiplies two mat4s
+ *
+ * @param {mat4} out the receiving matrix
+ * @param {mat4} a the first operand
+ * @param {mat4} b the second operand
+ * @returns {mat4} out
+ */
+function mat4_multiply(out, a, b) {
+  var a00 = a[0],
+      a01 = a[1],
+      a02 = a[2],
+      a03 = a[3];
+  var a10 = a[4],
+      a11 = a[5],
+      a12 = a[6],
+      a13 = a[7];
+  var a20 = a[8],
+      a21 = a[9],
+      a22 = a[10],
+      a23 = a[11];
+  var a30 = a[12],
+      a31 = a[13],
+      a32 = a[14],
+      a33 = a[15];
+
+  // Cache only the current line of the second matrix
+  var b0 = b[0],
+      b1 = b[1],
+      b2 = b[2],
+      b3 = b[3];
+  out[0] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
+  out[1] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
+  out[2] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
+  out[3] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
+
+  b0 = b[4];b1 = b[5];b2 = b[6];b3 = b[7];
+  out[4] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
+  out[5] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
+  out[6] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
+  out[7] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
+
+  b0 = b[8];b1 = b[9];b2 = b[10];b3 = b[11];
+  out[8] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
+  out[9] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
+  out[10] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
+  out[11] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
+
+  b0 = b[12];b1 = b[13];b2 = b[14];b3 = b[15];
+  out[12] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
+  out[13] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
+  out[14] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
+  out[15] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
+  return out;
+}
+
+/**
+ * Translate a mat4 by the given vector
+ *
+ * @param {mat4} out the receiving matrix
+ * @param {mat4} a the matrix to translate
+ * @param {vec3} v vector to translate by
+ * @returns {mat4} out
+ */
+function mat4_translate(out, a, v) {
+  var x = v[0],
+      y = v[1],
+      z = v[2];
+  var a00 = void 0,
+      a01 = void 0,
+      a02 = void 0,
+      a03 = void 0;
+  var a10 = void 0,
+      a11 = void 0,
+      a12 = void 0,
+      a13 = void 0;
+  var a20 = void 0,
+      a21 = void 0,
+      a22 = void 0,
+      a23 = void 0;
+
+  if (a === out) {
+    out[12] = a[0] * x + a[4] * y + a[8] * z + a[12];
+    out[13] = a[1] * x + a[5] * y + a[9] * z + a[13];
+    out[14] = a[2] * x + a[6] * y + a[10] * z + a[14];
+    out[15] = a[3] * x + a[7] * y + a[11] * z + a[15];
+  } else {
+    a00 = a[0];a01 = a[1];a02 = a[2];a03 = a[3];
+    a10 = a[4];a11 = a[5];a12 = a[6];a13 = a[7];
+    a20 = a[8];a21 = a[9];a22 = a[10];a23 = a[11];
+
+    out[0] = a00;out[1] = a01;out[2] = a02;out[3] = a03;
+    out[4] = a10;out[5] = a11;out[6] = a12;out[7] = a13;
+    out[8] = a20;out[9] = a21;out[10] = a22;out[11] = a23;
+
+    out[12] = a00 * x + a10 * y + a20 * z + a[12];
+    out[13] = a01 * x + a11 * y + a21 * z + a[13];
+    out[14] = a02 * x + a12 * y + a22 * z + a[14];
+    out[15] = a03 * x + a13 * y + a23 * z + a[15];
+  }
+
+  return out;
+}
+
+/**
+ * Scales the mat4 by the dimensions in the given vec3 not using vectorization
+ *
+ * @param {mat4} out the receiving matrix
+ * @param {mat4} a the matrix to scale
+ * @param {vec3} v the vec3 to scale the matrix by
+ * @returns {mat4} out
+ **/
+function mat4_scale(out, a, v) {
+  var x = v[0],
+      y = v[1],
+      z = v[2];
+
+  out[0] = a[0] * x;
+  out[1] = a[1] * x;
+  out[2] = a[2] * x;
+  out[3] = a[3] * x;
+  out[4] = a[4] * y;
+  out[5] = a[5] * y;
+  out[6] = a[6] * y;
+  out[7] = a[7] * y;
+  out[8] = a[8] * z;
+  out[9] = a[9] * z;
+  out[10] = a[10] * z;
+  out[11] = a[11] * z;
+  out[12] = a[12];
+  out[13] = a[13];
+  out[14] = a[14];
+  out[15] = a[15];
+  return out;
+}
+
+/**
+ * Rotates a mat4 by the given angle around the given axis
+ *
+ * @param {mat4} out the receiving matrix
+ * @param {mat4} a the matrix to rotate
+ * @param {Number} rad the angle to rotate the matrix by
+ * @param {vec3} axis the axis to rotate around
+ * @returns {mat4} out
+ */
+function mat4_rotate(out, a, rad, axis) {
+  var x = axis[0],
+      y = axis[1],
+      z = axis[2];
+  var len = Math.sqrt(x * x + y * y + z * z);
+  var s = void 0,
+      c = void 0,
+      t = void 0;
+  var a00 = void 0,
+      a01 = void 0,
+      a02 = void 0,
+      a03 = void 0;
+  var a10 = void 0,
+      a11 = void 0,
+      a12 = void 0,
+      a13 = void 0;
+  var a20 = void 0,
+      a21 = void 0,
+      a22 = void 0,
+      a23 = void 0;
+  var b00 = void 0,
+      b01 = void 0,
+      b02 = void 0;
+  var b10 = void 0,
+      b11 = void 0,
+      b12 = void 0;
+  var b20 = void 0,
+      b21 = void 0,
+      b22 = void 0;
+
+  if (len < EPSILON) {
+    return null;
+  }
+
+  len = 1 / len;
+  x *= len;
+  y *= len;
+  z *= len;
+
+  s = Math.sin(rad);
+  c = Math.cos(rad);
+  t = 1 - c;
+
+  a00 = a[0];a01 = a[1];a02 = a[2];a03 = a[3];
+  a10 = a[4];a11 = a[5];a12 = a[6];a13 = a[7];
+  a20 = a[8];a21 = a[9];a22 = a[10];a23 = a[11];
+
+  // Construct the elements of the rotation matrix
+  b00 = x * x * t + c;b01 = y * x * t + z * s;b02 = z * x * t - y * s;
+  b10 = x * y * t - z * s;b11 = y * y * t + c;b12 = z * y * t + x * s;
+  b20 = x * z * t + y * s;b21 = y * z * t - x * s;b22 = z * z * t + c;
+
+  // Perform rotation-specific matrix multiplication
+  out[0] = a00 * b00 + a10 * b01 + a20 * b02;
+  out[1] = a01 * b00 + a11 * b01 + a21 * b02;
+  out[2] = a02 * b00 + a12 * b01 + a22 * b02;
+  out[3] = a03 * b00 + a13 * b01 + a23 * b02;
+  out[4] = a00 * b10 + a10 * b11 + a20 * b12;
+  out[5] = a01 * b10 + a11 * b11 + a21 * b12;
+  out[6] = a02 * b10 + a12 * b11 + a22 * b12;
+  out[7] = a03 * b10 + a13 * b11 + a23 * b12;
+  out[8] = a00 * b20 + a10 * b21 + a20 * b22;
+  out[9] = a01 * b20 + a11 * b21 + a21 * b22;
+  out[10] = a02 * b20 + a12 * b21 + a22 * b22;
+  out[11] = a03 * b20 + a13 * b21 + a23 * b22;
+
+  if (a !== out) {
+    // If the source and destination differ, copy the unchanged last row
+    out[12] = a[12];
+    out[13] = a[13];
+    out[14] = a[14];
+    out[15] = a[15];
+  }
+  return out;
+}
+
+/**
+ * Rotates a matrix by the given angle around the X axis
+ *
+ * @param {mat4} out the receiving matrix
+ * @param {mat4} a the matrix to rotate
+ * @param {Number} rad the angle to rotate the matrix by
+ * @returns {mat4} out
+ */
+function rotateX(out, a, rad) {
+  var s = Math.sin(rad);
+  var c = Math.cos(rad);
+  var a10 = a[4];
+  var a11 = a[5];
+  var a12 = a[6];
+  var a13 = a[7];
+  var a20 = a[8];
+  var a21 = a[9];
+  var a22 = a[10];
+  var a23 = a[11];
+
+  if (a !== out) {
+    // If the source and destination differ, copy the unchanged rows
+    out[0] = a[0];
+    out[1] = a[1];
+    out[2] = a[2];
+    out[3] = a[3];
+    out[12] = a[12];
+    out[13] = a[13];
+    out[14] = a[14];
+    out[15] = a[15];
+  }
+
+  // Perform axis-specific matrix multiplication
+  out[4] = a10 * c + a20 * s;
+  out[5] = a11 * c + a21 * s;
+  out[6] = a12 * c + a22 * s;
+  out[7] = a13 * c + a23 * s;
+  out[8] = a20 * c - a10 * s;
+  out[9] = a21 * c - a11 * s;
+  out[10] = a22 * c - a12 * s;
+  out[11] = a23 * c - a13 * s;
+  return out;
+}
+
+/**
+ * Rotates a matrix by the given angle around the Y axis
+ *
+ * @param {mat4} out the receiving matrix
+ * @param {mat4} a the matrix to rotate
+ * @param {Number} rad the angle to rotate the matrix by
+ * @returns {mat4} out
+ */
+function rotateY(out, a, rad) {
+  var s = Math.sin(rad);
+  var c = Math.cos(rad);
+  var a00 = a[0];
+  var a01 = a[1];
+  var a02 = a[2];
+  var a03 = a[3];
+  var a20 = a[8];
+  var a21 = a[9];
+  var a22 = a[10];
+  var a23 = a[11];
+
+  if (a !== out) {
+    // If the source and destination differ, copy the unchanged rows
+    out[4] = a[4];
+    out[5] = a[5];
+    out[6] = a[6];
+    out[7] = a[7];
+    out[12] = a[12];
+    out[13] = a[13];
+    out[14] = a[14];
+    out[15] = a[15];
+  }
+
+  // Perform axis-specific matrix multiplication
+  out[0] = a00 * c - a20 * s;
+  out[1] = a01 * c - a21 * s;
+  out[2] = a02 * c - a22 * s;
+  out[3] = a03 * c - a23 * s;
+  out[8] = a00 * s + a20 * c;
+  out[9] = a01 * s + a21 * c;
+  out[10] = a02 * s + a22 * c;
+  out[11] = a03 * s + a23 * c;
+  return out;
+}
+
+/**
+ * Rotates a matrix by the given angle around the Z axis
+ *
+ * @param {mat4} out the receiving matrix
+ * @param {mat4} a the matrix to rotate
+ * @param {Number} rad the angle to rotate the matrix by
+ * @returns {mat4} out
+ */
+function rotateZ(out, a, rad) {
+  var s = Math.sin(rad);
+  var c = Math.cos(rad);
+  var a00 = a[0];
+  var a01 = a[1];
+  var a02 = a[2];
+  var a03 = a[3];
+  var a10 = a[4];
+  var a11 = a[5];
+  var a12 = a[6];
+  var a13 = a[7];
+
+  if (a !== out) {
+    // If the source and destination differ, copy the unchanged last row
+    out[8] = a[8];
+    out[9] = a[9];
+    out[10] = a[10];
+    out[11] = a[11];
+    out[12] = a[12];
+    out[13] = a[13];
+    out[14] = a[14];
+    out[15] = a[15];
+  }
+
+  // Perform axis-specific matrix multiplication
+  out[0] = a00 * c + a10 * s;
+  out[1] = a01 * c + a11 * s;
+  out[2] = a02 * c + a12 * s;
+  out[3] = a03 * c + a13 * s;
+  out[4] = a10 * c - a00 * s;
+  out[5] = a11 * c - a01 * s;
+  out[6] = a12 * c - a02 * s;
+  out[7] = a13 * c - a03 * s;
+  return out;
+}
+
+/**
+ * Creates a matrix from a vector translation
+ * This is equivalent to (but much faster than):
+ *
+ *     mat4.identity(dest);
+ *     mat4.translate(dest, dest, vec);
+ *
+ * @param {mat4} out mat4 receiving operation result
+ * @param {vec3} v Translation vector
+ * @returns {mat4} out
+ */
+function mat4_fromTranslation(out, v) {
+  out[0] = 1;
+  out[1] = 0;
+  out[2] = 0;
+  out[3] = 0;
+  out[4] = 0;
+  out[5] = 1;
+  out[6] = 0;
+  out[7] = 0;
+  out[8] = 0;
+  out[9] = 0;
+  out[10] = 1;
+  out[11] = 0;
+  out[12] = v[0];
+  out[13] = v[1];
+  out[14] = v[2];
+  out[15] = 1;
+  return out;
+}
+
+/**
+ * Creates a matrix from a vector scaling
+ * This is equivalent to (but much faster than):
+ *
+ *     mat4.identity(dest);
+ *     mat4.scale(dest, dest, vec);
+ *
+ * @param {mat4} out mat4 receiving operation result
+ * @param {vec3} v Scaling vector
+ * @returns {mat4} out
+ */
+function mat4_fromScaling(out, v) {
+  out[0] = v[0];
+  out[1] = 0;
+  out[2] = 0;
+  out[3] = 0;
+  out[4] = 0;
+  out[5] = v[1];
+  out[6] = 0;
+  out[7] = 0;
+  out[8] = 0;
+  out[9] = 0;
+  out[10] = v[2];
+  out[11] = 0;
+  out[12] = 0;
+  out[13] = 0;
+  out[14] = 0;
+  out[15] = 1;
+  return out;
+}
+
+/**
+ * Creates a matrix from a given angle around a given axis
+ * This is equivalent to (but much faster than):
+ *
+ *     mat4.identity(dest);
+ *     mat4.rotate(dest, dest, rad, axis);
+ *
+ * @param {mat4} out mat4 receiving operation result
+ * @param {Number} rad the angle to rotate the matrix by
+ * @param {vec3} axis the axis to rotate around
+ * @returns {mat4} out
+ */
+function mat4_fromRotation(out, rad, axis) {
+  var x = axis[0],
+      y = axis[1],
+      z = axis[2];
+  var len = Math.sqrt(x * x + y * y + z * z);
+  var s = void 0,
+      c = void 0,
+      t = void 0;
+
+  if (len < EPSILON) {
+    return null;
+  }
+
+  len = 1 / len;
+  x *= len;
+  y *= len;
+  z *= len;
+
+  s = Math.sin(rad);
+  c = Math.cos(rad);
+  t = 1 - c;
+
+  // Perform rotation-specific matrix multiplication
+  out[0] = x * x * t + c;
+  out[1] = y * x * t + z * s;
+  out[2] = z * x * t - y * s;
+  out[3] = 0;
+  out[4] = x * y * t - z * s;
+  out[5] = y * y * t + c;
+  out[6] = z * y * t + x * s;
+  out[7] = 0;
+  out[8] = x * z * t + y * s;
+  out[9] = y * z * t - x * s;
+  out[10] = z * z * t + c;
+  out[11] = 0;
+  out[12] = 0;
+  out[13] = 0;
+  out[14] = 0;
+  out[15] = 1;
+  return out;
+}
+
+/**
+ * Creates a matrix from the given angle around the X axis
+ * This is equivalent to (but much faster than):
+ *
+ *     mat4.identity(dest);
+ *     mat4.rotateX(dest, dest, rad);
+ *
+ * @param {mat4} out mat4 receiving operation result
+ * @param {Number} rad the angle to rotate the matrix by
+ * @returns {mat4} out
+ */
+function fromXRotation(out, rad) {
+  var s = Math.sin(rad);
+  var c = Math.cos(rad);
+
+  // Perform axis-specific matrix multiplication
+  out[0] = 1;
+  out[1] = 0;
+  out[2] = 0;
+  out[3] = 0;
+  out[4] = 0;
+  out[5] = c;
+  out[6] = s;
+  out[7] = 0;
+  out[8] = 0;
+  out[9] = -s;
+  out[10] = c;
+  out[11] = 0;
+  out[12] = 0;
+  out[13] = 0;
+  out[14] = 0;
+  out[15] = 1;
+  return out;
+}
+
+/**
+ * Creates a matrix from the given angle around the Y axis
+ * This is equivalent to (but much faster than):
+ *
+ *     mat4.identity(dest);
+ *     mat4.rotateY(dest, dest, rad);
+ *
+ * @param {mat4} out mat4 receiving operation result
+ * @param {Number} rad the angle to rotate the matrix by
+ * @returns {mat4} out
+ */
+function fromYRotation(out, rad) {
+  var s = Math.sin(rad);
+  var c = Math.cos(rad);
+
+  // Perform axis-specific matrix multiplication
+  out[0] = c;
+  out[1] = 0;
+  out[2] = -s;
+  out[3] = 0;
+  out[4] = 0;
+  out[5] = 1;
+  out[6] = 0;
+  out[7] = 0;
+  out[8] = s;
+  out[9] = 0;
+  out[10] = c;
+  out[11] = 0;
+  out[12] = 0;
+  out[13] = 0;
+  out[14] = 0;
+  out[15] = 1;
+  return out;
+}
+
+/**
+ * Creates a matrix from the given angle around the Z axis
+ * This is equivalent to (but much faster than):
+ *
+ *     mat4.identity(dest);
+ *     mat4.rotateZ(dest, dest, rad);
+ *
+ * @param {mat4} out mat4 receiving operation result
+ * @param {Number} rad the angle to rotate the matrix by
+ * @returns {mat4} out
+ */
+function fromZRotation(out, rad) {
+  var s = Math.sin(rad);
+  var c = Math.cos(rad);
+
+  // Perform axis-specific matrix multiplication
+  out[0] = c;
+  out[1] = s;
+  out[2] = 0;
+  out[3] = 0;
+  out[4] = -s;
+  out[5] = c;
+  out[6] = 0;
+  out[7] = 0;
+  out[8] = 0;
+  out[9] = 0;
+  out[10] = 1;
+  out[11] = 0;
+  out[12] = 0;
+  out[13] = 0;
+  out[14] = 0;
+  out[15] = 1;
+  return out;
+}
+
+/**
+ * Creates a matrix from a quaternion rotation and vector translation
+ * This is equivalent to (but much faster than):
+ *
+ *     mat4.identity(dest);
+ *     mat4.translate(dest, vec);
+ *     let quatMat = mat4.create();
+ *     quat4.toMat4(quat, quatMat);
+ *     mat4.multiply(dest, quatMat);
+ *
+ * @param {mat4} out mat4 receiving operation result
+ * @param {quat4} q Rotation quaternion
+ * @param {vec3} v Translation vector
+ * @returns {mat4} out
+ */
+function fromRotationTranslation(out, q, v) {
+  // Quaternion math
+  var x = q[0],
+      y = q[1],
+      z = q[2],
+      w = q[3];
+  var x2 = x + x;
+  var y2 = y + y;
+  var z2 = z + z;
+
+  var xx = x * x2;
+  var xy = x * y2;
+  var xz = x * z2;
+  var yy = y * y2;
+  var yz = y * z2;
+  var zz = z * z2;
+  var wx = w * x2;
+  var wy = w * y2;
+  var wz = w * z2;
+
+  out[0] = 1 - (yy + zz);
+  out[1] = xy + wz;
+  out[2] = xz - wy;
+  out[3] = 0;
+  out[4] = xy - wz;
+  out[5] = 1 - (xx + zz);
+  out[6] = yz + wx;
+  out[7] = 0;
+  out[8] = xz + wy;
+  out[9] = yz - wx;
+  out[10] = 1 - (xx + yy);
+  out[11] = 0;
+  out[12] = v[0];
+  out[13] = v[1];
+  out[14] = v[2];
+  out[15] = 1;
+
+  return out;
+}
+
+/**
+ * Creates a new mat4 from a dual quat.
+ *
+ * @param {mat4} out Matrix
+ * @param {quat2} a Dual Quaternion
+ * @returns {mat4} mat4 receiving operation result
+ */
+function fromQuat2(out, a) {
+  var translation = new ARRAY_TYPE(3);
+  var bx = -a[0],
+      by = -a[1],
+      bz = -a[2],
+      bw = a[3],
+      ax = a[4],
+      ay = a[5],
+      az = a[6],
+      aw = a[7];
+
+  var magnitude = bx * bx + by * by + bz * bz + bw * bw;
+  //Only scale if it makes sense
+  if (magnitude > 0) {
+    translation[0] = (ax * bw + aw * bx + ay * bz - az * by) * 2 / magnitude;
+    translation[1] = (ay * bw + aw * by + az * bx - ax * bz) * 2 / magnitude;
+    translation[2] = (az * bw + aw * bz + ax * by - ay * bx) * 2 / magnitude;
+  } else {
+    translation[0] = (ax * bw + aw * bx + ay * bz - az * by) * 2;
+    translation[1] = (ay * bw + aw * by + az * bx - ax * bz) * 2;
+    translation[2] = (az * bw + aw * bz + ax * by - ay * bx) * 2;
+  }
+  fromRotationTranslation(out, a, translation);
+  return out;
+}
+
+/**
+ * Returns the translation vector component of a transformation
+ *  matrix. If a matrix is built with fromRotationTranslation,
+ *  the returned vector will be the same as the translation vector
+ *  originally supplied.
+ * @param  {vec3} out Vector to receive translation component
+ * @param  {mat4} mat Matrix to be decomposed (input)
+ * @return {vec3} out
+ */
+function getTranslation(out, mat) {
+  out[0] = mat[12];
+  out[1] = mat[13];
+  out[2] = mat[14];
+
+  return out;
+}
+
+/**
+ * Returns the scaling factor component of a transformation
+ *  matrix. If a matrix is built with fromRotationTranslationScale
+ *  with a normalized Quaternion paramter, the returned vector will be
+ *  the same as the scaling vector
+ *  originally supplied.
+ * @param  {vec3} out Vector to receive scaling factor component
+ * @param  {mat4} mat Matrix to be decomposed (input)
+ * @return {vec3} out
+ */
+function getScaling(out, mat) {
+  var m11 = mat[0];
+  var m12 = mat[1];
+  var m13 = mat[2];
+  var m21 = mat[4];
+  var m22 = mat[5];
+  var m23 = mat[6];
+  var m31 = mat[8];
+  var m32 = mat[9];
+  var m33 = mat[10];
+
+  out[0] = Math.sqrt(m11 * m11 + m12 * m12 + m13 * m13);
+  out[1] = Math.sqrt(m21 * m21 + m22 * m22 + m23 * m23);
+  out[2] = Math.sqrt(m31 * m31 + m32 * m32 + m33 * m33);
+
+  return out;
+}
+
+/**
+ * Returns a quaternion representing the rotational component
+ *  of a transformation matrix. If a matrix is built with
+ *  fromRotationTranslation, the returned quaternion will be the
+ *  same as the quaternion originally supplied.
+ * @param {quat} out Quaternion to receive the rotation component
+ * @param {mat4} mat Matrix to be decomposed (input)
+ * @return {quat} out
+ */
+function getRotation(out, mat) {
+  // Algorithm taken from http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/index.htm
+  var trace = mat[0] + mat[5] + mat[10];
+  var S = 0;
+
+  if (trace > 0) {
+    S = Math.sqrt(trace + 1.0) * 2;
+    out[3] = 0.25 * S;
+    out[0] = (mat[6] - mat[9]) / S;
+    out[1] = (mat[8] - mat[2]) / S;
+    out[2] = (mat[1] - mat[4]) / S;
+  } else if (mat[0] > mat[5] && mat[0] > mat[10]) {
+    S = Math.sqrt(1.0 + mat[0] - mat[5] - mat[10]) * 2;
+    out[3] = (mat[6] - mat[9]) / S;
+    out[0] = 0.25 * S;
+    out[1] = (mat[1] + mat[4]) / S;
+    out[2] = (mat[8] + mat[2]) / S;
+  } else if (mat[5] > mat[10]) {
+    S = Math.sqrt(1.0 + mat[5] - mat[0] - mat[10]) * 2;
+    out[3] = (mat[8] - mat[2]) / S;
+    out[0] = (mat[1] + mat[4]) / S;
+    out[1] = 0.25 * S;
+    out[2] = (mat[6] + mat[9]) / S;
+  } else {
+    S = Math.sqrt(1.0 + mat[10] - mat[0] - mat[5]) * 2;
+    out[3] = (mat[1] - mat[4]) / S;
+    out[0] = (mat[8] + mat[2]) / S;
+    out[1] = (mat[6] + mat[9]) / S;
+    out[2] = 0.25 * S;
+  }
+
+  return out;
+}
+
+/**
+ * Creates a matrix from a quaternion rotation, vector translation and vector scale
+ * This is equivalent to (but much faster than):
+ *
+ *     mat4.identity(dest);
+ *     mat4.translate(dest, vec);
+ *     let quatMat = mat4.create();
+ *     quat4.toMat4(quat, quatMat);
+ *     mat4.multiply(dest, quatMat);
+ *     mat4.scale(dest, scale)
+ *
+ * @param {mat4} out mat4 receiving operation result
+ * @param {quat4} q Rotation quaternion
+ * @param {vec3} v Translation vector
+ * @param {vec3} s Scaling vector
+ * @returns {mat4} out
+ */
+function fromRotationTranslationScale(out, q, v, s) {
+  // Quaternion math
+  var x = q[0],
+      y = q[1],
+      z = q[2],
+      w = q[3];
+  var x2 = x + x;
+  var y2 = y + y;
+  var z2 = z + z;
+
+  var xx = x * x2;
+  var xy = x * y2;
+  var xz = x * z2;
+  var yy = y * y2;
+  var yz = y * z2;
+  var zz = z * z2;
+  var wx = w * x2;
+  var wy = w * y2;
+  var wz = w * z2;
+  var sx = s[0];
+  var sy = s[1];
+  var sz = s[2];
+
+  out[0] = (1 - (yy + zz)) * sx;
+  out[1] = (xy + wz) * sx;
+  out[2] = (xz - wy) * sx;
+  out[3] = 0;
+  out[4] = (xy - wz) * sy;
+  out[5] = (1 - (xx + zz)) * sy;
+  out[6] = (yz + wx) * sy;
+  out[7] = 0;
+  out[8] = (xz + wy) * sz;
+  out[9] = (yz - wx) * sz;
+  out[10] = (1 - (xx + yy)) * sz;
+  out[11] = 0;
+  out[12] = v[0];
+  out[13] = v[1];
+  out[14] = v[2];
+  out[15] = 1;
+
+  return out;
+}
+
+/**
+ * Creates a matrix from a quaternion rotation, vector translation and vector scale, rotating and scaling around the given origin
+ * This is equivalent to (but much faster than):
+ *
+ *     mat4.identity(dest);
+ *     mat4.translate(dest, vec);
+ *     mat4.translate(dest, origin);
+ *     let quatMat = mat4.create();
+ *     quat4.toMat4(quat, quatMat);
+ *     mat4.multiply(dest, quatMat);
+ *     mat4.scale(dest, scale)
+ *     mat4.translate(dest, negativeOrigin);
+ *
+ * @param {mat4} out mat4 receiving operation result
+ * @param {quat4} q Rotation quaternion
+ * @param {vec3} v Translation vector
+ * @param {vec3} s Scaling vector
+ * @param {vec3} o The origin vector around which to scale and rotate
+ * @returns {mat4} out
+ */
+function fromRotationTranslationScaleOrigin(out, q, v, s, o) {
+  // Quaternion math
+  var x = q[0],
+      y = q[1],
+      z = q[2],
+      w = q[3];
+  var x2 = x + x;
+  var y2 = y + y;
+  var z2 = z + z;
+
+  var xx = x * x2;
+  var xy = x * y2;
+  var xz = x * z2;
+  var yy = y * y2;
+  var yz = y * z2;
+  var zz = z * z2;
+  var wx = w * x2;
+  var wy = w * y2;
+  var wz = w * z2;
+
+  var sx = s[0];
+  var sy = s[1];
+  var sz = s[2];
+
+  var ox = o[0];
+  var oy = o[1];
+  var oz = o[2];
+
+  var out0 = (1 - (yy + zz)) * sx;
+  var out1 = (xy + wz) * sx;
+  var out2 = (xz - wy) * sx;
+  var out4 = (xy - wz) * sy;
+  var out5 = (1 - (xx + zz)) * sy;
+  var out6 = (yz + wx) * sy;
+  var out8 = (xz + wy) * sz;
+  var out9 = (yz - wx) * sz;
+  var out10 = (1 - (xx + yy)) * sz;
+
+  out[0] = out0;
+  out[1] = out1;
+  out[2] = out2;
+  out[3] = 0;
+  out[4] = out4;
+  out[5] = out5;
+  out[6] = out6;
+  out[7] = 0;
+  out[8] = out8;
+  out[9] = out9;
+  out[10] = out10;
+  out[11] = 0;
+  out[12] = v[0] + ox - (out0 * ox + out4 * oy + out8 * oz);
+  out[13] = v[1] + oy - (out1 * ox + out5 * oy + out9 * oz);
+  out[14] = v[2] + oz - (out2 * ox + out6 * oy + out10 * oz);
+  out[15] = 1;
+
+  return out;
+}
+
+/**
+ * Calculates a 4x4 matrix from the given quaternion
+ *
+ * @param {mat4} out mat4 receiving operation result
+ * @param {quat} q Quaternion to create matrix from
+ *
+ * @returns {mat4} out
+ */
+function mat4_fromQuat(out, q) {
+  var x = q[0],
+      y = q[1],
+      z = q[2],
+      w = q[3];
+  var x2 = x + x;
+  var y2 = y + y;
+  var z2 = z + z;
+
+  var xx = x * x2;
+  var yx = y * x2;
+  var yy = y * y2;
+  var zx = z * x2;
+  var zy = z * y2;
+  var zz = z * z2;
+  var wx = w * x2;
+  var wy = w * y2;
+  var wz = w * z2;
+
+  out[0] = 1 - yy - zz;
+  out[1] = yx + wz;
+  out[2] = zx - wy;
+  out[3] = 0;
+
+  out[4] = yx - wz;
+  out[5] = 1 - xx - zz;
+  out[6] = zy + wx;
+  out[7] = 0;
+
+  out[8] = zx + wy;
+  out[9] = zy - wx;
+  out[10] = 1 - xx - yy;
+  out[11] = 0;
+
+  out[12] = 0;
+  out[13] = 0;
+  out[14] = 0;
+  out[15] = 1;
+
+  return out;
+}
+
+/**
+ * Generates a frustum matrix with the given bounds
+ *
+ * @param {mat4} out mat4 frustum matrix will be written into
+ * @param {Number} left Left bound of the frustum
+ * @param {Number} right Right bound of the frustum
+ * @param {Number} bottom Bottom bound of the frustum
+ * @param {Number} top Top bound of the frustum
+ * @param {Number} near Near bound of the frustum
+ * @param {Number} far Far bound of the frustum
+ * @returns {mat4} out
+ */
+function frustum(out, left, right, bottom, top, near, far) {
+  var rl = 1 / (right - left);
+  var tb = 1 / (top - bottom);
+  var nf = 1 / (near - far);
+  out[0] = near * 2 * rl;
+  out[1] = 0;
+  out[2] = 0;
+  out[3] = 0;
+  out[4] = 0;
+  out[5] = near * 2 * tb;
+  out[6] = 0;
+  out[7] = 0;
+  out[8] = (right + left) * rl;
+  out[9] = (top + bottom) * tb;
+  out[10] = (far + near) * nf;
+  out[11] = -1;
+  out[12] = 0;
+  out[13] = 0;
+  out[14] = far * near * 2 * nf;
+  out[15] = 0;
+  return out;
+}
+
+/**
+ * Generates a perspective projection matrix with the given bounds.
+ * Passing null/undefined/no value for far will generate infinite projection matrix.
+ *
+ * @param {mat4} out mat4 frustum matrix will be written into
+ * @param {number} fovy Vertical field of view in radians
+ * @param {number} aspect Aspect ratio. typically viewport width/height
+ * @param {number} near Near bound of the frustum
+ * @param {number} far Far bound of the frustum, can be null or Infinity
+ * @returns {mat4} out
+ */
+function perspective(out, fovy, aspect, near, far) {
+  var f = 1.0 / Math.tan(fovy / 2),
+      nf = void 0;
+  out[0] = f / aspect;
+  out[1] = 0;
+  out[2] = 0;
+  out[3] = 0;
+  out[4] = 0;
+  out[5] = f;
+  out[6] = 0;
+  out[7] = 0;
+  out[8] = 0;
+  out[9] = 0;
+  out[11] = -1;
+  out[12] = 0;
+  out[13] = 0;
+  out[15] = 0;
+  if (far != null && far !== Infinity) {
+    nf = 1 / (near - far);
+    out[10] = (far + near) * nf;
+    out[14] = 2 * far * near * nf;
+  } else {
+    out[10] = -1;
+    out[14] = -2 * near;
+  }
+  return out;
+}
+
+/**
+ * Generates a perspective projection matrix with the given field of view.
+ * This is primarily useful for generating projection matrices to be used
+ * with the still experiemental WebVR API.
+ *
+ * @param {mat4} out mat4 frustum matrix will be written into
+ * @param {Object} fov Object containing the following values: upDegrees, downDegrees, leftDegrees, rightDegrees
+ * @param {number} near Near bound of the frustum
+ * @param {number} far Far bound of the frustum
+ * @returns {mat4} out
+ */
+function perspectiveFromFieldOfView(out, fov, near, far) {
+  var upTan = Math.tan(fov.upDegrees * Math.PI / 180.0);
+  var downTan = Math.tan(fov.downDegrees * Math.PI / 180.0);
+  var leftTan = Math.tan(fov.leftDegrees * Math.PI / 180.0);
+  var rightTan = Math.tan(fov.rightDegrees * Math.PI / 180.0);
+  var xScale = 2.0 / (leftTan + rightTan);
+  var yScale = 2.0 / (upTan + downTan);
+
+  out[0] = xScale;
+  out[1] = 0.0;
+  out[2] = 0.0;
+  out[3] = 0.0;
+  out[4] = 0.0;
+  out[5] = yScale;
+  out[6] = 0.0;
+  out[7] = 0.0;
+  out[8] = -((leftTan - rightTan) * xScale * 0.5);
+  out[9] = (upTan - downTan) * yScale * 0.5;
+  out[10] = far / (near - far);
+  out[11] = -1.0;
+  out[12] = 0.0;
+  out[13] = 0.0;
+  out[14] = far * near / (near - far);
+  out[15] = 0.0;
+  return out;
+}
+
+/**
+ * Generates a orthogonal projection matrix with the given bounds
+ *
+ * @param {mat4} out mat4 frustum matrix will be written into
+ * @param {number} left Left bound of the frustum
+ * @param {number} right Right bound of the frustum
+ * @param {number} bottom Bottom bound of the frustum
+ * @param {number} top Top bound of the frustum
+ * @param {number} near Near bound of the frustum
+ * @param {number} far Far bound of the frustum
+ * @returns {mat4} out
+ */
+function ortho(out, left, right, bottom, top, near, far) {
+  var lr = 1 / (left - right);
+  var bt = 1 / (bottom - top);
+  var nf = 1 / (near - far);
+  out[0] = -2 * lr;
+  out[1] = 0;
+  out[2] = 0;
+  out[3] = 0;
+  out[4] = 0;
+  out[5] = -2 * bt;
+  out[6] = 0;
+  out[7] = 0;
+  out[8] = 0;
+  out[9] = 0;
+  out[10] = 2 * nf;
+  out[11] = 0;
+  out[12] = (left + right) * lr;
+  out[13] = (top + bottom) * bt;
+  out[14] = (far + near) * nf;
+  out[15] = 1;
+  return out;
+}
+
+/**
+ * Generates a look-at matrix with the given eye position, focal point, and up axis.
+ * If you want a matrix that actually makes an object look at another object, you should use targetTo instead.
+ *
+ * @param {mat4} out mat4 frustum matrix will be written into
+ * @param {vec3} eye Position of the viewer
+ * @param {vec3} center Point the viewer is looking at
+ * @param {vec3} up vec3 pointing up
+ * @returns {mat4} out
+ */
+function lookAt(out, eye, center, up) {
+  var x0 = void 0,
+      x1 = void 0,
+      x2 = void 0,
+      y0 = void 0,
+      y1 = void 0,
+      y2 = void 0,
+      z0 = void 0,
+      z1 = void 0,
+      z2 = void 0,
+      len = void 0;
+  var eyex = eye[0];
+  var eyey = eye[1];
+  var eyez = eye[2];
+  var upx = up[0];
+  var upy = up[1];
+  var upz = up[2];
+  var centerx = center[0];
+  var centery = center[1];
+  var centerz = center[2];
+
+  if (Math.abs(eyex - centerx) < EPSILON && Math.abs(eyey - centery) < EPSILON && Math.abs(eyez - centerz) < EPSILON) {
+    return mat4_identity(out);
+  }
+
+  z0 = eyex - centerx;
+  z1 = eyey - centery;
+  z2 = eyez - centerz;
+
+  len = 1 / Math.sqrt(z0 * z0 + z1 * z1 + z2 * z2);
+  z0 *= len;
+  z1 *= len;
+  z2 *= len;
+
+  x0 = upy * z2 - upz * z1;
+  x1 = upz * z0 - upx * z2;
+  x2 = upx * z1 - upy * z0;
+  len = Math.sqrt(x0 * x0 + x1 * x1 + x2 * x2);
+  if (!len) {
+    x0 = 0;
+    x1 = 0;
+    x2 = 0;
+  } else {
+    len = 1 / len;
+    x0 *= len;
+    x1 *= len;
+    x2 *= len;
+  }
+
+  y0 = z1 * x2 - z2 * x1;
+  y1 = z2 * x0 - z0 * x2;
+  y2 = z0 * x1 - z1 * x0;
+
+  len = Math.sqrt(y0 * y0 + y1 * y1 + y2 * y2);
+  if (!len) {
+    y0 = 0;
+    y1 = 0;
+    y2 = 0;
+  } else {
+    len = 1 / len;
+    y0 *= len;
+    y1 *= len;
+    y2 *= len;
+  }
+
+  out[0] = x0;
+  out[1] = y0;
+  out[2] = z0;
+  out[3] = 0;
+  out[4] = x1;
+  out[5] = y1;
+  out[6] = z1;
+  out[7] = 0;
+  out[8] = x2;
+  out[9] = y2;
+  out[10] = z2;
+  out[11] = 0;
+  out[12] = -(x0 * eyex + x1 * eyey + x2 * eyez);
+  out[13] = -(y0 * eyex + y1 * eyey + y2 * eyez);
+  out[14] = -(z0 * eyex + z1 * eyey + z2 * eyez);
+  out[15] = 1;
+
+  return out;
+}
+
+/**
+ * Generates a matrix that makes something look at something else.
+ *
+ * @param {mat4} out mat4 frustum matrix will be written into
+ * @param {vec3} eye Position of the viewer
+ * @param {vec3} center Point the viewer is looking at
+ * @param {vec3} up vec3 pointing up
+ * @returns {mat4} out
+ */
+function targetTo(out, eye, target, up) {
+  var eyex = eye[0],
+      eyey = eye[1],
+      eyez = eye[2],
+      upx = up[0],
+      upy = up[1],
+      upz = up[2];
+
+  var z0 = eyex - target[0],
+      z1 = eyey - target[1],
+      z2 = eyez - target[2];
+
+  var len = z0 * z0 + z1 * z1 + z2 * z2;
+  if (len > 0) {
+    len = 1 / Math.sqrt(len);
+    z0 *= len;
+    z1 *= len;
+    z2 *= len;
+  }
+
+  var x0 = upy * z2 - upz * z1,
+      x1 = upz * z0 - upx * z2,
+      x2 = upx * z1 - upy * z0;
+
+  len = x0 * x0 + x1 * x1 + x2 * x2;
+  if (len > 0) {
+    len = 1 / Math.sqrt(len);
+    x0 *= len;
+    x1 *= len;
+    x2 *= len;
+  }
+
+  out[0] = x0;
+  out[1] = x1;
+  out[2] = x2;
+  out[3] = 0;
+  out[4] = z1 * x2 - z2 * x1;
+  out[5] = z2 * x0 - z0 * x2;
+  out[6] = z0 * x1 - z1 * x0;
+  out[7] = 0;
+  out[8] = z0;
+  out[9] = z1;
+  out[10] = z2;
+  out[11] = 0;
+  out[12] = eyex;
+  out[13] = eyey;
+  out[14] = eyez;
+  out[15] = 1;
+  return out;
+};
+
+/**
+ * Returns a string representation of a mat4
+ *
+ * @param {mat4} a matrix to represent as a string
+ * @returns {String} string representation of the matrix
+ */
+function mat4_str(a) {
+  return 'mat4(' + a[0] + ', ' + a[1] + ', ' + a[2] + ', ' + a[3] + ', ' + a[4] + ', ' + a[5] + ', ' + a[6] + ', ' + a[7] + ', ' + a[8] + ', ' + a[9] + ', ' + a[10] + ', ' + a[11] + ', ' + a[12] + ', ' + a[13] + ', ' + a[14] + ', ' + a[15] + ')';
+}
+
+/**
+ * Returns Frobenius norm of a mat4
+ *
+ * @param {mat4} a the matrix to calculate Frobenius norm of
+ * @returns {Number} Frobenius norm
+ */
+function mat4_frob(a) {
+  return Math.sqrt(Math.pow(a[0], 2) + Math.pow(a[1], 2) + Math.pow(a[2], 2) + Math.pow(a[3], 2) + Math.pow(a[4], 2) + Math.pow(a[5], 2) + Math.pow(a[6], 2) + Math.pow(a[7], 2) + Math.pow(a[8], 2) + Math.pow(a[9], 2) + Math.pow(a[10], 2) + Math.pow(a[11], 2) + Math.pow(a[12], 2) + Math.pow(a[13], 2) + Math.pow(a[14], 2) + Math.pow(a[15], 2));
+}
+
+/**
+ * Adds two mat4's
+ *
+ * @param {mat4} out the receiving matrix
+ * @param {mat4} a the first operand
+ * @param {mat4} b the second operand
+ * @returns {mat4} out
+ */
+function mat4_add(out, a, b) {
+  out[0] = a[0] + b[0];
+  out[1] = a[1] + b[1];
+  out[2] = a[2] + b[2];
+  out[3] = a[3] + b[3];
+  out[4] = a[4] + b[4];
+  out[5] = a[5] + b[5];
+  out[6] = a[6] + b[6];
+  out[7] = a[7] + b[7];
+  out[8] = a[8] + b[8];
+  out[9] = a[9] + b[9];
+  out[10] = a[10] + b[10];
+  out[11] = a[11] + b[11];
+  out[12] = a[12] + b[12];
+  out[13] = a[13] + b[13];
+  out[14] = a[14] + b[14];
+  out[15] = a[15] + b[15];
+  return out;
+}
+
+/**
+ * Subtracts matrix b from matrix a
+ *
+ * @param {mat4} out the receiving matrix
+ * @param {mat4} a the first operand
+ * @param {mat4} b the second operand
+ * @returns {mat4} out
+ */
+function mat4_subtract(out, a, b) {
+  out[0] = a[0] - b[0];
+  out[1] = a[1] - b[1];
+  out[2] = a[2] - b[2];
+  out[3] = a[3] - b[3];
+  out[4] = a[4] - b[4];
+  out[5] = a[5] - b[5];
+  out[6] = a[6] - b[6];
+  out[7] = a[7] - b[7];
+  out[8] = a[8] - b[8];
+  out[9] = a[9] - b[9];
+  out[10] = a[10] - b[10];
+  out[11] = a[11] - b[11];
+  out[12] = a[12] - b[12];
+  out[13] = a[13] - b[13];
+  out[14] = a[14] - b[14];
+  out[15] = a[15] - b[15];
+  return out;
+}
+
+/**
+ * Multiply each element of the matrix by a scalar.
+ *
+ * @param {mat4} out the receiving matrix
+ * @param {mat4} a the matrix to scale
+ * @param {Number} b amount to scale the matrix's elements by
+ * @returns {mat4} out
+ */
+function mat4_multiplyScalar(out, a, b) {
+  out[0] = a[0] * b;
+  out[1] = a[1] * b;
+  out[2] = a[2] * b;
+  out[3] = a[3] * b;
+  out[4] = a[4] * b;
+  out[5] = a[5] * b;
+  out[6] = a[6] * b;
+  out[7] = a[7] * b;
+  out[8] = a[8] * b;
+  out[9] = a[9] * b;
+  out[10] = a[10] * b;
+  out[11] = a[11] * b;
+  out[12] = a[12] * b;
+  out[13] = a[13] * b;
+  out[14] = a[14] * b;
+  out[15] = a[15] * b;
+  return out;
+}
+
+/**
+ * Adds two mat4's after multiplying each element of the second operand by a scalar value.
+ *
+ * @param {mat4} out the receiving vector
+ * @param {mat4} a the first operand
+ * @param {mat4} b the second operand
+ * @param {Number} scale the amount to scale b's elements by before adding
+ * @returns {mat4} out
+ */
+function mat4_multiplyScalarAndAdd(out, a, b, scale) {
+  out[0] = a[0] + b[0] * scale;
+  out[1] = a[1] + b[1] * scale;
+  out[2] = a[2] + b[2] * scale;
+  out[3] = a[3] + b[3] * scale;
+  out[4] = a[4] + b[4] * scale;
+  out[5] = a[5] + b[5] * scale;
+  out[6] = a[6] + b[6] * scale;
+  out[7] = a[7] + b[7] * scale;
+  out[8] = a[8] + b[8] * scale;
+  out[9] = a[9] + b[9] * scale;
+  out[10] = a[10] + b[10] * scale;
+  out[11] = a[11] + b[11] * scale;
+  out[12] = a[12] + b[12] * scale;
+  out[13] = a[13] + b[13] * scale;
+  out[14] = a[14] + b[14] * scale;
+  out[15] = a[15] + b[15] * scale;
+  return out;
+}
+
+/**
+ * Returns whether or not the matrices have exactly the same elements in the same position (when compared with ===)
+ *
+ * @param {mat4} a The first matrix.
+ * @param {mat4} b The second matrix.
+ * @returns {Boolean} True if the matrices are equal, false otherwise.
+ */
+function mat4_exactEquals(a, b) {
+  return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3] && a[4] === b[4] && a[5] === b[5] && a[6] === b[6] && a[7] === b[7] && a[8] === b[8] && a[9] === b[9] && a[10] === b[10] && a[11] === b[11] && a[12] === b[12] && a[13] === b[13] && a[14] === b[14] && a[15] === b[15];
+}
+
+/**
+ * Returns whether or not the matrices have approximately the same elements in the same position.
+ *
+ * @param {mat4} a The first matrix.
+ * @param {mat4} b The second matrix.
+ * @returns {Boolean} True if the matrices are equal, false otherwise.
+ */
+function mat4_equals(a, b) {
+  var a0 = a[0],
+      a1 = a[1],
+      a2 = a[2],
+      a3 = a[3];
+  var a4 = a[4],
+      a5 = a[5],
+      a6 = a[6],
+      a7 = a[7];
+  var a8 = a[8],
+      a9 = a[9],
+      a10 = a[10],
+      a11 = a[11];
+  var a12 = a[12],
+      a13 = a[13],
+      a14 = a[14],
+      a15 = a[15];
+
+  var b0 = b[0],
+      b1 = b[1],
+      b2 = b[2],
+      b3 = b[3];
+  var b4 = b[4],
+      b5 = b[5],
+      b6 = b[6],
+      b7 = b[7];
+  var b8 = b[8],
+      b9 = b[9],
+      b10 = b[10],
+      b11 = b[11];
+  var b12 = b[12],
+      b13 = b[13],
+      b14 = b[14],
+      b15 = b[15];
+
+  return Math.abs(a0 - b0) <= EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)) && Math.abs(a3 - b3) <= EPSILON * Math.max(1.0, Math.abs(a3), Math.abs(b3)) && Math.abs(a4 - b4) <= EPSILON * Math.max(1.0, Math.abs(a4), Math.abs(b4)) && Math.abs(a5 - b5) <= EPSILON * Math.max(1.0, Math.abs(a5), Math.abs(b5)) && Math.abs(a6 - b6) <= EPSILON * Math.max(1.0, Math.abs(a6), Math.abs(b6)) && Math.abs(a7 - b7) <= EPSILON * Math.max(1.0, Math.abs(a7), Math.abs(b7)) && Math.abs(a8 - b8) <= EPSILON * Math.max(1.0, Math.abs(a8), Math.abs(b8)) && Math.abs(a9 - b9) <= EPSILON * Math.max(1.0, Math.abs(a9), Math.abs(b9)) && Math.abs(a10 - b10) <= EPSILON * Math.max(1.0, Math.abs(a10), Math.abs(b10)) && Math.abs(a11 - b11) <= EPSILON * Math.max(1.0, Math.abs(a11), Math.abs(b11)) && Math.abs(a12 - b12) <= EPSILON * Math.max(1.0, Math.abs(a12), Math.abs(b12)) && Math.abs(a13 - b13) <= EPSILON * Math.max(1.0, Math.abs(a13), Math.abs(b13)) && Math.abs(a14 - b14) <= EPSILON * Math.max(1.0, Math.abs(a14), Math.abs(b14)) && Math.abs(a15 - b15) <= EPSILON * Math.max(1.0, Math.abs(a15), Math.abs(b15));
+}
+
+/**
+ * Alias for {@link mat4.multiply}
+ * @function
+ */
+var mat4_mul = mat4_multiply;
+
+/**
+ * Alias for {@link mat4.subtract}
+ * @function
+ */
+var mat4_sub = mat4_subtract;
+// CONCATENATED MODULE: ./node_modules/gl-matrix/lib/gl-matrix/vec3.js
+
+
+/**
+ * 3 Dimensional Vector
+ * @module vec3
+ */
+
+/**
+ * Creates a new, empty vec3
+ *
+ * @returns {vec3} a new 3D vector
+ */
+function vec3_create() {
+  var out = new ARRAY_TYPE(3);
+  if (ARRAY_TYPE != Float32Array) {
+    out[0] = 0;
+    out[1] = 0;
+    out[2] = 0;
+  }
+  return out;
+}
+
+/**
+ * Creates a new vec3 initialized with values from an existing vector
+ *
+ * @param {vec3} a vector to clone
+ * @returns {vec3} a new 3D vector
+ */
+function vec3_clone(a) {
+  var out = new ARRAY_TYPE(3);
+  out[0] = a[0];
+  out[1] = a[1];
+  out[2] = a[2];
+  return out;
+}
+
+/**
+ * Calculates the length of a vec3
+ *
+ * @param {vec3} a vector to calculate length of
+ * @returns {Number} length of a
+ */
+function vec3_length(a) {
+  var x = a[0];
+  var y = a[1];
+  var z = a[2];
+  return Math.sqrt(x * x + y * y + z * z);
+}
+
+/**
+ * Creates a new vec3 initialized with the given values
+ *
+ * @param {Number} x X component
+ * @param {Number} y Y component
+ * @param {Number} z Z component
+ * @returns {vec3} a new 3D vector
+ */
+function vec3_fromValues(x, y, z) {
+  var out = new ARRAY_TYPE(3);
+  out[0] = x;
+  out[1] = y;
+  out[2] = z;
+  return out;
+}
+
+/**
+ * Copy the values from one vec3 to another
+ *
+ * @param {vec3} out the receiving vector
+ * @param {vec3} a the source vector
+ * @returns {vec3} out
+ */
+function vec3_copy(out, a) {
+  out[0] = a[0];
+  out[1] = a[1];
+  out[2] = a[2];
+  return out;
+}
+
+/**
+ * Set the components of a vec3 to the given values
+ *
+ * @param {vec3} out the receiving vector
+ * @param {Number} x X component
+ * @param {Number} y Y component
+ * @param {Number} z Z component
+ * @returns {vec3} out
+ */
+function vec3_set(out, x, y, z) {
+  out[0] = x;
+  out[1] = y;
+  out[2] = z;
+  return out;
+}
+
+/**
+ * Adds two vec3's
+ *
+ * @param {vec3} out the receiving vector
+ * @param {vec3} a the first operand
+ * @param {vec3} b the second operand
+ * @returns {vec3} out
+ */
+function vec3_add(out, a, b) {
+  out[0] = a[0] + b[0];
+  out[1] = a[1] + b[1];
+  out[2] = a[2] + b[2];
+  return out;
+}
+
+/**
+ * Subtracts vector b from vector a
+ *
+ * @param {vec3} out the receiving vector
+ * @param {vec3} a the first operand
+ * @param {vec3} b the second operand
+ * @returns {vec3} out
+ */
+function vec3_subtract(out, a, b) {
+  out[0] = a[0] - b[0];
+  out[1] = a[1] - b[1];
+  out[2] = a[2] - b[2];
+  return out;
+}
+
+/**
+ * Multiplies two vec3's
+ *
+ * @param {vec3} out the receiving vector
+ * @param {vec3} a the first operand
+ * @param {vec3} b the second operand
+ * @returns {vec3} out
+ */
+function vec3_multiply(out, a, b) {
+  out[0] = a[0] * b[0];
+  out[1] = a[1] * b[1];
+  out[2] = a[2] * b[2];
+  return out;
+}
+
+/**
+ * Divides two vec3's
+ *
+ * @param {vec3} out the receiving vector
+ * @param {vec3} a the first operand
+ * @param {vec3} b the second operand
+ * @returns {vec3} out
+ */
+function divide(out, a, b) {
+  out[0] = a[0] / b[0];
+  out[1] = a[1] / b[1];
+  out[2] = a[2] / b[2];
+  return out;
+}
+
+/**
+ * Math.ceil the components of a vec3
+ *
+ * @param {vec3} out the receiving vector
+ * @param {vec3} a vector to ceil
+ * @returns {vec3} out
+ */
+function ceil(out, a) {
+  out[0] = Math.ceil(a[0]);
+  out[1] = Math.ceil(a[1]);
+  out[2] = Math.ceil(a[2]);
+  return out;
+}
+
+/**
+ * Math.floor the components of a vec3
+ *
+ * @param {vec3} out the receiving vector
+ * @param {vec3} a vector to floor
+ * @returns {vec3} out
+ */
+function floor(out, a) {
+  out[0] = Math.floor(a[0]);
+  out[1] = Math.floor(a[1]);
+  out[2] = Math.floor(a[2]);
+  return out;
+}
+
+/**
+ * Returns the minimum of two vec3's
+ *
+ * @param {vec3} out the receiving vector
+ * @param {vec3} a the first operand
+ * @param {vec3} b the second operand
+ * @returns {vec3} out
+ */
+function vec3_min(out, a, b) {
+  out[0] = Math.min(a[0], b[0]);
+  out[1] = Math.min(a[1], b[1]);
+  out[2] = Math.min(a[2], b[2]);
+  return out;
+}
+
+/**
+ * Returns the maximum of two vec3's
+ *
+ * @param {vec3} out the receiving vector
+ * @param {vec3} a the first operand
+ * @param {vec3} b the second operand
+ * @returns {vec3} out
+ */
+function vec3_max(out, a, b) {
+  out[0] = Math.max(a[0], b[0]);
+  out[1] = Math.max(a[1], b[1]);
+  out[2] = Math.max(a[2], b[2]);
+  return out;
+}
+
+/**
+ * Math.round the components of a vec3
+ *
+ * @param {vec3} out the receiving vector
+ * @param {vec3} a vector to round
+ * @returns {vec3} out
+ */
+function round(out, a) {
+  out[0] = Math.round(a[0]);
+  out[1] = Math.round(a[1]);
+  out[2] = Math.round(a[2]);
+  return out;
+}
+
+/**
+ * Scales a vec3 by a scalar number
+ *
+ * @param {vec3} out the receiving vector
+ * @param {vec3} a the vector to scale
+ * @param {Number} b amount to scale the vector by
+ * @returns {vec3} out
+ */
+function vec3_scale(out, a, b) {
+  out[0] = a[0] * b;
+  out[1] = a[1] * b;
+  out[2] = a[2] * b;
+  return out;
+}
+
+/**
+ * Adds two vec3's after scaling the second operand by a scalar value
+ *
+ * @param {vec3} out the receiving vector
+ * @param {vec3} a the first operand
+ * @param {vec3} b the second operand
+ * @param {Number} scale the amount to scale b by before adding
+ * @returns {vec3} out
+ */
+function scaleAndAdd(out, a, b, scale) {
+  out[0] = a[0] + b[0] * scale;
+  out[1] = a[1] + b[1] * scale;
+  out[2] = a[2] + b[2] * scale;
+  return out;
+}
+
+/**
+ * Calculates the euclidian distance between two vec3's
+ *
+ * @param {vec3} a the first operand
+ * @param {vec3} b the second operand
+ * @returns {Number} distance between a and b
+ */
+function distance(a, b) {
+  var x = b[0] - a[0];
+  var y = b[1] - a[1];
+  var z = b[2] - a[2];
+  return Math.sqrt(x * x + y * y + z * z);
+}
+
+/**
+ * Calculates the squared euclidian distance between two vec3's
+ *
+ * @param {vec3} a the first operand
+ * @param {vec3} b the second operand
+ * @returns {Number} squared distance between a and b
+ */
+function squaredDistance(a, b) {
+  var x = b[0] - a[0];
+  var y = b[1] - a[1];
+  var z = b[2] - a[2];
+  return x * x + y * y + z * z;
+}
+
+/**
+ * Calculates the squared length of a vec3
+ *
+ * @param {vec3} a vector to calculate squared length of
+ * @returns {Number} squared length of a
+ */
+function squaredLength(a) {
+  var x = a[0];
+  var y = a[1];
+  var z = a[2];
+  return x * x + y * y + z * z;
+}
+
+/**
+ * Negates the components of a vec3
+ *
+ * @param {vec3} out the receiving vector
+ * @param {vec3} a vector to negate
+ * @returns {vec3} out
+ */
+function negate(out, a) {
+  out[0] = -a[0];
+  out[1] = -a[1];
+  out[2] = -a[2];
+  return out;
+}
+
+/**
+ * Returns the inverse of the components of a vec3
+ *
+ * @param {vec3} out the receiving vector
+ * @param {vec3} a vector to invert
+ * @returns {vec3} out
+ */
+function inverse(out, a) {
+  out[0] = 1.0 / a[0];
+  out[1] = 1.0 / a[1];
+  out[2] = 1.0 / a[2];
+  return out;
+}
+
+/**
+ * Normalize a vec3
+ *
+ * @param {vec3} out the receiving vector
+ * @param {vec3} a vector to normalize
+ * @returns {vec3} out
+ */
+function normalize(out, a) {
+  var x = a[0];
+  var y = a[1];
+  var z = a[2];
+  var len = x * x + y * y + z * z;
+  if (len > 0) {
+    //TODO: evaluate use of glm_invsqrt here?
+    len = 1 / Math.sqrt(len);
+    out[0] = a[0] * len;
+    out[1] = a[1] * len;
+    out[2] = a[2] * len;
+  }
+  return out;
+}
+
+/**
+ * Calculates the dot product of two vec3's
+ *
+ * @param {vec3} a the first operand
+ * @param {vec3} b the second operand
+ * @returns {Number} dot product of a and b
+ */
+function vec3_dot(a, b) {
+  return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+}
+
+/**
+ * Computes the cross product of two vec3's
+ *
+ * @param {vec3} out the receiving vector
+ * @param {vec3} a the first operand
+ * @param {vec3} b the second operand
+ * @returns {vec3} out
+ */
+function cross(out, a, b) {
+  var ax = a[0],
+      ay = a[1],
+      az = a[2];
+  var bx = b[0],
+      by = b[1],
+      bz = b[2];
+
+  out[0] = ay * bz - az * by;
+  out[1] = az * bx - ax * bz;
+  out[2] = ax * by - ay * bx;
+  return out;
+}
+
+/**
+ * Performs a linear interpolation between two vec3's
+ *
+ * @param {vec3} out the receiving vector
+ * @param {vec3} a the first operand
+ * @param {vec3} b the second operand
+ * @param {Number} t interpolation amount, in the range [0-1], between the two inputs
+ * @returns {vec3} out
+ */
+function lerp(out, a, b, t) {
+  var ax = a[0];
+  var ay = a[1];
+  var az = a[2];
+  out[0] = ax + t * (b[0] - ax);
+  out[1] = ay + t * (b[1] - ay);
+  out[2] = az + t * (b[2] - az);
+  return out;
+}
+
+/**
+ * Performs a hermite interpolation with two control points
+ *
+ * @param {vec3} out the receiving vector
+ * @param {vec3} a the first operand
+ * @param {vec3} b the second operand
+ * @param {vec3} c the third operand
+ * @param {vec3} d the fourth operand
+ * @param {Number} t interpolation amount, in the range [0-1], between the two inputs
+ * @returns {vec3} out
+ */
+function hermite(out, a, b, c, d, t) {
+  var factorTimes2 = t * t;
+  var factor1 = factorTimes2 * (2 * t - 3) + 1;
+  var factor2 = factorTimes2 * (t - 2) + t;
+  var factor3 = factorTimes2 * (t - 1);
+  var factor4 = factorTimes2 * (3 - 2 * t);
+
+  out[0] = a[0] * factor1 + b[0] * factor2 + c[0] * factor3 + d[0] * factor4;
+  out[1] = a[1] * factor1 + b[1] * factor2 + c[1] * factor3 + d[1] * factor4;
+  out[2] = a[2] * factor1 + b[2] * factor2 + c[2] * factor3 + d[2] * factor4;
+
+  return out;
+}
+
+/**
+ * Performs a bezier interpolation with two control points
+ *
+ * @param {vec3} out the receiving vector
+ * @param {vec3} a the first operand
+ * @param {vec3} b the second operand
+ * @param {vec3} c the third operand
+ * @param {vec3} d the fourth operand
+ * @param {Number} t interpolation amount, in the range [0-1], between the two inputs
+ * @returns {vec3} out
+ */
+function bezier(out, a, b, c, d, t) {
+  var inverseFactor = 1 - t;
+  var inverseFactorTimesTwo = inverseFactor * inverseFactor;
+  var factorTimes2 = t * t;
+  var factor1 = inverseFactorTimesTwo * inverseFactor;
+  var factor2 = 3 * t * inverseFactorTimesTwo;
+  var factor3 = 3 * factorTimes2 * inverseFactor;
+  var factor4 = factorTimes2 * t;
+
+  out[0] = a[0] * factor1 + b[0] * factor2 + c[0] * factor3 + d[0] * factor4;
+  out[1] = a[1] * factor1 + b[1] * factor2 + c[1] * factor3 + d[1] * factor4;
+  out[2] = a[2] * factor1 + b[2] * factor2 + c[2] * factor3 + d[2] * factor4;
+
+  return out;
+}
+
+/**
+ * Generates a random vector with the given scale
+ *
+ * @param {vec3} out the receiving vector
+ * @param {Number} [scale] Length of the resulting vector. If ommitted, a unit vector will be returned
+ * @returns {vec3} out
+ */
+function random(out, scale) {
+  scale = scale || 1.0;
+
+  var r = RANDOM() * 2.0 * Math.PI;
+  var z = RANDOM() * 2.0 - 1.0;
+  var zScale = Math.sqrt(1.0 - z * z) * scale;
+
+  out[0] = Math.cos(r) * zScale;
+  out[1] = Math.sin(r) * zScale;
+  out[2] = z * scale;
+  return out;
+}
+
+/**
+ * Transforms the vec3 with a mat4.
+ * 4th vector component is implicitly '1'
+ *
+ * @param {vec3} out the receiving vector
+ * @param {vec3} a the vector to transform
+ * @param {mat4} m matrix to transform with
+ * @returns {vec3} out
+ */
+function transformMat4(out, a, m) {
+  var x = a[0],
+      y = a[1],
+      z = a[2];
+  var w = m[3] * x + m[7] * y + m[11] * z + m[15];
+  w = w || 1.0;
+  out[0] = (m[0] * x + m[4] * y + m[8] * z + m[12]) / w;
+  out[1] = (m[1] * x + m[5] * y + m[9] * z + m[13]) / w;
+  out[2] = (m[2] * x + m[6] * y + m[10] * z + m[14]) / w;
+  return out;
+}
+
+/**
+ * Transforms the vec3 with a mat3.
+ *
+ * @param {vec3} out the receiving vector
+ * @param {vec3} a the vector to transform
+ * @param {mat3} m the 3x3 matrix to transform with
+ * @returns {vec3} out
+ */
+function transformMat3(out, a, m) {
+  var x = a[0],
+      y = a[1],
+      z = a[2];
+  out[0] = x * m[0] + y * m[3] + z * m[6];
+  out[1] = x * m[1] + y * m[4] + z * m[7];
+  out[2] = x * m[2] + y * m[5] + z * m[8];
+  return out;
+}
+
+/**
+ * Transforms the vec3 with a quat
+ * Can also be used for dual quaternions. (Multiply it with the real part)
+ *
+ * @param {vec3} out the receiving vector
+ * @param {vec3} a the vector to transform
+ * @param {quat} q quaternion to transform with
+ * @returns {vec3} out
+ */
+function transformQuat(out, a, q) {
+  // benchmarks: https://jsperf.com/quaternion-transform-vec3-implementations-fixed
+  var qx = q[0],
+      qy = q[1],
+      qz = q[2],
+      qw = q[3];
+  var x = a[0],
+      y = a[1],
+      z = a[2];
+  // var qvec = [qx, qy, qz];
+  // var uv = vec3.cross([], qvec, a);
+  var uvx = qy * z - qz * y,
+      uvy = qz * x - qx * z,
+      uvz = qx * y - qy * x;
+  // var uuv = vec3.cross([], qvec, uv);
+  var uuvx = qy * uvz - qz * uvy,
+      uuvy = qz * uvx - qx * uvz,
+      uuvz = qx * uvy - qy * uvx;
+  // vec3.scale(uv, uv, 2 * w);
+  var w2 = qw * 2;
+  uvx *= w2;
+  uvy *= w2;
+  uvz *= w2;
+  // vec3.scale(uuv, uuv, 2);
+  uuvx *= 2;
+  uuvy *= 2;
+  uuvz *= 2;
+  // return vec3.add(out, a, vec3.add(out, uv, uuv));
+  out[0] = x + uvx + uuvx;
+  out[1] = y + uvy + uuvy;
+  out[2] = z + uvz + uuvz;
+  return out;
+}
+
+/**
+ * Rotate a 3D vector around the x-axis
+ * @param {vec3} out The receiving vec3
+ * @param {vec3} a The vec3 point to rotate
+ * @param {vec3} b The origin of the rotation
+ * @param {Number} c The angle of rotation
+ * @returns {vec3} out
+ */
+function vec3_rotateX(out, a, b, c) {
+  var p = [],
+      r = [];
+  //Translate point to the origin
+  p[0] = a[0] - b[0];
+  p[1] = a[1] - b[1];
+  p[2] = a[2] - b[2];
+
+  //perform rotation
+  r[0] = p[0];
+  r[1] = p[1] * Math.cos(c) - p[2] * Math.sin(c);
+  r[2] = p[1] * Math.sin(c) + p[2] * Math.cos(c);
+
+  //translate to correct position
+  out[0] = r[0] + b[0];
+  out[1] = r[1] + b[1];
+  out[2] = r[2] + b[2];
+
+  return out;
+}
+
+/**
+ * Rotate a 3D vector around the y-axis
+ * @param {vec3} out The receiving vec3
+ * @param {vec3} a The vec3 point to rotate
+ * @param {vec3} b The origin of the rotation
+ * @param {Number} c The angle of rotation
+ * @returns {vec3} out
+ */
+function vec3_rotateY(out, a, b, c) {
+  var p = [],
+      r = [];
+  //Translate point to the origin
+  p[0] = a[0] - b[0];
+  p[1] = a[1] - b[1];
+  p[2] = a[2] - b[2];
+
+  //perform rotation
+  r[0] = p[2] * Math.sin(c) + p[0] * Math.cos(c);
+  r[1] = p[1];
+  r[2] = p[2] * Math.cos(c) - p[0] * Math.sin(c);
+
+  //translate to correct position
+  out[0] = r[0] + b[0];
+  out[1] = r[1] + b[1];
+  out[2] = r[2] + b[2];
+
+  return out;
+}
+
+/**
+ * Rotate a 3D vector around the z-axis
+ * @param {vec3} out The receiving vec3
+ * @param {vec3} a The vec3 point to rotate
+ * @param {vec3} b The origin of the rotation
+ * @param {Number} c The angle of rotation
+ * @returns {vec3} out
+ */
+function vec3_rotateZ(out, a, b, c) {
+  var p = [],
+      r = [];
+  //Translate point to the origin
+  p[0] = a[0] - b[0];
+  p[1] = a[1] - b[1];
+  p[2] = a[2] - b[2];
+
+  //perform rotation
+  r[0] = p[0] * Math.cos(c) - p[1] * Math.sin(c);
+  r[1] = p[0] * Math.sin(c) + p[1] * Math.cos(c);
+  r[2] = p[2];
+
+  //translate to correct position
+  out[0] = r[0] + b[0];
+  out[1] = r[1] + b[1];
+  out[2] = r[2] + b[2];
+
+  return out;
+}
+
+/**
+ * Get the angle between two 3D vectors
+ * @param {vec3} a The first operand
+ * @param {vec3} b The second operand
+ * @returns {Number} The angle in radians
+ */
+function angle(a, b) {
+  var tempA = vec3_fromValues(a[0], a[1], a[2]);
+  var tempB = vec3_fromValues(b[0], b[1], b[2]);
+
+  normalize(tempA, tempA);
+  normalize(tempB, tempB);
+
+  var cosine = vec3_dot(tempA, tempB);
+
+  if (cosine > 1.0) {
+    return 0;
+  } else if (cosine < -1.0) {
+    return Math.PI;
+  } else {
+    return Math.acos(cosine);
+  }
+}
+
+/**
+ * Returns a string representation of a vector
+ *
+ * @param {vec3} a vector to represent as a string
+ * @returns {String} string representation of the vector
+ */
+function vec3_str(a) {
+  return 'vec3(' + a[0] + ', ' + a[1] + ', ' + a[2] + ')';
+}
+
+/**
+ * Returns whether or not the vectors have exactly the same elements in the same position (when compared with ===)
+ *
+ * @param {vec3} a The first vector.
+ * @param {vec3} b The second vector.
+ * @returns {Boolean} True if the vectors are equal, false otherwise.
+ */
+function vec3_exactEquals(a, b) {
+  return a[0] === b[0] && a[1] === b[1] && a[2] === b[2];
+}
+
+/**
+ * Returns whether or not the vectors have approximately the same elements in the same position.
+ *
+ * @param {vec3} a The first vector.
+ * @param {vec3} b The second vector.
+ * @returns {Boolean} True if the vectors are equal, false otherwise.
+ */
+function vec3_equals(a, b) {
+  var a0 = a[0],
+      a1 = a[1],
+      a2 = a[2];
+  var b0 = b[0],
+      b1 = b[1],
+      b2 = b[2];
+  return Math.abs(a0 - b0) <= EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2));
+}
+
+/**
+ * Alias for {@link vec3.subtract}
+ * @function
+ */
+var vec3_sub = vec3_subtract;
+
+/**
+ * Alias for {@link vec3.multiply}
+ * @function
+ */
+var vec3_mul = vec3_multiply;
+
+/**
+ * Alias for {@link vec3.divide}
+ * @function
+ */
+var div = divide;
+
+/**
+ * Alias for {@link vec3.distance}
+ * @function
+ */
+var dist = distance;
+
+/**
+ * Alias for {@link vec3.squaredDistance}
+ * @function
+ */
+var sqrDist = squaredDistance;
+
+/**
+ * Alias for {@link vec3.length}
+ * @function
+ */
+var vec3_len = vec3_length;
+
+/**
+ * Alias for {@link vec3.squaredLength}
+ * @function
+ */
+var sqrLen = squaredLength;
+
+/**
+ * Perform some operation over an array of vec3s.
+ *
+ * @param {Array} a the array of vectors to iterate over
+ * @param {Number} stride Number of elements between the start of each vec3. If 0 assumes tightly packed
+ * @param {Number} offset Number of elements to skip at the beginning of the array
+ * @param {Number} count Number of vec3s to iterate over. If 0 iterates over entire array
+ * @param {Function} fn Function to call for each vector in the array
+ * @param {Object} [arg] additional argument to pass to fn
+ * @returns {Array} a
+ * @function
+ */
+var forEach = function () {
+  var vec = vec3_create();
+
+  return function (a, stride, offset, count, fn, arg) {
+    var i = void 0,
+        l = void 0;
+    if (!stride) {
+      stride = 3;
+    }
+
+    if (!offset) {
+      offset = 0;
+    }
+
+    if (count) {
+      l = Math.min(count * stride + offset, a.length);
+    } else {
+      l = a.length;
+    }
+
+    for (i = offset; i < l; i += stride) {
+      vec[0] = a[i];vec[1] = a[i + 1];vec[2] = a[i + 2];
+      fn(vec, vec, arg);
+      a[i] = vec[0];a[i + 1] = vec[1];a[i + 2] = vec[2];
+    }
+
+    return a;
+  };
+}();
+// CONCATENATED MODULE: ./node_modules/gl-matrix/lib/gl-matrix/vec4.js
+
+
+/**
+ * 4 Dimensional Vector
+ * @module vec4
+ */
+
+/**
+ * Creates a new, empty vec4
+ *
+ * @returns {vec4} a new 4D vector
+ */
+function vec4_create() {
+  var out = new ARRAY_TYPE(4);
+  if (ARRAY_TYPE != Float32Array) {
+    out[0] = 0;
+    out[1] = 0;
+    out[2] = 0;
+    out[3] = 0;
+  }
+  return out;
+}
+
+/**
+ * Creates a new vec4 initialized with values from an existing vector
+ *
+ * @param {vec4} a vector to clone
+ * @returns {vec4} a new 4D vector
+ */
+function vec4_clone(a) {
+  var out = new ARRAY_TYPE(4);
+  out[0] = a[0];
+  out[1] = a[1];
+  out[2] = a[2];
+  out[3] = a[3];
+  return out;
+}
+
+/**
+ * Creates a new vec4 initialized with the given values
+ *
+ * @param {Number} x X component
+ * @param {Number} y Y component
+ * @param {Number} z Z component
+ * @param {Number} w W component
+ * @returns {vec4} a new 4D vector
+ */
+function vec4_fromValues(x, y, z, w) {
+  var out = new ARRAY_TYPE(4);
+  out[0] = x;
+  out[1] = y;
+  out[2] = z;
+  out[3] = w;
+  return out;
+}
+
+/**
+ * Copy the values from one vec4 to another
+ *
+ * @param {vec4} out the receiving vector
+ * @param {vec4} a the source vector
+ * @returns {vec4} out
+ */
+function vec4_copy(out, a) {
+  out[0] = a[0];
+  out[1] = a[1];
+  out[2] = a[2];
+  out[3] = a[3];
+  return out;
+}
+
+/**
+ * Set the components of a vec4 to the given values
+ *
+ * @param {vec4} out the receiving vector
+ * @param {Number} x X component
+ * @param {Number} y Y component
+ * @param {Number} z Z component
+ * @param {Number} w W component
+ * @returns {vec4} out
+ */
+function vec4_set(out, x, y, z, w) {
+  out[0] = x;
+  out[1] = y;
+  out[2] = z;
+  out[3] = w;
+  return out;
+}
+
+/**
+ * Adds two vec4's
+ *
+ * @param {vec4} out the receiving vector
+ * @param {vec4} a the first operand
+ * @param {vec4} b the second operand
+ * @returns {vec4} out
+ */
+function vec4_add(out, a, b) {
+  out[0] = a[0] + b[0];
+  out[1] = a[1] + b[1];
+  out[2] = a[2] + b[2];
+  out[3] = a[3] + b[3];
+  return out;
+}
+
+/**
+ * Subtracts vector b from vector a
+ *
+ * @param {vec4} out the receiving vector
+ * @param {vec4} a the first operand
+ * @param {vec4} b the second operand
+ * @returns {vec4} out
+ */
+function vec4_subtract(out, a, b) {
+  out[0] = a[0] - b[0];
+  out[1] = a[1] - b[1];
+  out[2] = a[2] - b[2];
+  out[3] = a[3] - b[3];
+  return out;
+}
+
+/**
+ * Multiplies two vec4's
+ *
+ * @param {vec4} out the receiving vector
+ * @param {vec4} a the first operand
+ * @param {vec4} b the second operand
+ * @returns {vec4} out
+ */
+function vec4_multiply(out, a, b) {
+  out[0] = a[0] * b[0];
+  out[1] = a[1] * b[1];
+  out[2] = a[2] * b[2];
+  out[3] = a[3] * b[3];
+  return out;
+}
+
+/**
+ * Divides two vec4's
+ *
+ * @param {vec4} out the receiving vector
+ * @param {vec4} a the first operand
+ * @param {vec4} b the second operand
+ * @returns {vec4} out
+ */
+function vec4_divide(out, a, b) {
+  out[0] = a[0] / b[0];
+  out[1] = a[1] / b[1];
+  out[2] = a[2] / b[2];
+  out[3] = a[3] / b[3];
+  return out;
+}
+
+/**
+ * Math.ceil the components of a vec4
+ *
+ * @param {vec4} out the receiving vector
+ * @param {vec4} a vector to ceil
+ * @returns {vec4} out
+ */
+function vec4_ceil(out, a) {
+  out[0] = Math.ceil(a[0]);
+  out[1] = Math.ceil(a[1]);
+  out[2] = Math.ceil(a[2]);
+  out[3] = Math.ceil(a[3]);
+  return out;
+}
+
+/**
+ * Math.floor the components of a vec4
+ *
+ * @param {vec4} out the receiving vector
+ * @param {vec4} a vector to floor
+ * @returns {vec4} out
+ */
+function vec4_floor(out, a) {
+  out[0] = Math.floor(a[0]);
+  out[1] = Math.floor(a[1]);
+  out[2] = Math.floor(a[2]);
+  out[3] = Math.floor(a[3]);
+  return out;
+}
+
+/**
+ * Returns the minimum of two vec4's
+ *
+ * @param {vec4} out the receiving vector
+ * @param {vec4} a the first operand
+ * @param {vec4} b the second operand
+ * @returns {vec4} out
+ */
+function vec4_min(out, a, b) {
+  out[0] = Math.min(a[0], b[0]);
+  out[1] = Math.min(a[1], b[1]);
+  out[2] = Math.min(a[2], b[2]);
+  out[3] = Math.min(a[3], b[3]);
+  return out;
+}
+
+/**
+ * Returns the maximum of two vec4's
+ *
+ * @param {vec4} out the receiving vector
+ * @param {vec4} a the first operand
+ * @param {vec4} b the second operand
+ * @returns {vec4} out
+ */
+function vec4_max(out, a, b) {
+  out[0] = Math.max(a[0], b[0]);
+  out[1] = Math.max(a[1], b[1]);
+  out[2] = Math.max(a[2], b[2]);
+  out[3] = Math.max(a[3], b[3]);
+  return out;
+}
+
+/**
+ * Math.round the components of a vec4
+ *
+ * @param {vec4} out the receiving vector
+ * @param {vec4} a vector to round
+ * @returns {vec4} out
+ */
+function vec4_round(out, a) {
+  out[0] = Math.round(a[0]);
+  out[1] = Math.round(a[1]);
+  out[2] = Math.round(a[2]);
+  out[3] = Math.round(a[3]);
+  return out;
+}
+
+/**
+ * Scales a vec4 by a scalar number
+ *
+ * @param {vec4} out the receiving vector
+ * @param {vec4} a the vector to scale
+ * @param {Number} b amount to scale the vector by
+ * @returns {vec4} out
+ */
+function vec4_scale(out, a, b) {
+  out[0] = a[0] * b;
+  out[1] = a[1] * b;
+  out[2] = a[2] * b;
+  out[3] = a[3] * b;
+  return out;
+}
+
+/**
+ * Adds two vec4's after scaling the second operand by a scalar value
+ *
+ * @param {vec4} out the receiving vector
+ * @param {vec4} a the first operand
+ * @param {vec4} b the second operand
+ * @param {Number} scale the amount to scale b by before adding
+ * @returns {vec4} out
+ */
+function vec4_scaleAndAdd(out, a, b, scale) {
+  out[0] = a[0] + b[0] * scale;
+  out[1] = a[1] + b[1] * scale;
+  out[2] = a[2] + b[2] * scale;
+  out[3] = a[3] + b[3] * scale;
+  return out;
+}
+
+/**
+ * Calculates the euclidian distance between two vec4's
+ *
+ * @param {vec4} a the first operand
+ * @param {vec4} b the second operand
+ * @returns {Number} distance between a and b
+ */
+function vec4_distance(a, b) {
+  var x = b[0] - a[0];
+  var y = b[1] - a[1];
+  var z = b[2] - a[2];
+  var w = b[3] - a[3];
+  return Math.sqrt(x * x + y * y + z * z + w * w);
+}
+
+/**
+ * Calculates the squared euclidian distance between two vec4's
+ *
+ * @param {vec4} a the first operand
+ * @param {vec4} b the second operand
+ * @returns {Number} squared distance between a and b
+ */
+function vec4_squaredDistance(a, b) {
+  var x = b[0] - a[0];
+  var y = b[1] - a[1];
+  var z = b[2] - a[2];
+  var w = b[3] - a[3];
+  return x * x + y * y + z * z + w * w;
+}
+
+/**
+ * Calculates the length of a vec4
+ *
+ * @param {vec4} a vector to calculate length of
+ * @returns {Number} length of a
+ */
+function vec4_length(a) {
+  var x = a[0];
+  var y = a[1];
+  var z = a[2];
+  var w = a[3];
+  return Math.sqrt(x * x + y * y + z * z + w * w);
+}
+
+/**
+ * Calculates the squared length of a vec4
+ *
+ * @param {vec4} a vector to calculate squared length of
+ * @returns {Number} squared length of a
+ */
+function vec4_squaredLength(a) {
+  var x = a[0];
+  var y = a[1];
+  var z = a[2];
+  var w = a[3];
+  return x * x + y * y + z * z + w * w;
+}
+
+/**
+ * Negates the components of a vec4
+ *
+ * @param {vec4} out the receiving vector
+ * @param {vec4} a vector to negate
+ * @returns {vec4} out
+ */
+function vec4_negate(out, a) {
+  out[0] = -a[0];
+  out[1] = -a[1];
+  out[2] = -a[2];
+  out[3] = -a[3];
+  return out;
+}
+
+/**
+ * Returns the inverse of the components of a vec4
+ *
+ * @param {vec4} out the receiving vector
+ * @param {vec4} a vector to invert
+ * @returns {vec4} out
+ */
+function vec4_inverse(out, a) {
+  out[0] = 1.0 / a[0];
+  out[1] = 1.0 / a[1];
+  out[2] = 1.0 / a[2];
+  out[3] = 1.0 / a[3];
+  return out;
+}
+
+/**
+ * Normalize a vec4
+ *
+ * @param {vec4} out the receiving vector
+ * @param {vec4} a vector to normalize
+ * @returns {vec4} out
+ */
+function vec4_normalize(out, a) {
+  var x = a[0];
+  var y = a[1];
+  var z = a[2];
+  var w = a[3];
+  var len = x * x + y * y + z * z + w * w;
+  if (len > 0) {
+    len = 1 / Math.sqrt(len);
+    out[0] = x * len;
+    out[1] = y * len;
+    out[2] = z * len;
+    out[3] = w * len;
+  }
+  return out;
+}
+
+/**
+ * Calculates the dot product of two vec4's
+ *
+ * @param {vec4} a the first operand
+ * @param {vec4} b the second operand
+ * @returns {Number} dot product of a and b
+ */
+function vec4_dot(a, b) {
+  return a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3];
+}
+
+/**
+ * Performs a linear interpolation between two vec4's
+ *
+ * @param {vec4} out the receiving vector
+ * @param {vec4} a the first operand
+ * @param {vec4} b the second operand
+ * @param {Number} t interpolation amount, in the range [0-1], between the two inputs
+ * @returns {vec4} out
+ */
+function vec4_lerp(out, a, b, t) {
+  var ax = a[0];
+  var ay = a[1];
+  var az = a[2];
+  var aw = a[3];
+  out[0] = ax + t * (b[0] - ax);
+  out[1] = ay + t * (b[1] - ay);
+  out[2] = az + t * (b[2] - az);
+  out[3] = aw + t * (b[3] - aw);
+  return out;
+}
+
+/**
+ * Generates a random vector with the given scale
+ *
+ * @param {vec4} out the receiving vector
+ * @param {Number} [scale] Length of the resulting vector. If ommitted, a unit vector will be returned
+ * @returns {vec4} out
+ */
+function vec4_random(out, scale) {
+  scale = scale || 1.0;
+
+  // Marsaglia, George. Choosing a Point from the Surface of a
+  // Sphere. Ann. Math. Statist. 43 (1972), no. 2, 645--646.
+  // http://projecteuclid.org/euclid.aoms/1177692644;
+  var v1, v2, v3, v4;
+  var s1, s2;
+  do {
+    v1 = RANDOM() * 2 - 1;
+    v2 = RANDOM() * 2 - 1;
+    s1 = v1 * v1 + v2 * v2;
+  } while (s1 >= 1);
+  do {
+    v3 = RANDOM() * 2 - 1;
+    v4 = RANDOM() * 2 - 1;
+    s2 = v3 * v3 + v4 * v4;
+  } while (s2 >= 1);
+
+  var d = Math.sqrt((1 - s1) / s2);
+  out[0] = scale * v1;
+  out[1] = scale * v2;
+  out[2] = scale * v3 * d;
+  out[3] = scale * v4 * d;
+  return out;
+}
+
+/**
+ * Transforms the vec4 with a mat4.
+ *
+ * @param {vec4} out the receiving vector
+ * @param {vec4} a the vector to transform
+ * @param {mat4} m matrix to transform with
+ * @returns {vec4} out
+ */
+function vec4_transformMat4(out, a, m) {
+  var x = a[0],
+      y = a[1],
+      z = a[2],
+      w = a[3];
+  out[0] = m[0] * x + m[4] * y + m[8] * z + m[12] * w;
+  out[1] = m[1] * x + m[5] * y + m[9] * z + m[13] * w;
+  out[2] = m[2] * x + m[6] * y + m[10] * z + m[14] * w;
+  out[3] = m[3] * x + m[7] * y + m[11] * z + m[15] * w;
+  return out;
+}
+
+/**
+ * Transforms the vec4 with a quat
+ *
+ * @param {vec4} out the receiving vector
+ * @param {vec4} a the vector to transform
+ * @param {quat} q quaternion to transform with
+ * @returns {vec4} out
+ */
+function vec4_transformQuat(out, a, q) {
+  var x = a[0],
+      y = a[1],
+      z = a[2];
+  var qx = q[0],
+      qy = q[1],
+      qz = q[2],
+      qw = q[3];
+
+  // calculate quat * vec
+  var ix = qw * x + qy * z - qz * y;
+  var iy = qw * y + qz * x - qx * z;
+  var iz = qw * z + qx * y - qy * x;
+  var iw = -qx * x - qy * y - qz * z;
+
+  // calculate result * inverse quat
+  out[0] = ix * qw + iw * -qx + iy * -qz - iz * -qy;
+  out[1] = iy * qw + iw * -qy + iz * -qx - ix * -qz;
+  out[2] = iz * qw + iw * -qz + ix * -qy - iy * -qx;
+  out[3] = a[3];
+  return out;
+}
+
+/**
+ * Returns a string representation of a vector
+ *
+ * @param {vec4} a vector to represent as a string
+ * @returns {String} string representation of the vector
+ */
+function vec4_str(a) {
+  return 'vec4(' + a[0] + ', ' + a[1] + ', ' + a[2] + ', ' + a[3] + ')';
+}
+
+/**
+ * Returns whether or not the vectors have exactly the same elements in the same position (when compared with ===)
+ *
+ * @param {vec4} a The first vector.
+ * @param {vec4} b The second vector.
+ * @returns {Boolean} True if the vectors are equal, false otherwise.
+ */
+function vec4_exactEquals(a, b) {
+  return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3];
+}
+
+/**
+ * Returns whether or not the vectors have approximately the same elements in the same position.
+ *
+ * @param {vec4} a The first vector.
+ * @param {vec4} b The second vector.
+ * @returns {Boolean} True if the vectors are equal, false otherwise.
+ */
+function vec4_equals(a, b) {
+  var a0 = a[0],
+      a1 = a[1],
+      a2 = a[2],
+      a3 = a[3];
+  var b0 = b[0],
+      b1 = b[1],
+      b2 = b[2],
+      b3 = b[3];
+  return Math.abs(a0 - b0) <= EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)) && Math.abs(a3 - b3) <= EPSILON * Math.max(1.0, Math.abs(a3), Math.abs(b3));
+}
+
+/**
+ * Alias for {@link vec4.subtract}
+ * @function
+ */
+var vec4_sub = vec4_subtract;
+
+/**
+ * Alias for {@link vec4.multiply}
+ * @function
+ */
+var vec4_mul = vec4_multiply;
+
+/**
+ * Alias for {@link vec4.divide}
+ * @function
+ */
+var vec4_div = vec4_divide;
+
+/**
+ * Alias for {@link vec4.distance}
+ * @function
+ */
+var vec4_dist = vec4_distance;
+
+/**
+ * Alias for {@link vec4.squaredDistance}
+ * @function
+ */
+var vec4_sqrDist = vec4_squaredDistance;
+
+/**
+ * Alias for {@link vec4.length}
+ * @function
+ */
+var vec4_len = vec4_length;
+
+/**
+ * Alias for {@link vec4.squaredLength}
+ * @function
+ */
+var vec4_sqrLen = vec4_squaredLength;
+
+/**
+ * Perform some operation over an array of vec4s.
+ *
+ * @param {Array} a the array of vectors to iterate over
+ * @param {Number} stride Number of elements between the start of each vec4. If 0 assumes tightly packed
+ * @param {Number} offset Number of elements to skip at the beginning of the array
+ * @param {Number} count Number of vec4s to iterate over. If 0 iterates over entire array
+ * @param {Function} fn Function to call for each vector in the array
+ * @param {Object} [arg] additional argument to pass to fn
+ * @returns {Array} a
+ * @function
+ */
+var vec4_forEach = function () {
+  var vec = vec4_create();
+
+  return function (a, stride, offset, count, fn, arg) {
+    var i = void 0,
+        l = void 0;
+    if (!stride) {
+      stride = 4;
+    }
+
+    if (!offset) {
+      offset = 0;
+    }
+
+    if (count) {
+      l = Math.min(count * stride + offset, a.length);
+    } else {
+      l = a.length;
+    }
+
+    for (i = offset; i < l; i += stride) {
+      vec[0] = a[i];vec[1] = a[i + 1];vec[2] = a[i + 2];vec[3] = a[i + 3];
+      fn(vec, vec, arg);
+      a[i] = vec[0];a[i + 1] = vec[1];a[i + 2] = vec[2];a[i + 3] = vec[3];
+    }
+
+    return a;
+  };
+}();
+// CONCATENATED MODULE: ./node_modules/gl-matrix/lib/gl-matrix/quat.js
+
+
+
+
+
+/**
+ * Quaternion
+ * @module quat
+ */
+
+/**
+ * Creates a new identity quat
+ *
+ * @returns {quat} a new quaternion
+ */
+function quat_create() {
+  var out = new ARRAY_TYPE(4);
+  if (ARRAY_TYPE != Float32Array) {
+    out[0] = 0;
+    out[1] = 0;
+    out[2] = 0;
+  }
+  out[3] = 1;
+  return out;
+}
+
+/**
+ * Set a quat to the identity quaternion
+ *
+ * @param {quat} out the receiving quaternion
+ * @returns {quat} out
+ */
+function quat_identity(out) {
+  out[0] = 0;
+  out[1] = 0;
+  out[2] = 0;
+  out[3] = 1;
+  return out;
+}
+
+/**
+ * Sets a quat from the given angle and rotation axis,
+ * then returns it.
+ *
+ * @param {quat} out the receiving quaternion
+ * @param {vec3} axis the axis around which to rotate
+ * @param {Number} rad the angle in radians
+ * @returns {quat} out
+ **/
+function setAxisAngle(out, axis, rad) {
+  rad = rad * 0.5;
+  var s = Math.sin(rad);
+  out[0] = s * axis[0];
+  out[1] = s * axis[1];
+  out[2] = s * axis[2];
+  out[3] = Math.cos(rad);
+  return out;
+}
+
+/**
+ * Gets the rotation axis and angle for a given
+ *  quaternion. If a quaternion is created with
+ *  setAxisAngle, this method will return the same
+ *  values as providied in the original parameter list
+ *  OR functionally equivalent values.
+ * Example: The quaternion formed by axis [0, 0, 1] and
+ *  angle -90 is the same as the quaternion formed by
+ *  [0, 0, 1] and 270. This method favors the latter.
+ * @param  {vec3} out_axis  Vector receiving the axis of rotation
+ * @param  {quat} q     Quaternion to be decomposed
+ * @return {Number}     Angle, in radians, of the rotation
+ */
+function getAxisAngle(out_axis, q) {
+  var rad = Math.acos(q[3]) * 2.0;
+  var s = Math.sin(rad / 2.0);
+  if (s > EPSILON) {
+    out_axis[0] = q[0] / s;
+    out_axis[1] = q[1] / s;
+    out_axis[2] = q[2] / s;
+  } else {
+    // If s is zero, return any axis (no rotation - axis does not matter)
+    out_axis[0] = 1;
+    out_axis[1] = 0;
+    out_axis[2] = 0;
+  }
+  return rad;
+}
+
+/**
+ * Multiplies two quat's
+ *
+ * @param {quat} out the receiving quaternion
+ * @param {quat} a the first operand
+ * @param {quat} b the second operand
+ * @returns {quat} out
+ */
+function quat_multiply(out, a, b) {
+  var ax = a[0],
+      ay = a[1],
+      az = a[2],
+      aw = a[3];
+  var bx = b[0],
+      by = b[1],
+      bz = b[2],
+      bw = b[3];
+
+  out[0] = ax * bw + aw * bx + ay * bz - az * by;
+  out[1] = ay * bw + aw * by + az * bx - ax * bz;
+  out[2] = az * bw + aw * bz + ax * by - ay * bx;
+  out[3] = aw * bw - ax * bx - ay * by - az * bz;
+  return out;
+}
+
+/**
+ * Rotates a quaternion by the given angle about the X axis
+ *
+ * @param {quat} out quat receiving operation result
+ * @param {quat} a quat to rotate
+ * @param {number} rad angle (in radians) to rotate
+ * @returns {quat} out
+ */
+function quat_rotateX(out, a, rad) {
+  rad *= 0.5;
+
+  var ax = a[0],
+      ay = a[1],
+      az = a[2],
+      aw = a[3];
+  var bx = Math.sin(rad),
+      bw = Math.cos(rad);
+
+  out[0] = ax * bw + aw * bx;
+  out[1] = ay * bw + az * bx;
+  out[2] = az * bw - ay * bx;
+  out[3] = aw * bw - ax * bx;
+  return out;
+}
+
+/**
+ * Rotates a quaternion by the given angle about the Y axis
+ *
+ * @param {quat} out quat receiving operation result
+ * @param {quat} a quat to rotate
+ * @param {number} rad angle (in radians) to rotate
+ * @returns {quat} out
+ */
+function quat_rotateY(out, a, rad) {
+  rad *= 0.5;
+
+  var ax = a[0],
+      ay = a[1],
+      az = a[2],
+      aw = a[3];
+  var by = Math.sin(rad),
+      bw = Math.cos(rad);
+
+  out[0] = ax * bw - az * by;
+  out[1] = ay * bw + aw * by;
+  out[2] = az * bw + ax * by;
+  out[3] = aw * bw - ay * by;
+  return out;
+}
+
+/**
+ * Rotates a quaternion by the given angle about the Z axis
+ *
+ * @param {quat} out quat receiving operation result
+ * @param {quat} a quat to rotate
+ * @param {number} rad angle (in radians) to rotate
+ * @returns {quat} out
+ */
+function quat_rotateZ(out, a, rad) {
+  rad *= 0.5;
+
+  var ax = a[0],
+      ay = a[1],
+      az = a[2],
+      aw = a[3];
+  var bz = Math.sin(rad),
+      bw = Math.cos(rad);
+
+  out[0] = ax * bw + ay * bz;
+  out[1] = ay * bw - ax * bz;
+  out[2] = az * bw + aw * bz;
+  out[3] = aw * bw - az * bz;
+  return out;
+}
+
+/**
+ * Calculates the W component of a quat from the X, Y, and Z components.
+ * Assumes that quaternion is 1 unit in length.
+ * Any existing W component will be ignored.
+ *
+ * @param {quat} out the receiving quaternion
+ * @param {quat} a quat to calculate W component of
+ * @returns {quat} out
+ */
+function calculateW(out, a) {
+  var x = a[0],
+      y = a[1],
+      z = a[2];
+
+  out[0] = x;
+  out[1] = y;
+  out[2] = z;
+  out[3] = Math.sqrt(Math.abs(1.0 - x * x - y * y - z * z));
+  return out;
+}
+
+/**
+ * Performs a spherical linear interpolation between two quat
+ *
+ * @param {quat} out the receiving quaternion
+ * @param {quat} a the first operand
+ * @param {quat} b the second operand
+ * @param {Number} t interpolation amount, in the range [0-1], between the two inputs
+ * @returns {quat} out
+ */
+function slerp(out, a, b, t) {
+  // benchmarks:
+  //    http://jsperf.com/quaternion-slerp-implementations
+  var ax = a[0],
+      ay = a[1],
+      az = a[2],
+      aw = a[3];
+  var bx = b[0],
+      by = b[1],
+      bz = b[2],
+      bw = b[3];
+
+  var omega = void 0,
+      cosom = void 0,
+      sinom = void 0,
+      scale0 = void 0,
+      scale1 = void 0;
+
+  // calc cosine
+  cosom = ax * bx + ay * by + az * bz + aw * bw;
+  // adjust signs (if necessary)
+  if (cosom < 0.0) {
+    cosom = -cosom;
+    bx = -bx;
+    by = -by;
+    bz = -bz;
+    bw = -bw;
+  }
+  // calculate coefficients
+  if (1.0 - cosom > EPSILON) {
+    // standard case (slerp)
+    omega = Math.acos(cosom);
+    sinom = Math.sin(omega);
+    scale0 = Math.sin((1.0 - t) * omega) / sinom;
+    scale1 = Math.sin(t * omega) / sinom;
+  } else {
+    // "from" and "to" quaternions are very close
+    //  ... so we can do a linear interpolation
+    scale0 = 1.0 - t;
+    scale1 = t;
+  }
+  // calculate final values
+  out[0] = scale0 * ax + scale1 * bx;
+  out[1] = scale0 * ay + scale1 * by;
+  out[2] = scale0 * az + scale1 * bz;
+  out[3] = scale0 * aw + scale1 * bw;
+
+  return out;
+}
+
+/**
+ * Generates a random quaternion
+ *
+ * @param {quat} out the receiving quaternion
+ * @returns {quat} out
+ */
+function quat_random(out) {
+  // Implementation of http://planning.cs.uiuc.edu/node198.html
+  // TODO: Calling random 3 times is probably not the fastest solution
+  var u1 = RANDOM();
+  var u2 = RANDOM();
+  var u3 = RANDOM();
+
+  var sqrt1MinusU1 = Math.sqrt(1 - u1);
+  var sqrtU1 = Math.sqrt(u1);
+
+  out[0] = sqrt1MinusU1 * Math.sin(2.0 * Math.PI * u2);
+  out[1] = sqrt1MinusU1 * Math.cos(2.0 * Math.PI * u2);
+  out[2] = sqrtU1 * Math.sin(2.0 * Math.PI * u3);
+  out[3] = sqrtU1 * Math.cos(2.0 * Math.PI * u3);
+  return out;
+}
+
+/**
+ * Calculates the inverse of a quat
+ *
+ * @param {quat} out the receiving quaternion
+ * @param {quat} a quat to calculate inverse of
+ * @returns {quat} out
+ */
+function quat_invert(out, a) {
+  var a0 = a[0],
+      a1 = a[1],
+      a2 = a[2],
+      a3 = a[3];
+  var dot = a0 * a0 + a1 * a1 + a2 * a2 + a3 * a3;
+  var invDot = dot ? 1.0 / dot : 0;
+
+  // TODO: Would be faster to return [0,0,0,0] immediately if dot == 0
+
+  out[0] = -a0 * invDot;
+  out[1] = -a1 * invDot;
+  out[2] = -a2 * invDot;
+  out[3] = a3 * invDot;
+  return out;
+}
+
+/**
+ * Calculates the conjugate of a quat
+ * If the quaternion is normalized, this function is faster than quat.inverse and produces the same result.
+ *
+ * @param {quat} out the receiving quaternion
+ * @param {quat} a quat to calculate conjugate of
+ * @returns {quat} out
+ */
+function conjugate(out, a) {
+  out[0] = -a[0];
+  out[1] = -a[1];
+  out[2] = -a[2];
+  out[3] = a[3];
+  return out;
+}
+
+/**
+ * Creates a quaternion from the given 3x3 rotation matrix.
+ *
+ * NOTE: The resultant quaternion is not normalized, so you should be sure
+ * to renormalize the quaternion yourself where necessary.
+ *
+ * @param {quat} out the receiving quaternion
+ * @param {mat3} m rotation matrix
+ * @returns {quat} out
+ * @function
+ */
+function fromMat3(out, m) {
+  // Algorithm in Ken Shoemake's article in 1987 SIGGRAPH course notes
+  // article "Quaternion Calculus and Fast Animation".
+  var fTrace = m[0] + m[4] + m[8];
+  var fRoot = void 0;
+
+  if (fTrace > 0.0) {
+    // |w| > 1/2, may as well choose w > 1/2
+    fRoot = Math.sqrt(fTrace + 1.0); // 2w
+    out[3] = 0.5 * fRoot;
+    fRoot = 0.5 / fRoot; // 1/(4w)
+    out[0] = (m[5] - m[7]) * fRoot;
+    out[1] = (m[6] - m[2]) * fRoot;
+    out[2] = (m[1] - m[3]) * fRoot;
+  } else {
+    // |w| <= 1/2
+    var i = 0;
+    if (m[4] > m[0]) i = 1;
+    if (m[8] > m[i * 3 + i]) i = 2;
+    var j = (i + 1) % 3;
+    var k = (i + 2) % 3;
+
+    fRoot = Math.sqrt(m[i * 3 + i] - m[j * 3 + j] - m[k * 3 + k] + 1.0);
+    out[i] = 0.5 * fRoot;
+    fRoot = 0.5 / fRoot;
+    out[3] = (m[j * 3 + k] - m[k * 3 + j]) * fRoot;
+    out[j] = (m[j * 3 + i] + m[i * 3 + j]) * fRoot;
+    out[k] = (m[k * 3 + i] + m[i * 3 + k]) * fRoot;
+  }
+
+  return out;
+}
+
+/**
+ * Creates a quaternion from the given euler angle x, y, z.
+ *
+ * @param {quat} out the receiving quaternion
+ * @param {x} Angle to rotate around X axis in degrees.
+ * @param {y} Angle to rotate around Y axis in degrees.
+ * @param {z} Angle to rotate around Z axis in degrees.
+ * @returns {quat} out
+ * @function
+ */
+function fromEuler(out, x, y, z) {
+  var halfToRad = 0.5 * Math.PI / 180.0;
+  x *= halfToRad;
+  y *= halfToRad;
+  z *= halfToRad;
+
+  var sx = Math.sin(x);
+  var cx = Math.cos(x);
+  var sy = Math.sin(y);
+  var cy = Math.cos(y);
+  var sz = Math.sin(z);
+  var cz = Math.cos(z);
+
+  out[0] = sx * cy * cz - cx * sy * sz;
+  out[1] = cx * sy * cz + sx * cy * sz;
+  out[2] = cx * cy * sz - sx * sy * cz;
+  out[3] = cx * cy * cz + sx * sy * sz;
+
+  return out;
+}
+
+/**
+ * Returns a string representation of a quatenion
+ *
+ * @param {quat} a vector to represent as a string
+ * @returns {String} string representation of the vector
+ */
+function quat_str(a) {
+  return 'quat(' + a[0] + ', ' + a[1] + ', ' + a[2] + ', ' + a[3] + ')';
+}
+
+/**
+ * Creates a new quat initialized with values from an existing quaternion
+ *
+ * @param {quat} a quaternion to clone
+ * @returns {quat} a new quaternion
+ * @function
+ */
+var quat_clone = vec4_clone;
+
+/**
+ * Creates a new quat initialized with the given values
+ *
+ * @param {Number} x X component
+ * @param {Number} y Y component
+ * @param {Number} z Z component
+ * @param {Number} w W component
+ * @returns {quat} a new quaternion
+ * @function
+ */
+var quat_fromValues = vec4_fromValues;
+
+/**
+ * Copy the values from one quat to another
+ *
+ * @param {quat} out the receiving quaternion
+ * @param {quat} a the source quaternion
+ * @returns {quat} out
+ * @function
+ */
+var quat_copy = vec4_copy;
+
+/**
+ * Set the components of a quat to the given values
+ *
+ * @param {quat} out the receiving quaternion
+ * @param {Number} x X component
+ * @param {Number} y Y component
+ * @param {Number} z Z component
+ * @param {Number} w W component
+ * @returns {quat} out
+ * @function
+ */
+var quat_set = vec4_set;
+
+/**
+ * Adds two quat's
+ *
+ * @param {quat} out the receiving quaternion
+ * @param {quat} a the first operand
+ * @param {quat} b the second operand
+ * @returns {quat} out
+ * @function
+ */
+var quat_add = vec4_add;
+
+/**
+ * Alias for {@link quat.multiply}
+ * @function
+ */
+var quat_mul = quat_multiply;
+
+/**
+ * Scales a quat by a scalar number
+ *
+ * @param {quat} out the receiving vector
+ * @param {quat} a the vector to scale
+ * @param {Number} b amount to scale the vector by
+ * @returns {quat} out
+ * @function
+ */
+var quat_scale = vec4_scale;
+
+/**
+ * Calculates the dot product of two quat's
+ *
+ * @param {quat} a the first operand
+ * @param {quat} b the second operand
+ * @returns {Number} dot product of a and b
+ * @function
+ */
+var quat_dot = vec4_dot;
+
+/**
+ * Performs a linear interpolation between two quat's
+ *
+ * @param {quat} out the receiving quaternion
+ * @param {quat} a the first operand
+ * @param {quat} b the second operand
+ * @param {Number} t interpolation amount, in the range [0-1], between the two inputs
+ * @returns {quat} out
+ * @function
+ */
+var quat_lerp = vec4_lerp;
+
+/**
+ * Calculates the length of a quat
+ *
+ * @param {quat} a vector to calculate length of
+ * @returns {Number} length of a
+ */
+var quat_length = vec4_length;
+
+/**
+ * Alias for {@link quat.length}
+ * @function
+ */
+var quat_len = quat_length;
+
+/**
+ * Calculates the squared length of a quat
+ *
+ * @param {quat} a vector to calculate squared length of
+ * @returns {Number} squared length of a
+ * @function
+ */
+var quat_squaredLength = vec4_squaredLength;
+
+/**
+ * Alias for {@link quat.squaredLength}
+ * @function
+ */
+var quat_sqrLen = quat_squaredLength;
+
+/**
+ * Normalize a quat
+ *
+ * @param {quat} out the receiving quaternion
+ * @param {quat} a quaternion to normalize
+ * @returns {quat} out
+ * @function
+ */
+var quat_normalize = vec4_normalize;
+
+/**
+ * Returns whether or not the quaternions have exactly the same elements in the same position (when compared with ===)
+ *
+ * @param {quat} a The first quaternion.
+ * @param {quat} b The second quaternion.
+ * @returns {Boolean} True if the vectors are equal, false otherwise.
+ */
+var quat_exactEquals = vec4_exactEquals;
+
+/**
+ * Returns whether or not the quaternions have approximately the same elements in the same position.
+ *
+ * @param {quat} a The first vector.
+ * @param {quat} b The second vector.
+ * @returns {Boolean} True if the vectors are equal, false otherwise.
+ */
+var quat_equals = vec4_equals;
+
+/**
+ * Sets a quaternion to represent the shortest rotation from one
+ * vector to another.
+ *
+ * Both vectors are assumed to be unit length.
+ *
+ * @param {quat} out the receiving quaternion.
+ * @param {vec3} a the initial vector
+ * @param {vec3} b the destination vector
+ * @returns {quat} out
+ */
+var rotationTo = function () {
+  var tmpvec3 = vec3_create();
+  var xUnitVec3 = vec3_fromValues(1, 0, 0);
+  var yUnitVec3 = vec3_fromValues(0, 1, 0);
+
+  return function (out, a, b) {
+    var dot = vec3_dot(a, b);
+    if (dot < -0.999999) {
+      cross(tmpvec3, xUnitVec3, a);
+      if (vec3_len(tmpvec3) < 0.000001) cross(tmpvec3, yUnitVec3, a);
+      normalize(tmpvec3, tmpvec3);
+      setAxisAngle(out, tmpvec3, Math.PI);
+      return out;
+    } else if (dot > 0.999999) {
+      out[0] = 0;
+      out[1] = 0;
+      out[2] = 0;
+      out[3] = 1;
+      return out;
+    } else {
+      cross(tmpvec3, a, b);
+      out[0] = tmpvec3[0];
+      out[1] = tmpvec3[1];
+      out[2] = tmpvec3[2];
+      out[3] = 1 + dot;
+      return quat_normalize(out, out);
+    }
+  };
+}();
+
+/**
+ * Performs a spherical linear interpolation with two control points
+ *
+ * @param {quat} out the receiving quaternion
+ * @param {quat} a the first operand
+ * @param {quat} b the second operand
+ * @param {quat} c the third operand
+ * @param {quat} d the fourth operand
+ * @param {Number} t interpolation amount, in the range [0-1], between the two inputs
+ * @returns {quat} out
+ */
+var sqlerp = function () {
+  var temp1 = quat_create();
+  var temp2 = quat_create();
+
+  return function (out, a, b, c, d, t) {
+    slerp(temp1, a, d, t);
+    slerp(temp2, b, c, t);
+    slerp(out, temp1, temp2, 2 * t * (1 - t));
+
+    return out;
+  };
+}();
+
+/**
+ * Sets the specified quaternion with values corresponding to the given
+ * axes. Each axis is a vec3 and is expected to be unit length and
+ * perpendicular to all other specified axes.
+ *
+ * @param {vec3} view  the vector representing the viewing direction
+ * @param {vec3} right the vector representing the local "right" direction
+ * @param {vec3} up    the vector representing the local "up" direction
+ * @returns {quat} out
+ */
+var setAxes = function () {
+  var matr = create();
+
+  return function (out, view, right, up) {
+    matr[0] = right[0];
+    matr[3] = right[1];
+    matr[6] = right[2];
+
+    matr[1] = up[0];
+    matr[4] = up[1];
+    matr[7] = up[2];
+
+    matr[2] = -view[0];
+    matr[5] = -view[1];
+    matr[8] = -view[2];
+
+    return quat_normalize(out, fromMat3(out, matr));
+  };
+}();
+// CONCATENATED MODULE: ./node_modules/gl-matrix/lib/gl-matrix.js
+
+
+
+
+
+
+
+
+
+
+
+
+// CONCATENATED MODULE: ./src/lib/graph/node.js
+/**
+ * Node
+ * A node in the node hierarchy.
+ */
+
+
+
+/* harmony default export */ var graph_node = (({
+    parent = null,
+    children = [],
+
+    mesh = null,
+    camera = null,
+
+    rotation = quat_namespaceObject.create(),
+    translation = vec3_namespaceObject.fromValues(0, 0, 0),
+    scale = vec3_namespaceObject.fromValues(1, 1, 1),
+
+    matrix = null
+
+}, name = null) => {
+
+    const node = {
+
+        name,
+
+        children,
+
+        mesh,
+        camera,
+
+        localMatrix: mat4_namespaceObject.create(),
+        worldMatrix: mat4_namespaceObject.create(),
+
+        translation,
+        scale,
+        rotation, // quaternion
+
+        add(child) {
+            if (child && this.children.indexOf(child) === -1) {
+                this.children.push(child);
+            }
+        },
+
+        remove(child) {
+            if (child) {
+                let index = this.children.indexOf(child);
+
+                if (index !== -1) {
+                    this.children.splice(index, 1);
+                    child.parent = null;
+                }
+            }
+        },
+
+        tick(parentWorldMatrix = null) {
+            this.updateLocalMatrix(); // Recalculate this node's localMatrix.
+
+            // Do this if the node has a parent
+            if (parentWorldMatrix !== null) {
+
+                // Multiply the localMatrix of this node with the worldMatrix of its parent.
+                mat4_namespaceObject.multiply(this.worldMatrix, parentWorldMatrix, this.localMatrix);
+
+            } else {
+
+                //Just set the localMatrix as the worldMatrix since this node does not have a parent
+                mat4_namespaceObject.copy(this.worldMatrix, this.localMatrix);
+
+            }
+
+            // Propagate the update downwards in the scene tree 
+            //(the children will use this node's worldMatrix in the tick)
+            for (let i = 0; i < this.children.length; i++) {
+                this.children[i].tick(this.worldMatrix);
+            }
+
+        },
+
+        updateLocalMatrix() {
+            mat4_namespaceObject.fromRotationTranslationScale(this.localMatrix, this.rotation, this.translation, this.scale);
+        },
+
+        setScale(x, y, z) {
+            this.scale[0] = x;
+            this.scale[1] = y;
+            this.scale[2] = z;
+        },
+
+        applyScale(x, y, z) {
+            this.scale[0] *= x;
+            this.scale[1] *= y;
+            this.scale[2] *= z;
+        },
+
+        setTranslation(x, y, z) {
+            this.translation[0] = x;
+            this.translation[1] = y;
+            this.translation[2] = z;
+        },
+
+        applyTranslation(x, y, z) {
+            this.translation[0] += x;
+            this.translation[1] += y;
+            this.translation[2] += z;
+        },
+
+        setRotationFromEuler(x, y, z) {
+            quat_namespaceObject.fromEuler(this.rotation, x, y, z);
+        },
+
+        applyRotationX(rad) {
+            quat_namespaceObject.rotateX(this.rotation, this.rotation, rad);
+        },
+
+        applyRotationY(rad) {
+            quat_namespaceObject.rotateY(this.rotation, this.rotation, rad);
+        },
+
+        applyRotationZ(rad) {
+            quat_namespaceObject.rotateZ(this.rotation, this.rotation, rad);
+        }
+    };
+
+    if (parent) {
+        parent.add(node);
+    }
+
+    if (matrix) {
+        mat4_namespaceObject.getRotation(node.rotation, matrix);
+        mat4_namespaceObject.getTranslation(node.translation, matrix);
+        mat4_namespaceObject.getScaling(node.scale, matrix);
+    }
+
+    return node;
+});
+// CONCATENATED MODULE: ./src/lib/camera/orthographic.js
+/**
+ * An orthographic camera containing properties to create an orthographic projection matrix.
+ */
+
+
+
+/* harmony default export */ var orthographic = (({ xmag = 1.0, ymag = 1.0, zfar = 100, znear = 0 }, name = null) => {
+
+    return {
+        
+        type: 'orthographic',
+        orthographic: {
+            xmag,
+            ymag,
+            zfar,
+            znear
+        },
+        perspective: null,
+        name,
+
+        projectionMatrix: mat4_namespaceObject.ortho(mat4_namespaceObject.create(), -xmag, xmag, -ymag, ymag, znear, zfar),
+        
+        updateProjectionMatrix() {
+            const { xmag, ymag, zfar, znear } = this.orthographic;
+            this.projectionMatrix = mat4_namespaceObject.ortho(this.projectionMatrix, -xmag, xmag, -ymag, ymag, znear, zfar);
+        }
+
+    };
+
+});
+// CONCATENATED MODULE: ./src/lib/camera/perspective.js
+/**
+ * A perspective camera containing properties to create a perspective projection matrix.
+ */
+
+
+
+/* harmony default export */ var camera_perspective = (({ aspectRatio, yfov = 1.0472, zfar = null, znear = 1.0}, name = null ) => {
+
+    return {
+        
+        type: 'perspective',
+        perspective: {
+            aspectRatio,
+            yfov,
+            zfar,
+            znear
+        },
+        orthographic: null,
+        name,
+
+        projectionMatrix: mat4_namespaceObject.perspective(mat4_namespaceObject.create(), yfov, aspectRatio, znear, zfar),
+
+        updateProjectionMatrix() {
+            const { aspectRatio, yfov, zfar, znear } = this.perspective;
+            this.projectionMatrix = mat4_namespaceObject.perspective(mat4_namespaceObject.create(), yfov, aspectRatio, znear, zfar);
+        }
+
+    };
+
+});
+// CONCATENATED MODULE: ./src/lib/mesh/mesh.js
+/**
+ * Mesh
+ * A drawable collection of primitives.
+ */
+
+/* harmony default export */ var mesh_mesh = ((primitives, name = null) => {
+
+    return {
+        primitives, // An array of primitives, each defining geometry to be rendered with a material.
+        name
+    };
+    
+});
+// CONCATENATED MODULE: ./src/lib/mesh/primitive.js
+/**
+ * Primitive
+ * Geometry to be rendered with the given material.
+ */
+
+/* harmony default export */ var mesh_primitive = ((attributes, mode = 4, material, indices = null) => {
+
+    return {
+        attributes,
+        indices, // if defined use drawElements, else drawArrays
+        material,
+        mode,
+        extras: {}
+    };
+    
+});
+// CONCATENATED MODULE: ./src/lib/mesh/accessor.js
+/**
+ * Accessor
+ * All large data for meshes, skins, and animations is stored in buffers and retrieved via accessors.
+ */
+
+// constants:
+// const componentType = {
+//     BYTE: 5120,
+//     UNSIGNED_BYTE: 5121,
+//     SHORT: 5122,
+//     UNSIGNED_SHORT: 5123,
+//     UNSIGNED_INT: 5125,
+//     FLOAT: 5126
+// };
+
+// const type = {
+//     SCALAR: 1,
+//     VEC2: 2,
+//     VEC3: 3,
+//     VEC4: 4,
+//     MAT2: 4,
+//     MAT3: 9,
+//     MAT4: 16
+// };
+
+/* harmony default export */ var mesh_accessor = ((bufferView, componentType, type, count, min, max, byteOffset = 0, normalized = false) => {
+
+    return {
+        bufferView,
+
+        type,
+        componentType,
+
+        byteOffset,
+        count,
+
+        min,
+        max,
+
+        normalized
+    };
+
+});
+// CONCATENATED MODULE: ./src/lib/mesh/bufferView.js
+/**
+ * BufferView
+ * A bufferView represents a subset of data in a buffer, defined by an integer offset into the buffer specified in the byteOffset property and a byteLength property to specify length of the buffer view.
+ */
+
+/* harmony default export */ var mesh_bufferView = ((buffer, byteLength, byteOffset = 0, target = null, byteStride = 0) => {
+
+    return {
+        buffer, // Javascript ArrayBuffer (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer)
+
+        byteLength,
+        byteOffset,
+        byteStride, // int: [4, 252], default: 0 (tightly packed)
+
+        target, // setting the target allows the runtime to upload the bufferView to the GPU without having to infer it from the accessors.
+
+        extras: {}
+    };
+    
+});
+// CONCATENATED MODULE: ./src/lib/material/sampler.js
+/**
+ * Sampler
+ */
+
+/* harmony default export */ var sampler = (({
+
+    magFilter = 9728,
+    minFilter = 9986,
+    wrapS = 10497,
+    wrapT = 10497,
+
+} = {}, name = null) => {
+
+    return {
+        magFilter,
+        minFilter,
+        wrapS,
+        wrapT,
+        name,
+        extras: {}
+    };
+    
+});
+// CONCATENATED MODULE: ./src/lib/material/texture.js
+/**
+ * Texture
+ */
+
+/* harmony default export */ var texture = (({
+
+    source = null,
+    sampler = null
+
+}, name = null) => {
+
+    return {
+        source,
+        sampler,
+        name,
+        extras: {}
+    };
+    
+});
+// CONCATENATED MODULE: ./src/lib/material/material.js
+/**
+ * Material
+ * The material appearance of a primitive.
+ */
+
+
+
+
+
+/* harmony default export */ var material_material = (({
+
+    baseColorFactor = vec4_namespaceObject.fromValues(1.0, 1.0, 1.0, 1.0),
+    baseColorTexture = null,
+    metallicFactor = 1.0,
+    roughnessFactor = 1.0,
+    metallicRoughnessTexture = null,
+
+    normalTexture = null,
+    occlusionTexture = null,
+    emissiveTexture = null,
+    emissiveFactor = vec3_namespaceObject.create(),
+
+    alphaMode = 'OPAQUE',
+    alphaCutoff = 0.5,
+    doubleSided = false
+
+} = {}, name = null) => {
+
+    return {
+        baseColorFactor,
+        baseColorTexture, // HAS_BASECOLORMAP
+        metallicFactor,
+        roughnessFactor,
+        metallicRoughnessTexture, // HAS_METALROUGHNESSMAP
+
+        normalTexture, // HAS_NORMALMAP
+        occlusionTexture, // HAS_OCCLUSIONMAP
+        emissiveTexture, // HAS_EMISSIVEMAP
+        emissiveFactor,
+
+        alphaMode: ALPHA_MODE[alphaMode], // TODO: add defines for this as well.
+        alphaCutoff,
+        doubleSided,
+
+        name,
+        extras: {}
+    };
+    
+});
+
+
+// CONCATENATED MODULE: ./src/lib/importer.js
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const SUPPORTED_VERSION = GLTF_VERSION.split('.').map(a => parseInt(a));
+
+/* harmony default export */ var importer = (async (url) => {
+
+    const basePath = url.substring(0, url.lastIndexOf('/') + 1);
+
+    const gltf = await fetch(url).then(res => res.json());
+
+    let version = (gltf.asset.minVersion ? gltf.asset.minVersion : gltf.asset.version).split('.').map(a => parseInt(a));
+
+    if (SUPPORTED_VERSION[0] !== version[0]) {
+        // TODO: give feedback, major version is incompatible.
+        return null;
+    }
+
+    if (gltf.asset.minVersion && SUPPORTED_VERSION[1] < version[1]) {
+        // TODO: give feedback, minor version is incompatible.
+        return null;
+    }
+
+
+    let buffers = [];
+    if (gltf.buffers) {
+        buffers = await Promise.all(gltf.buffers.map(({ uri }) => {
+            if (uri.startsWith('data:')) {
+                return fetch(uri).then(res => res.arrayBuffer());
+            } else {
+                return fetch(basePath + uri).then(res => res.arrayBuffer());
+            }
+        }));
+    }
+
+    let bufferViews = [];
+    if (gltf.bufferViews) {
+
+        bufferViews = gltf.bufferViews.map(({
+            buffer: bufferIndex,
+            byteLength,
+            byteOffset,
+            target,
+            byteStride
+        }) => {
+
+            return mesh_bufferView(buffers[bufferIndex], byteLength, byteOffset, target, byteStride);
+
+        });
+    }
+
+    let accessors = [];
+    if (gltf.accessors) {
+        accessors = gltf.accessors.map(({
+            bufferView: bufferViewIndex,
+            componentType,
+            type,
+            count,
+            min,
+            max,
+            byteOffset
+        }) => {
+
+            if (componentType === COMPONENT.TYPE.FLOAT) {
+                if (min) {
+                    min = min.map(a => Math.fround(a));
+                }
+                if (max) {
+                    max = max.map(a => Math.fround(a));
+                }
+            }
+
+            return mesh_accessor(bufferViews[bufferViewIndex], componentType, type, count, min, max, byteOffset);
+
+        });
+    }
+
+    let images = [];
+    if (gltf.images) {
+        images = await Promise.all(gltf.images.map(({
+            uri,
+            bufferView,
+            mimeType
+        }) => {
+            if (uri && mimeType) {
+
+                const image = new Image();
+                image.src = basePath + uri;
+                return new Promise((resolve, reject) => {
+                    image.onload = resolve.bind(null, image);
+                    image.onerror = reject;
+                });
+
+                //return fetch(basePath + uri, { headers: { 'content-type': mimeType } }).then(res => res.blob());
+
+            } else {
+
+                const bv = bufferViews[bufferView];
+                const buffer = new DataView(bv.buffer, bv.byteOffset, bv.byteLength);
+                const blob = new Blob([ buffer ], { type: mimeType });
+
+                const image = new Image();
+                image.src = URL.createObjectURL(blob);
+                return new Promise((resolve, reject) => {
+                    image.onload = resolve.bind(null, image);
+                    image.onerror = reject;
+                });
+
+            }
+        }));
+    }
+
+    let samplers = [];
+    if (gltf.samplers) {
+        samplers = gltf.samplers.map(s => sampler(s));
+    }
+
+    let textures = [];
+    if (gltf.textures) {
+        textures = gltf.textures.map(({ source: sourceIndex, sampler: samplerIndex, name }) => {
+
+            const image = images[sourceIndex];
+
+            let sampler_instance = sampler();
+            if (samplerIndex) {
+                sampler_instance = samplers[samplerIndex];
+            }
+
+            return texture({ source: image, sampler: sampler_instance }, name);
+        });
+    }
+
+    let materials = [];
+    if (gltf.materials) {
+        materials = gltf.materials.map(({
+            pbrMetallicRoughness,
+            normalTexture,
+            occlusionTexture,
+            emissiveTexture,
+            emissiveFactor,
+            alphaMode,
+            alphaCutoff,
+            doubleSided,
+            name
+        }) => {
+
+            // extract pbr parameters.
+            const {
+                baseColorFactor,
+                baseColorTexture,
+                metallicFactor,
+                roughnessFactor,
+                metallicRoughnessTexture
+            } = pbrMetallicRoughness;
+
+            // setup base-params
+            const parameters = {
+                baseColorFactor,
+                metallicFactor,
+                roughnessFactor,
+                emissiveFactor,
+                alphaMode,
+                alphaCutoff,
+                doubleSided
+            };
+
+            // add textures if they are defined:
+
+            if (baseColorTexture) {
+                const { index, texCoord } = baseColorTexture;
+                parameters.baseColorTexture = {
+                    texCoord,
+                    texture: textures[index]
+                };
+            }
+
+            if (metallicRoughnessTexture) {
+                const { index, texCoord } = metallicRoughnessTexture;
+                parameters.metallicRoughnessTexture = {
+                    texCoord,
+                    texture: textures[index]
+                };
+            }
+
+            if (normalTexture) {
+                const { scale, index, texCoord } = normalTexture;
+                parameters.normalTexture = {
+                    scale,
+                    texCoord,
+                    texture: textures[index]
+                };
+            }
+
+            if (occlusionTexture) {
+                const { strength, index, texCoord } = occlusionTexture;
+                parameters.occlusionTexture = {
+                    strength,
+                    texCoord,
+                    texture: textures[index]
+                };
+            }
+
+            if (emissiveTexture) {
+                const { index, texCoord } = emissiveTexture;
+                parameters.emissiveTexture = {
+                    texCoord,
+                    texture: textures[index]
+                };
+            }
+
+            // finally construct a material instance.
+            return material_material(parameters, name);
+        });
+    }
+
+    function createPrimitive({ attributes: attributeIndices, mode, material: materialIndex, indices: indicesIndex }) {
+
+        let attributes = {};
+
+        for (let key in attributeIndices) {
+
+            let accessor = accessors[attributeIndices[key]];
+
+            attributes[key] = accessor;
+
+            if (
+                (VALID_ACCESSOR_TYPES[key] &&
+                    VALID_ACCESSOR_TYPES[key].type.includes(accessor.type) &&
+                    VALID_ACCESSOR_TYPES[key].componentType.includes(accessor.componentType))
+                === false
+            ) {
+                throw Error('GLTF2.0: Accessor is invalid.');
+            }
+        }
+
+        const indices = accessors[indicesIndex];
+
+        if (!VALID_ACCESSOR_TYPES.INDEX.type.includes(indices.type) || !VALID_ACCESSOR_TYPES.INDEX.componentType.includes(indices.componentType)) {
+            throw Error('GLTF2.0: Indices accessor should have componentType { 5121, 5123, 5125 }, and type "SCALAR".');
+        }
+
+        const ibv = indices.bufferView;
+
+        if (ibv.target && ibv.target !== TARGET.ELEMENT_ARRAY_BUFFER) {
+            console.log(ibv.target);
+            throw Error('GLTF2.0: Indices accessor should have a target equal to 34963 (ELEMENT_ARRAY_BUFFER).');
+        }
+
+
+        return mesh_primitive(attributes, mode, materials[materialIndex], indices);
+
+    }
+
+    let meshes = [];
+    if (gltf.meshes) {
+        meshes = gltf.meshes.map(({
+            primitives: primitiveObjects,
+            name
+        }) => {
+
+            let primitives = primitiveObjects.map((object) => createPrimitive(object));
+
+            return mesh_mesh(primitives, name);
+
+        });
+    }
+
+
+    let cameras = [];
+    if (gltf.cameras) {
+        cameras = gltf.cameras.map(({
+            name,
+            type,
+            orthographic: orthographicProperties,
+            perspective: perspectiveProperties
+        }) => {
+
+            if (type === PROJECTION.ORTHOGRAPHIC) {
+                return orthographic(orthographicProperties, name);
+            } else if (type === PROJECTION.PERSPECTIVE) {
+                return camera_perspective(perspectiveProperties, name);
+            } else {
+                // TODO: type not defined, throw?
+                return null;
+            }
+
+        });
+    }
+
+    // Note:
+    // We assume that the nodes form a disjoint union of strict trees, as described in the specification.
+    function createNode(index) {
+        let {
+            name,
+
+            rotation,
+            translation,
+            scale,
+            matrix,
+
+            mesh: meshIndex,
+            camera: cameraIndex,
+
+            children: childIndices = []
+
+        } = gltf.nodes[index];
+
+        return graph_node({
+            mesh: meshes[meshIndex],
+            camera: cameras[cameraIndex],
+            rotation,
+            translation,
+            scale,
+            matrix,
+
+            // recusively create nodes for the children.
+            children: childIndices.map((index) => createNode(index))
+        }, name);
+
+    }
+
+    let scenes = [];
+    if (gltf.scenes) {
+        scenes = gltf.scenes.map(({
+            nodes: nodeIndices,
+            name
+        }) => {
+
+            return scene(nodeIndices.map((index) => createNode(index)), name);
+
+        });
+    }
+
+    return {
+        scene: scenes[gltf.scene],
+        scenes
+    };
+});
+// CONCATENATED MODULE: ./src/lib/shader/shaderBuilder.js
+function compile(gl, source, type) {
+
+    let shader = gl.createShader(type);
+    gl.shaderSource(shader, source);
+    gl.compileShader(shader);
+
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        throw Error(gl.getShaderInfoLog(shader));
+    }
+
+    return shader;
+    
+}
+
+/* harmony default export */ var shaderBuilder = ((gl, vertexShaderSource, fragmentShaderSource) => {
+
+    let vertexShader = compile(gl, vertexShaderSource, gl.VERTEX_SHADER);
+    let fragmentShader = compile(gl, fragmentShaderSource, gl.FRAGMENT_SHADER);
+
+    let program = gl.createProgram();
+
+    gl.attachShader(program, vertexShader);
+    gl.attachShader(program, fragmentShader);
+    gl.linkProgram(program);
+
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+        throw Error('Error when building shaders.');
+    }
+
+    return program;
+
+});
+// EXTERNAL MODULE: ./src/lib/shader/code/pbr-vertex-shader.glsl
+var pbr_vertex_shader = __webpack_require__(0);
+var pbr_vertex_shader_default = /*#__PURE__*/__webpack_require__.n(pbr_vertex_shader);
+
+// EXTERNAL MODULE: ./src/lib/shader/code/pbr-fragment-shader.glsl
+var pbr_fragment_shader = __webpack_require__(1);
+var pbr_fragment_shader_default = /*#__PURE__*/__webpack_require__.n(pbr_fragment_shader);
+
+// CONCATENATED MODULE: ./src/lib/shader/standard.js
+
+
+
+
+
+/* harmony default export */ var standard = ((context, material) => {
+
+    let fragmentDefines = '';
+
+    if (material.baseColorTexture !== null) {
+        fragmentDefines += '#define HAS_BASECOLORMAP\n';
+    }
+
+    if (material.metallicRoughnessTexture !== null) {
+        fragmentDefines += '#define HAS_METALROUGHNESSMAP\n';
+    }
+
+    if (material.normalTexture !== null) {
+        fragmentDefines += '#define HAS_NORMALMAP\n';
+    }
+
+    if (material.occlusionTexture !== null) {
+        fragmentDefines += '#define HAS_OCCLUSIONMAP\n';
+    }
+
+    if (material.emissiveTexture !== null) {
+        fragmentDefines += '#define HAS_EMISSIVEMAP\n';
+    }
+
+    const program = shaderBuilder(context, pbr_vertex_shader_default.a.replace('__DEFINES__', ''), pbr_fragment_shader_default.a.replace('__DEFINES__', fragmentDefines));
+
+    context.useProgram(program);
+
+    return {
+        program,
+        uniformLocations: {
+            
+            modelViewProjectionMatrix: context.getUniformLocation(program, 'modelViewProjectionMatrix'),
+            modelMatrix: context.getUniformLocation(program, 'modelMatrix'),
+            normalMatrix: context.getUniformLocation(program, 'normalMatrix'),
+
+            camera: context.getUniformLocation(program, 'u_Camera'),
+
+            baseColorSampler: context.getUniformLocation(program, 'u_BaseColorSampler'),
+            baseColorFactor: context.getUniformLocation(program, 'u_BaseColorFactor'),
+
+            normalSampler: context.getUniformLocation(program, 'u_NormalSampler'),
+            normalScale: context.getUniformLocation(program, 'u_NormalScale'),
+
+            emissiveSampler: context.getUniformLocation(program, 'u_EmissiveSampler'),
+            emissiveFactor: context.getUniformLocation(program, 'u_EmissiveFactor'),
+
+            metallicRoughnessSampler: context.getUniformLocation(program, 'u_MetallicRoughnessSampler'),
+            metallicRoughnessValues: context.getUniformLocation(program, 'u_MetallicRoughnessValues'),
+            
+            occlusionSampler: context.getUniformLocation(program, 'u_OcclusionSampler'),
+            occlusionStrength: context.getUniformLocation(program, 'u_OcclusionStrength')
+
+        }
+    };
+});
+// CONCATENATED MODULE: ./src/lib/core/renderer.js
+
+
+
+
+
+
+/* harmony default export */ var core_renderer = ((context = null) => {
+
+    if (context === null) {
+        throw Error('You must pass a WebGL2 context to the renderer.');
+    }
+
+    const gl = context;
+    const domElement = gl.canvas;
+
+    gl.viewport(0, 0, domElement.width, domElement.height);
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.enable(gl.DEPTH_TEST);
+    gl.enable(gl.CULL_FACE);
+
+    const renderer = {
+
+        domElement,
+        gl,
+
+        setSize(width, height) {
+            domElement.width = width;
+            domElement.height = height;
+            gl.viewport(0, 0, domElement.width, domElement.height);
+            gl.clearColor(1.0, 1.0, 1.0, 1.0);
+        },
+
+        draw(renderable, viewMatrix, projectionMatrix) {
+
+            const [primitive, worldMatrix] = renderable;
+
+            const material = primitive.material;
+            const shader = material.extras.shader;
+            gl.useProgram(shader.program);
+
+            // vertex uniforms: (TODO: calculate only per mesh.)
+            const modelViewMatrix = mat4_namespaceObject.multiply(mat4_namespaceObject.create(), viewMatrix, worldMatrix);
+            const modelViewProjectionMatrix = mat4_namespaceObject.multiply(mat4_namespaceObject.create(), projectionMatrix, modelViewMatrix);
+            const normalMatrix = mat3_namespaceObject.normalFromMat4(mat3_namespaceObject.create(), modelViewMatrix);
+
+            gl.uniformMatrix4fv(shader.uniformLocations.modelMatrix, false, worldMatrix);
+            gl.uniformMatrix4fv(shader.uniformLocations.modelViewProjectionMatrix, false, modelViewProjectionMatrix);
+            gl.uniformMatrix4fv(shader.uniformLocations.normalMatrix, false, normalMatrix);
+
+            // material uniforms:
+
+            gl.uniform4fv(shader.uniformLocations.baseColorFactor, material.baseColorFactor);
+
+            if (primitive.material.baseColorTexture !== null) {
+                gl.activeTexture(gl.TEXTURE0);
+                gl.bindTexture(gl.TEXTURE_2D, primitive.material.baseColorTexture.texture.extras.gl_texture);
+                gl.uniform1i(shader.uniformLocations.baseColorSampler, 0);
+            }
+
+            if (primitive.extras.vao) {
+
+                gl.bindVertexArray(primitive.extras.vao);
+
+                if (primitive.indices) {
+
+                    const offset = primitive.indices.byteOffset / COMPONENT.SIZE[primitive.indices.componentType];
+                    gl.drawElements(primitive.mode, primitive.indices.count, primitive.indices.componentType, offset);
+
+                } else {
+
+                    gl.drawArrays(gl.TRIANGLES, 0, primitive.attributes.POSITION.count / 3);
+
+                }
+
+            } else {
+
+                throw Error('Attempted to draw primitive with no VAO (Is the mesh loaded?).');
+
+            }
+
+        },
+
+        render(renderQueue, cameraNode) {
+
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+            const viewMatrix = mat4_namespaceObject.invert(mat4_namespaceObject.create(), cameraNode.worldMatrix);
+
+            for (let i = 0; i < renderQueue.length; i++) {
+                this.draw(renderQueue[i], viewMatrix, cameraNode.camera.projectionMatrix);
+            }
+
+        },
+
+        /**
+         *
+         *
+         * @param {*} n Scene, node, or mesh.
+         */
+        load(primitive) {
+
+            if (primitive.extras.vao) {
+
+                // the primitive has already been loaded.
+                return;
+
+            }
+
+            // setup VAO:
+
+            let vao = gl.createVertexArray();
+            gl.bindVertexArray(vao);
+
+            if (primitive.indices) {
+
+                let accessor = primitive.indices;
+                let bufferView = accessor.bufferView;
+
+                if (bufferView.extras.element_array_buffer) {
+
+                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, bufferView.extras.element_array_buffer);
+
+                    // the bufferView is already loaded, increment access count.
+                    bufferView.extras.bufferAccessCount += 1;
+
+                } else {
+
+                    // create buffer and upload data.
+
+                    let buffer = gl.createBuffer();
+                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer);
+
+                    let dataView = new DataView(bufferView.buffer, bufferView.byteOffset, bufferView.byteLength);
+
+                    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, dataView, gl.STATIC_DRAW);
+
+                    bufferView.extras.element_array_buffer = buffer;
+                    bufferView.extras.bufferAccessCount = 1; // number of accessors linking to this buffer.
+
+                }
+
+            }
+
+            // create and link attribute accessors, and possibly upload bufferView to GPU.
+
+            for (let name in primitive.attributes) {
+
+                let accessor = primitive.attributes[name];
+                let bufferView = accessor.bufferView;
+
+                if (bufferView.extras.array_buffer) {
+
+                    gl.bindBuffer(gl.ARRAY_BUFFER, bufferView.extras.array_buffer);
+
+                    // the bufferView is already loaded, increment access count.
+                    bufferView.extras.bufferAccessCount += 1;
+
+                } else {
+
+                    // create buffer and upload data.
+
+                    let buffer = gl.createBuffer();
+                    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+
+                    let dataView = new DataView(bufferView.buffer, bufferView.byteOffset, bufferView.byteLength);
+
+                    gl.bufferData(gl.ARRAY_BUFFER, dataView, gl.STATIC_DRAW);
+
+                    // setup and enable vertex attributes (Using the predefined and constant locations.)
+                    gl.vertexAttribPointer(ATTRIBUTE_LOCATION[name], TYPE[accessor.type], accessor.componentType, accessor.normalized, bufferView.byteStride, accessor.byteOffset);
+                    gl.enableVertexAttribArray(ATTRIBUTE_LOCATION[name]);
+
+                    bufferView.extras.array_buffer = buffer;
+                    bufferView.extras.bufferAccessCount = 1; // number of accessors linking to this buffer.
+
+                }
+            }
+
+            primitive.extras.vao = vao;
+
+
+            const material = primitive.material;
+
+            if (material.extras.shader) {
+                return; // shaderprogram already compiled.
+            }
+
+            const shader = standard(gl, material);
+            material.extras.shader = shader;
+
+            if (material.baseColorTexture !== null) {
+
+                const sampler = material.baseColorTexture.texture.sampler;
+
+                const texture = gl.createTexture();
+
+                gl.activeTexture(gl.TEXTURE0);
+                gl.bindTexture(gl.TEXTURE_2D, texture);
+
+                gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE);
+
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, sampler.wrapS);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, sampler.wrapT);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, sampler.minFilter);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, sampler.magFilter);
+
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, material.baseColorTexture.texture.source);
+                gl.generateMipmap(gl.TEXTURE_2D);
+
+                material.baseColorTexture.texture.extras.gl_texture = texture;
+
+            }
+
+        },
+
+        /**
+         *
+         *
+         * @param {*} n Scene, node, or mesh.
+         */
+        unload(primitive) {
+
+            if (typeof primitive.extras.vao === 'undefined') {
+
+                // the primitive has already been unloaded.
+                return;
+
+            }
+
+            if (primitive.indices) {
+
+                let accessor = primitive.indices;
+                let bufferView = accessor.bufferView;
+
+                if (bufferView.extras.element_array_buffer) {
+
+                    if (bufferView.extras.bufferAccessCount > 1) {
+
+                        // the bufferView is still used by another accessor, decrement access count.
+                        bufferView.extras.bufferAccessCount -= 1;
+
+                    } else {
+
+                        gl.deleteBuffer(bufferView.extras.element_array_buffer);
+                        delete bufferView.extras.element_array_buffer;
+                        delete bufferView.extras.bufferAccessCount;
+
+                    }
+
+                }
+
+            }
+
+            for (let name in primitive.attributes) {
+
+                let accessor = primitive.attributes[name];
+                let bufferView = accessor.bufferView;
+
+                if (bufferView.extras.array_buffer) {
+
+                    if (bufferView.extras.bufferAccessCount > 1) {
+
+                        // the bufferView is still used by another accessor, decrement access count.
+                        bufferView.extras.bufferAccessCount -= 1;
+
+                    } else {
+
+                        gl.deleteBuffer(bufferView.extras.array_buffer);
+                        delete bufferView.extras.array_buffer;
+                        delete bufferView.extras.bufferAccessCount;
+
+                    }
+
+                }
+
+            }
+
+            gl.deleteVertexArray(primitive.extras.vao);
+            delete primitive.extras.vao;
+
+        }
+
+    };
+
+    return renderer;
+
+    // loadTexture(url) {
+    //     let image = new Image();
+
+    //     image.src = url;
+
+    //     let texture = this.gl.createTexture();
+
+    //     this.gl.activeTexture(this.gl.TEXTURE0);
+    //     this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
+    //     this.gl.pixelStorei(this.gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, this.gl.NONE);
+
+    //     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
+    //     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
+    //     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
+    //     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
+
+    //     this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, 1, 1, 0, this.gl.RGBA, this.gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 255]));
+
+    //     image.addEventListener('load', () => {
+
+    //         this.gl.activeTexture(this.gl.TEXTURE0);
+    //         this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
+    //         this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, image);
+
+    //         this.gl.generateMipmap(this.gl.TEXTURE_2D);
+    //         this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST_MIPMAP_LINEAR);
+    //         this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
+    //     });
+
+    //     return texture;
+    // }
+
+    // loadCubeMap(urls) {
+    //     let ct = 0;
+    //     let image = new Array(6);
+
+    //     let cubeMap = this.gl.createTexture();
+
+    //     for (let i = 0; i < 6; i++) {
+    //         image[i] = new Image();
+    //         image[i].addEventListener('load', () => {
+    //             ct++;
+    //             if (ct == 6) {
+    //                 this.gl.bindTexture(this.gl.TEXTURE_CUBE_MAP, cubeMap);
+    //                 this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
+    //                 var targets = [
+    //                     this.gl.TEXTURE_CUBE_MAP_POSITIVE_X, this.gl.TEXTURE_CUBE_MAP_NEGATIVE_X,
+    //                     this.gl.TEXTURE_CUBE_MAP_POSITIVE_Y, this.gl.TEXTURE_CUBE_MAP_NEGATIVE_Y,
+    //                     this.gl.TEXTURE_CUBE_MAP_POSITIVE_Z, this.gl.TEXTURE_CUBE_MAP_NEGATIVE_Z
+    //                 ];
+    //                 for (let j = 0; j < 6; j++) {
+    //                     this.gl.texImage2D(targets[j], 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, image[j]);
+    //                     this.gl.texParameteri(this.gl.TEXTURE_CUBE_MAP, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
+    //                     this.gl.texParameteri(this.gl.TEXTURE_CUBE_MAP, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
+    //                     this.gl.texParameterf(this.gl.TEXTURE_CUBE_MAP, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
+    //                     this.gl.texParameteri(this.gl.TEXTURE_CUBE_MAP, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR_MIPMAP_NEAREST);
+    //                 }
+    //                 this.gl.generateMipmap(this.gl.TEXTURE_CUBE_MAP);
+    //             }
+    //         });
+    //         image[i].src = urls[i];
+    //     }
+
+    //     return cubeMap;
+    // }
+});
+// CONCATENATED MODULE: ./src/index.js
+/**
+ * Warp
+ * A super simple WebGL2 javascript library.
+ * Written by Oskar Bråten, 13/10/2017.
+ * ported to webpack and gl-matrix, 07/06/2018
+ */
+
+
+
+
+
+
+
+
+
+
+/* harmony default export */ var src = __webpack_exports__["default"] = ({
+    node: graph_node,
+    importer: importer,
+    renderer: core_renderer,
+    perspectiveCamera: camera_perspective,
+    orthographicCamera: orthographic
+});
+
+
+/***/ })
+/******/ ]);
+});
 //# sourceMappingURL=warp.js.map

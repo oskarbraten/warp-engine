@@ -2,6 +2,7 @@ const path = require('path');
 const { WebpackPluginServe: Serve } = require('webpack-plugin-serve');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 module.exports = [
     {
@@ -29,23 +30,17 @@ module.exports = [
                     },
                 },
                 {
-                    test: /\.(glsl|gltf)$/,
+                    test: /\.(glsl)$/,
                     use: 'raw-loader'
-                },
-                {
-                    test: /\.(png|jpg|gif)$/,
-                    use: [
-                        {
-                            loader: 'file-loader',
-                            options: {}
-                        }
-                    ]
                 }
             ]
         },
         plugins: [
             new CleanWebpackPlugin('dist', {}),
-        ]
+        ],
+        optimization: {
+            minimize: false
+        }
     },
     {
         mode: process.env.WEBPACK_SERVE ? 'development' : 'production',
@@ -71,7 +66,7 @@ module.exports = [
                     },
                 },
                 {
-                    test: /\.(glsl|gltf)$/,
+                    test: /\.(glsl)$/,
                     use: 'raw-loader'
                 },
                 {
@@ -93,8 +88,20 @@ module.exports = [
                 template: './example/index.html',
                 filename: 'index.html'
             }),
+            new CopyWebpackPlugin([
+                {
+                    from: 'example/misc/',
+                    to: 'assets'
+                }
+            ]),
             new Serve({ static: path.join(process.cwd(), '/example/build') })
         ],
-        watch: true
+        watch: true,
+        optimization: {
+            minimize: false
+        },
+        performance: {
+            hints: false
+        }
     }
 ];

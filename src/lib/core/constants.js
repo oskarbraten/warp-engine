@@ -1,6 +1,14 @@
 
 export const GLTF_VERSION = '2.0';
 
+export const MAX_LIGHTS = 500;
+
+export const ALPHA_MODE = {
+    OPAQUE: 0,
+    MASK: 1,
+    BLEND: 2
+};
+
 export const COMPONENT = Object.freeze({
     SIZE: Object.freeze({
         '5120': 1,
