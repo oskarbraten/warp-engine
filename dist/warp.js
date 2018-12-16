@@ -5595,7 +5595,7 @@ var setAxes = function () {
     metallicRoughnessTexture = null,
 
     normalTexture = null,
-    occulsionTexture = null,
+    occlusionTexture = null,
     emissiveTexture = null,
     emissiveFactor = vec3_namespaceObject.create(),
 
@@ -5607,17 +5607,17 @@ var setAxes = function () {
 
     return {
         baseColorFactor,
-        baseColorTexture,
+        baseColorTexture, // HAS_BASECOLORMAP
         metallicFactor,
         roughnessFactor,
-        metallicRoughnessTexture,
+        metallicRoughnessTexture, // HAS_METALROUGHNESSMAP
 
-        normalTexture,
-        occulsionTexture,
-        emissiveTexture,
+        normalTexture, // HAS_NORMALMAP
+        occlusionTexture, // HAS_OCCLUSIONMAP
+        emissiveTexture, // HAS_EMISSIVEMAP
         emissiveFactor,
 
-        alphaMode: ALPHA_MODE[alphaMode],
+        alphaMode: ALPHA_MODE[alphaMode], // TODO: add defines for this as well.
         alphaCutoff,
         doubleSided,
 
@@ -6032,10 +6032,6 @@ var pbr_fragment_shader_default = /*#__PURE__*/__webpack_require__.n(pbr_fragmen
 
     let fragmentDefines = '';
 
-    // TODO: add define strings.
-
-    console.log(material);
-
     if (material.baseColorTexture !== null) {
         fragmentDefines += '#define HAS_BASECOLORMAP\n';
     }
@@ -6095,7 +6091,6 @@ var pbr_fragment_shader_default = /*#__PURE__*/__webpack_require__.n(pbr_fragmen
 
 
 
-
 /* harmony default export */ var core_renderer = ((context = null) => {
 
     if (context === null) {
@@ -6109,9 +6104,6 @@ var pbr_fragment_shader_default = /*#__PURE__*/__webpack_require__.n(pbr_fragmen
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.CULL_FACE);
-
-    const { program, uniformLocations } = standard(gl, material_material());
-    gl.useProgram(program);
 
     const renderer = {
 
@@ -6127,24 +6119,29 @@ var pbr_fragment_shader_default = /*#__PURE__*/__webpack_require__.n(pbr_fragmen
 
         draw(renderable, viewMatrix, projectionMatrix) {
 
-            const [ primitive, worldMatrix ] = renderable;
+            const [primitive, worldMatrix] = renderable;
 
-            // TODO: only upload these uniforms per mesh.
+            const material = primitive.material;
+            const shader = material.extras.shader;
+            gl.useProgram(shader.program);
 
-            // vertex uniforms:
+            // vertex uniforms: (TODO: calculate only per mesh.)
             const modelViewMatrix = mat4_namespaceObject.multiply(mat4_namespaceObject.create(), viewMatrix, worldMatrix);
             const modelViewProjectionMatrix = mat4_namespaceObject.multiply(mat4_namespaceObject.create(), projectionMatrix, modelViewMatrix);
             const normalMatrix = mat3_namespaceObject.normalFromMat4(mat3_namespaceObject.create(), modelViewMatrix);
 
-            gl.uniformMatrix4fv(uniformLocations.modelMatrix, false, worldMatrix);
-            gl.uniformMatrix4fv(uniformLocations.modelViewProjectionMatrix, false, modelViewProjectionMatrix);
-            gl.uniformMatrix4fv(uniformLocations.normalMatrix, false, normalMatrix);
+            gl.uniformMatrix4fv(shader.uniformLocations.modelMatrix, false, worldMatrix);
+            gl.uniformMatrix4fv(shader.uniformLocations.modelViewProjectionMatrix, false, modelViewProjectionMatrix);
+            gl.uniformMatrix4fv(shader.uniformLocations.normalMatrix, false, normalMatrix);
 
             // material uniforms:
+
+            gl.uniform4fv(shader.uniformLocations.baseColorFactor, material.baseColorFactor);
+
             if (primitive.material.baseColorTexture !== null) {
                 gl.activeTexture(gl.TEXTURE0);
-                gl.bindTexture(gl.TEXTURE_2D, primitive.material.baseColorTexture.texture.glTexture);
-                gl.uniform1i(uniformLocations.baseColorSampler, 0);
+                gl.bindTexture(gl.TEXTURE_2D, primitive.material.baseColorTexture.texture.extras.gl_texture);
+                gl.uniform1i(shader.uniformLocations.baseColorSampler, 0);
             }
 
             if (primitive.extras.vao) {
@@ -6268,7 +6265,16 @@ var pbr_fragment_shader_default = /*#__PURE__*/__webpack_require__.n(pbr_fragmen
 
             primitive.extras.vao = vao;
 
+
             const material = primitive.material;
+
+            if (material.extras.shader) {
+                return; // shaderprogram already compiled.
+            }
+
+            const shader = standard(gl, material);
+            material.extras.shader = shader;
+
             if (material.baseColorTexture !== null) {
 
                 const sampler = material.baseColorTexture.texture.sampler;
@@ -6288,10 +6294,9 @@ var pbr_fragment_shader_default = /*#__PURE__*/__webpack_require__.n(pbr_fragmen
                 gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, material.baseColorTexture.texture.source);
                 gl.generateMipmap(gl.TEXTURE_2D);
 
-                material.baseColorTexture.texture.glTexture = texture;
+                material.baseColorTexture.texture.extras.gl_texture = texture;
 
             }
-
 
         },
 

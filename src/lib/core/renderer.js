@@ -3,7 +3,6 @@ import { mat3, mat4 } from 'gl-matrix';
 
 import { ATTRIBUTE_LOCATION, TYPE, COMPONENT } from './constants';
 import standardShader from '../shader/standard';
-import material from '../material/material';
 
 export default (context = null) => {
 
@@ -19,9 +18,6 @@ export default (context = null) => {
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.CULL_FACE);
 
-    const { program, uniformLocations } = standardShader(gl, material());
-    gl.useProgram(program);
-
     const renderer = {
 
         domElement,
@@ -36,24 +32,29 @@ export default (context = null) => {
 
         draw(renderable, viewMatrix, projectionMatrix) {
 
-            const [ primitive, worldMatrix ] = renderable;
+            const [primitive, worldMatrix] = renderable;
 
-            // TODO: only upload these uniforms per mesh.
+            const material = primitive.material;
+            const shader = material.extras.shader;
+            gl.useProgram(shader.program);
 
-            // vertex uniforms:
+            // vertex uniforms: (TODO: calculate only per mesh.)
             const modelViewMatrix = mat4.multiply(mat4.create(), viewMatrix, worldMatrix);
             const modelViewProjectionMatrix = mat4.multiply(mat4.create(), projectionMatrix, modelViewMatrix);
             const normalMatrix = mat3.normalFromMat4(mat3.create(), modelViewMatrix);
 
-            gl.uniformMatrix4fv(uniformLocations.modelMatrix, false, worldMatrix);
-            gl.uniformMatrix4fv(uniformLocations.modelViewProjectionMatrix, false, modelViewProjectionMatrix);
-            gl.uniformMatrix4fv(uniformLocations.normalMatrix, false, normalMatrix);
+            gl.uniformMatrix4fv(shader.uniformLocations.modelMatrix, false, worldMatrix);
+            gl.uniformMatrix4fv(shader.uniformLocations.modelViewProjectionMatrix, false, modelViewProjectionMatrix);
+            gl.uniformMatrix4fv(shader.uniformLocations.normalMatrix, false, normalMatrix);
 
             // material uniforms:
+
+            gl.uniform4fv(shader.uniformLocations.baseColorFactor, material.baseColorFactor);
+
             if (primitive.material.baseColorTexture !== null) {
                 gl.activeTexture(gl.TEXTURE0);
-                gl.bindTexture(gl.TEXTURE_2D, primitive.material.baseColorTexture.texture.glTexture);
-                gl.uniform1i(uniformLocations.baseColorSampler, 0);
+                gl.bindTexture(gl.TEXTURE_2D, primitive.material.baseColorTexture.texture.extras.gl_texture);
+                gl.uniform1i(shader.uniformLocations.baseColorSampler, 0);
             }
 
             if (primitive.extras.vao) {
@@ -177,7 +178,16 @@ export default (context = null) => {
 
             primitive.extras.vao = vao;
 
+
             const material = primitive.material;
+
+            if (material.extras.shader) {
+                return; // shaderprogram already compiled.
+            }
+
+            const shader = standardShader(gl, material);
+            material.extras.shader = shader;
+
             if (material.baseColorTexture !== null) {
 
                 const sampler = material.baseColorTexture.texture.sampler;
@@ -197,10 +207,9 @@ export default (context = null) => {
                 gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, material.baseColorTexture.texture.source);
                 gl.generateMipmap(gl.TEXTURE_2D);
 
-                material.baseColorTexture.texture.glTexture = texture;
+                material.baseColorTexture.texture.extras.gl_texture = texture;
 
             }
-
 
         },
 

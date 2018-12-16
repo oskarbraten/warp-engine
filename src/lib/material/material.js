@@ -16,7 +16,7 @@ export default ({
     metallicRoughnessTexture = null,
 
     normalTexture = null,
-    occulsionTexture = null,
+    occlusionTexture = null,
     emissiveTexture = null,
     emissiveFactor = vec3.create(),
 
@@ -28,17 +28,17 @@ export default ({
 
     return {
         baseColorFactor,
-        baseColorTexture,
+        baseColorTexture, // HAS_BASECOLORMAP
         metallicFactor,
         roughnessFactor,
-        metallicRoughnessTexture,
+        metallicRoughnessTexture, // HAS_METALROUGHNESSMAP
 
-        normalTexture,
-        occulsionTexture,
-        emissiveTexture,
+        normalTexture, // HAS_NORMALMAP
+        occlusionTexture, // HAS_OCCLUSIONMAP
+        emissiveTexture, // HAS_EMISSIVEMAP
         emissiveFactor,
 
-        alphaMode: ALPHA_MODE[alphaMode],
+        alphaMode: ALPHA_MODE[alphaMode], // TODO: add defines for this as well.
         alphaCutoff,
         doubleSided,
 

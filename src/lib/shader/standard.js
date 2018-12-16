@@ -7,10 +7,6 @@ export default (context, material) => {
 
     let fragmentDefines = '';
 
-    // TODO: add define strings.
-
-    console.log(material);
-
     if (material.baseColorTexture !== null) {
         fragmentDefines += '#define HAS_BASECOLORMAP\n';
     }
