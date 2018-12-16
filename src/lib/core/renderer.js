@@ -1,13 +1,9 @@
 
-import { mat4 } from 'gl-matrix';
+import { mat3, mat4 } from 'gl-matrix';
 
 import { ATTRIBUTE_LOCATION, TYPE, COMPONENT } from './constants';
-
-import buildShaderFromSource from '../shading/shader';
-
-import basicVertexShaderSource from '../shading/shaders/basic-vertex-shader.glsl';
-import basicFragmentShaderSource from '../shading/shaders/basic-fragment-shader.glsl';
-
+import standardShader from '../shader/standard';
+import material from '../material/material';
 
 export default (context = null) => {
 
@@ -23,9 +19,8 @@ export default (context = null) => {
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.CULL_FACE);
 
-    const program = buildShaderFromSource(gl, basicVertexShaderSource, basicFragmentShaderSource);
+    const { program, uniformLocations } = standardShader(gl, material());
     gl.useProgram(program);
-
 
     const renderer = {
 
@@ -39,13 +34,27 @@ export default (context = null) => {
             gl.clearColor(1.0, 1.0, 1.0, 1.0);
         },
 
-        draw(renderable, viewMatrix) {
+        draw(renderable, viewMatrix, projectionMatrix) {
 
-            const { primitive, worldMatrix } = renderable;
+            const [ primitive, worldMatrix ] = renderable;
 
-            let modelViewMatrix = mat4.multiply(mat4.create(), viewMatrix, worldMatrix);
+            // TODO: only upload these uniforms per mesh.
 
-            gl.uniformMatrix4fv(gl.getUniformLocation(program, 'modelViewMatrix'), false, modelViewMatrix);
+            // vertex uniforms:
+            const modelViewMatrix = mat4.multiply(mat4.create(), viewMatrix, worldMatrix);
+            const modelViewProjectionMatrix = mat4.multiply(mat4.create(), projectionMatrix, modelViewMatrix);
+            const normalMatrix = mat3.normalFromMat4(mat3.create(), modelViewMatrix);
+
+            gl.uniformMatrix4fv(uniformLocations.modelMatrix, false, worldMatrix);
+            gl.uniformMatrix4fv(uniformLocations.modelViewProjectionMatrix, false, modelViewProjectionMatrix);
+            gl.uniformMatrix4fv(uniformLocations.normalMatrix, false, normalMatrix);
+
+            // material uniforms:
+            if (primitive.material.baseColorTexture !== null) {
+                gl.activeTexture(gl.TEXTURE0);
+                gl.bindTexture(gl.TEXTURE_2D, primitive.material.baseColorTexture.texture.glTexture);
+                gl.uniform1i(uniformLocations.baseColorSampler, 0);
+            }
 
             if (primitive.extras.vao) {
 
@@ -72,15 +81,12 @@ export default (context = null) => {
 
         render(renderQueue, cameraNode) {
 
-            gl.clearColor(1.0, 1.0, 1.0, 1.0);
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-            gl.uniformMatrix4fv(gl.getUniformLocation(program, 'projectionMatrix'), false, cameraNode.camera.projectionMatrix);
 
             const viewMatrix = mat4.invert(mat4.create(), cameraNode.worldMatrix);
 
             for (let i = 0; i < renderQueue.length; i++) {
-                this.draw(renderQueue[i], viewMatrix);
+                this.draw(renderQueue[i], viewMatrix, cameraNode.camera.projectionMatrix);
             }
 
         },
@@ -171,6 +177,30 @@ export default (context = null) => {
 
             primitive.extras.vao = vao;
 
+            const material = primitive.material;
+            if (material.baseColorTexture !== null) {
+
+                const sampler = material.baseColorTexture.texture.sampler;
+
+                const texture = gl.createTexture();
+
+                gl.activeTexture(gl.TEXTURE0);
+                gl.bindTexture(gl.TEXTURE_2D, texture);
+
+                gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE);
+
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, sampler.wrapS);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, sampler.wrapT);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, sampler.minFilter);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, sampler.magFilter);
+
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, material.baseColorTexture.texture.source);
+                gl.generateMipmap(gl.TEXTURE_2D);
+
+                material.baseColorTexture.texture.glTexture = texture;
+
+            }
+
 
         },
 
@@ -254,7 +284,7 @@ export default (context = null) => {
 
     //     this.gl.activeTexture(this.gl.TEXTURE0);
     //     this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
-    //     //this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
+    //     this.gl.pixelStorei(this.gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, this.gl.NONE);
 
     //     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
     //     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);

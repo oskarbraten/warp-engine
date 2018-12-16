@@ -3,7 +3,7 @@
  * A bufferView represents a subset of data in a buffer, defined by an integer offset into the buffer specified in the byteOffset property and a byteLength property to specify length of the buffer view.
  */
 
-export default (buffer, byteLength, byteOffset = 0, target = target.ARRAY_BUFFER, byteStride = 0) => {
+export default (buffer, byteLength, byteOffset = 0, target = null, byteStride = 0) => {
 
     return {
         buffer, // Javascript ArrayBuffer (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer)

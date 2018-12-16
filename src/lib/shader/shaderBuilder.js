@@ -1,5 +1,5 @@
-
 function compile(gl, source, type) {
+
     let shader = gl.createShader(type);
     gl.shaderSource(shader, source);
     gl.compileShader(shader);
@@ -9,6 +9,7 @@ function compile(gl, source, type) {
     }
 
     return shader;
+    
 }
 
 export default (gl, vertexShaderSource, fragmentShaderSource) => {

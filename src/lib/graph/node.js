@@ -6,9 +6,6 @@
 import { vec3, mat4, quat } from 'gl-matrix';
 
 export default ({
-
-    name = null,
-
     parent = null,
     children = [],
 
@@ -21,7 +18,7 @@ export default ({
 
     matrix = null
 
-}) => {
+}, name = null) => {
 
     const node = {
 
