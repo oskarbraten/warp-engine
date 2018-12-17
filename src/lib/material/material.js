@@ -4,13 +4,13 @@
  */
 
 import { ALPHA_MODE } from '../core/constants';
-import { vec3 } from 'gl-matrix';
-import { vec4 } from 'gl-matrix';
+import { vec3, vec4 } from 'gl-matrix';
 
 export default ({
 
     baseColorFactor = vec4.fromValues(1.0, 1.0, 1.0, 1.0),
     baseColorTexture = null,
+
     metallicFactor = 1.0,
     roughnessFactor = 1.0,
     metallicRoughnessTexture = null,
@@ -29,6 +29,7 @@ export default ({
     return {
         baseColorFactor,
         baseColorTexture, // HAS_BASECOLORMAP
+
         metallicFactor,
         roughnessFactor,
         metallicRoughnessTexture, // HAS_METALROUGHNESSMAP
@@ -47,4 +48,3 @@ export default ({
     };
     
 };
-

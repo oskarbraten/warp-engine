@@ -54,12 +54,12 @@ export const PROJECTION = Object.freeze({
 export const ATTRIBUTE_LOCATION = Object.freeze({
     POSITION: 0,
     NORMAL: 1,
-    TEXCOORD_0: 2,
-    JOINTS_0: 3,
-    JOINTS_1: 5,
-    WEIGHTS_0: 4,
-    WEIGHTS_1: 6,
-    TANGENT: 7
+    TANGENT: 2,
+    TEXCOORD_0: 3,
+    TEXCOORD_1: 4,
+    COLOR_0: 5,
+    JOINTS_0: 6,
+    WEIGHTS_0: 7,
 });
 
 export const VALID_ACCESSOR_TYPES = Object.freeze({

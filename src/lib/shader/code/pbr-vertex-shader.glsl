@@ -5,10 +5,7 @@ __DEFINES__
 layout(location = 0) in vec4 in_position;
 layout(location = 1) in vec4 in_normal;
 layout(location = 2) in vec4 in_tangent;
-
-#ifdef HAS_UV
 layout(location = 3) in vec2 in_texcoord_0;
-#endif
 
 uniform mat4 modelViewProjectionMatrix;
 uniform mat4 modelMatrix;
@@ -29,11 +26,7 @@ void main() {
     vec3 bitangentW = cross(normalW, tangentW) * in_tangent.w;
     TBN = mat3(tangentW, bitangentW, normalW);
 
-    #ifdef HAS_UV
     texcoord_0 = in_texcoord_0;
-    #else
-    texcoord_0 = vec2(0., 0.);
-    #endif
 
     gl_Position = modelViewProjectionMatrix * in_position; // needs w for proper perspective correction
 }

@@ -1,5 +1,5 @@
 
-import { mat3, mat4 } from 'gl-matrix';
+import { mat3, mat4, vec3 } from 'gl-matrix';
 
 import { ATTRIBUTE_LOCATION, TYPE, COMPONENT } from './constants';
 import standardShader from '../shader/standard';
@@ -30,7 +30,7 @@ export default (context = null) => {
             gl.clearColor(1.0, 1.0, 1.0, 1.0);
         },
 
-        draw(renderable, viewMatrix, projectionMatrix) {
+        draw(renderable, cameraNode) {
 
             const [primitive, worldMatrix] = renderable;
 
@@ -39,22 +39,53 @@ export default (context = null) => {
             gl.useProgram(shader.program);
 
             // vertex uniforms: (TODO: calculate only per mesh.)
+            const viewMatrix = mat4.invert(mat4.create(), cameraNode.worldMatrix);
             const modelViewMatrix = mat4.multiply(mat4.create(), viewMatrix, worldMatrix);
-            const modelViewProjectionMatrix = mat4.multiply(mat4.create(), projectionMatrix, modelViewMatrix);
+            const modelViewProjectionMatrix = mat4.multiply(mat4.create(), cameraNode.camera.projectionMatrix, modelViewMatrix);
             const normalMatrix = mat3.normalFromMat4(mat3.create(), modelViewMatrix);
 
             gl.uniformMatrix4fv(shader.uniformLocations.modelMatrix, false, worldMatrix);
             gl.uniformMatrix4fv(shader.uniformLocations.modelViewProjectionMatrix, false, modelViewProjectionMatrix);
             gl.uniformMatrix4fv(shader.uniformLocations.normalMatrix, false, normalMatrix);
 
+            const cameraPosition = mat4.getTranslation(vec3.create(), cameraNode.worldMatrix);
+            gl.uniform3fv(shader.uniformLocations.camera, cameraPosition);
+
             // material uniforms:
-
             gl.uniform4fv(shader.uniformLocations.baseColorFactor, material.baseColorFactor);
+            gl.uniform2f(shader.uniformLocations.metallicRoughnessValues, material.metallicFactor, material.roughnessFactor);
 
-            if (primitive.material.baseColorTexture !== null) {
+            if (material.baseColorTexture !== null) {
                 gl.activeTexture(gl.TEXTURE0);
-                gl.bindTexture(gl.TEXTURE_2D, primitive.material.baseColorTexture.texture.extras.gl_texture);
+                gl.bindTexture(gl.TEXTURE_2D, material.baseColorTexture.texture.extras.gl_texture);
                 gl.uniform1i(shader.uniformLocations.baseColorSampler, 0);
+            }
+
+            if (material.metallicRoughnessTexture !== null) {
+                gl.activeTexture(gl.TEXTURE1);
+                gl.bindTexture(gl.TEXTURE_2D, material.metallicRoughnessTexture.texture.extras.gl_texture);
+                gl.uniform1i(shader.uniformLocations.metallicRoughnessSampler, 1);
+            }
+
+            if (material.normalTexture !== null) {
+                gl.activeTexture(gl.TEXTURE2);
+                gl.bindTexture(gl.TEXTURE_2D, material.normalTexture.texture.extras.gl_texture);
+                gl.uniform1i(shader.uniformLocations.normalSampler, 2);
+                gl.uniform1f(shader.uniformLocations.normalScale, material.normalTexture.normalScale);
+            }
+
+            if (material.occlusionTexture !== null) {
+                gl.activeTexture(gl.TEXTURE3);
+                gl.bindTexture(gl.TEXTURE_2D, material.occlusionTexture.texture.extras.gl_texture);
+                gl.uniform1i(shader.uniformLocations.occlusionTexture, 3);
+                gl.uniform1f(shader.uniformLocations.occlusionStrength, material.occlusionTexture.occlusionStrength);
+            }
+
+            if (material.emissiveTexture !== null) {
+                gl.activeTexture(gl.TEXTURE4);
+                gl.bindTexture(gl.TEXTURE_2D, material.emissiveTexture.texture.extras.gl_texture);
+                gl.uniform1i(shader.uniformLocations.emissiveTexture, 4);
+                gl.uniform3fv(shader.uniformLocations.emissiveFactor, material.emissiveFactor);
             }
 
             if (primitive.extras.vao) {
@@ -84,10 +115,9 @@ export default (context = null) => {
 
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-            const viewMatrix = mat4.invert(mat4.create(), cameraNode.worldMatrix);
-
+            
             for (let i = 0; i < renderQueue.length; i++) {
-                this.draw(renderQueue[i], viewMatrix, cameraNode.camera.projectionMatrix);
+                this.draw(renderQueue[i], cameraNode);
             }
 
         },
@@ -189,27 +219,47 @@ export default (context = null) => {
             material.extras.shader = shader;
 
             if (material.baseColorTexture !== null) {
-
-                const sampler = material.baseColorTexture.texture.sampler;
-
-                const texture = gl.createTexture();
-
-                gl.activeTexture(gl.TEXTURE0);
-                gl.bindTexture(gl.TEXTURE_2D, texture);
-
-                gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE);
-
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, sampler.wrapS);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, sampler.wrapT);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, sampler.minFilter);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, sampler.magFilter);
-
-                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, material.baseColorTexture.texture.source);
-                gl.generateMipmap(gl.TEXTURE_2D);
-
-                material.baseColorTexture.texture.extras.gl_texture = texture;
-
+                material.baseColorTexture.texture.extras.gl_texture = this.loadTexture(material.baseColorTexture.texture);
             }
+
+            if (material.metallicRoughnessTexture !== null) {
+                material.metallicRoughnessTexture.texture.extras.gl_texture = this.loadTexture(material.metallicRoughnessTexture.texture);
+            }
+
+            if (material.normalTexture !== null) {
+                material.normalTexture.texture.extras.gl_texture = this.loadTexture(material.normalTexture.texture);
+            }
+
+            if (material.occlusionTexture !== null) {
+                material.occlusionTexture.texture.extras.gl_texture = this.loadTexture(material.occlusionTexture.texture);
+            }
+
+            if (material.emissiveTexture !== null) {
+                material.emissiveTexture.texture.extras.gl_texture = this.loadTexture(material.emissiveTexture.texture);
+            }
+
+        },
+
+        loadTexture(texture) {
+
+            const { sampler, source } = texture;
+
+            const gl_texture = gl.createTexture();
+
+            gl.activeTexture(gl.TEXTURE0);
+            gl.bindTexture(gl.TEXTURE_2D, gl_texture);
+
+            gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE);
+
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, sampler.wrapS);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, sampler.wrapT);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, sampler.minFilter);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, sampler.magFilter);
+
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
+            gl.generateMipmap(gl.TEXTURE_2D);
+
+            return gl_texture;
 
         },
 

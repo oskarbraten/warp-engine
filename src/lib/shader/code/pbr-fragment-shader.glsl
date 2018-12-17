@@ -8,50 +8,43 @@ const vec3 u_LightDirection = vec3(0.5, 0.5, 0.0);
 const vec3 u_LightColor = vec3(1.0, 1.0, 1.0);
 
 #ifdef USE_IBL
-uniform samplerCube u_DiffuseEnvSampler;
-uniform samplerCube u_SpecularEnvSampler;
-uniform sampler2D u_brdfLUT;
+    uniform samplerCube u_DiffuseEnvSampler;
+    uniform samplerCube u_SpecularEnvSampler;
+    uniform sampler2D u_brdfLUT;
 #endif
 
 #ifdef HAS_BASECOLORMAP
-uniform sampler2D u_BaseColorSampler;
+    uniform sampler2D u_BaseColorSampler;
 #endif
 #ifdef HAS_NORMALMAP
-uniform sampler2D u_NormalSampler;
-uniform float u_NormalScale;
+    uniform sampler2D u_NormalSampler;
+    uniform float u_NormalScale;
 #endif
 #ifdef HAS_EMISSIVEMAP
-uniform sampler2D u_EmissiveSampler;
-uniform vec3 u_EmissiveFactor;
+    uniform sampler2D u_EmissiveSampler;
+    uniform vec3 u_EmissiveFactor;
 #endif
 #ifdef HAS_METALROUGHNESSMAP
-uniform sampler2D u_MetallicRoughnessSampler;
+    uniform sampler2D u_MetallicRoughnessSampler;
 #endif
 #ifdef HAS_OCCLUSIONMAP
-uniform sampler2D u_OcclusionSampler;
-uniform float u_OcclusionStrength;
+    uniform sampler2D u_OcclusionSampler;
+    uniform float u_OcclusionStrength;
 #endif
 
 uniform vec2 u_MetallicRoughnessValues;
 uniform vec4 u_BaseColorFactor;
-
 uniform vec3 u_Camera;
 
-// debugging flags used for shader output of intermediate PBR variables
-// uniform vec4 u_ScaleDiffBaseMR;
-// uniform vec4 u_ScaleFGDSpec;
-// uniform vec4 u_ScaleIBLAmbient;
-
 in vec3 position;
-
 in vec2 texcoord_0;
 
 #ifdef HAS_NORMALS
-#ifdef HAS_TANGENTS
-in mat3 TBN;
-#else
-in vec3 normal;
-#endif
+    #ifdef HAS_TANGENTS
+        in mat3 TBN;
+    #else
+        in vec3 normal;
+    #endif
 #endif
 
 out vec4 fColor;
@@ -202,25 +195,28 @@ void main() {
     // or from a metallic-roughness map
     float perceptualRoughness = u_MetallicRoughnessValues.y;
     float metallic = u_MetallicRoughnessValues.x;
-#ifdef HAS_METALROUGHNESSMAP
-    // Roughness is stored in the 'g' channel, metallic is stored in the 'b' channel.
-    // This layout intentionally reserves the 'r' channel for (optional) occlusion map data
-    vec4 mrSample = texture(u_MetallicRoughnessSampler, texcoord_0);
-    perceptualRoughness = mrSample.g * perceptualRoughness;
-    metallic = mrSample.b * metallic;
-#endif
+
+    #ifdef HAS_METALROUGHNESSMAP
+        // Roughness is stored in the 'g' channel, metallic is stored in the 'b' channel.
+        // This layout intentionally reserves the 'r' channel for (optional) occlusion map data
+        vec4 mrSample = texture(u_MetallicRoughnessSampler, texcoord_0);
+        perceptualRoughness = mrSample.g * perceptualRoughness;
+        metallic = mrSample.b * metallic;
+    #endif
+
     perceptualRoughness = clamp(perceptualRoughness, c_MinRoughness, 1.0);
     metallic = clamp(metallic, 0.0, 1.0);
+
     // Roughness is authored as perceptual roughness; as is convention,
     // convert to material roughness by squaring the perceptual roughness [2].
     float alphaRoughness = perceptualRoughness * perceptualRoughness;
 
     // The albedo may be defined from a base texture or a flat color
-#ifdef HAS_BASECOLORMAP
-    vec4 baseColor = SRGBtoLINEAR(texture(u_BaseColorSampler, texcoord_0)) * u_BaseColorFactor;
-#else
-    vec4 baseColor = u_BaseColorFactor;
-#endif
+    #ifdef HAS_BASECOLORMAP
+        vec4 baseColor = SRGBtoLINEAR(texture(u_BaseColorSampler, texcoord_0)) * u_BaseColorFactor;
+    #else
+        vec4 baseColor = u_BaseColorFactor;
+    #endif
 
     vec3 f0 = vec3(0.04);
     vec3 diffuseColor = baseColor.rgb * (vec3(1.0) - f0);
@@ -275,32 +271,20 @@ void main() {
     vec3 color = NdotL * u_LightColor * (diffuseContrib + specContrib);
 
     // Calculate lighting contribution from image based lighting source (IBL)
-#ifdef USE_IBL
-    color += getIBLContribution(pbrInputs, n, reflection);
-#endif
+    #ifdef USE_IBL
+        color += getIBLContribution(pbrInputs, n, reflection);
+    #endif
 
     // Apply optional PBR terms for additional (optional) shading
-#ifdef HAS_OCCLUSIONMAP
-    float ao = texture(u_OcclusionSampler, texcoord_0).r;
-    color = mix(color, color * ao, u_OcclusionStrength);
-#endif
+    #ifdef HAS_OCCLUSIONMAP
+        float ao = texture(u_OcclusionSampler, texcoord_0).r;
+        color = mix(color, color * ao, u_OcclusionStrength);
+    #endif
 
-#ifdef HAS_EMISSIVEMAP
-    vec3 emissive = SRGBtoLINEAR(texture(u_EmissiveSampler, texcoord_0)).rgb * u_EmissiveFactor;
-    color += emissive;
-#endif
-
-    // // This section uses mix to override final color for reference app visualization
-    // // of various parameters in the lighting equation.
-    // color = mix(color, F, u_ScaleFGDSpec.x);
-    // color = mix(color, vec3(G), u_ScaleFGDSpec.y);
-    // color = mix(color, vec3(D), u_ScaleFGDSpec.z);
-    // color = mix(color, specContrib, u_ScaleFGDSpec.w);
-
-    // color = mix(color, diffuseContrib, u_ScaleDiffBaseMR.x);
-    // color = mix(color, baseColor.rgb, u_ScaleDiffBaseMR.y);
-    // color = mix(color, vec3(metallic), u_ScaleDiffBaseMR.z);
-    // color = mix(color, vec3(perceptualRoughness), u_ScaleDiffBaseMR.w);
+    #ifdef HAS_EMISSIVEMAP
+        vec3 emissive = SRGBtoLINEAR(texture(u_EmissiveSampler, texcoord_0)).rgb * u_EmissiveFactor;
+        color += emissive;
+    #endif
 
     fColor = vec4(pow(color,vec3(1.0/2.2)), baseColor.a);
 }
