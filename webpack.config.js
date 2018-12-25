@@ -45,8 +45,7 @@ module.exports = [
     {
         mode: process.env.WEBPACK_SERVE ? 'development' : 'production',
         entry: [
-            './example/demo.js',
-            'webpack-plugin-serve/client'
+            './example/demo.js'
         ],
         output: {
             path: path.resolve(__dirname, 'example/build'),
