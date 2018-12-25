@@ -10,14 +10,13 @@ import { default as renderer } from './lib/core/renderer';
 
 import { default as node } from './lib/graph/node';
 
-import { default as orthographic } from './lib/camera/orthographic';
-import { default as perspective } from './lib/camera/perspective';
-
+import camera from './lib/core/camera';
+import light from './lib/core/light';
 
 export default {
     node,
     importer,
     renderer,
-    perspectiveCamera: perspective,
-    orthographicCamera: orthographic
+    camera,
+    light
 };
