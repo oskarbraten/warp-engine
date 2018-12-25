@@ -11,6 +11,7 @@ export default ({
 
     mesh = null,
     camera = null,
+    light = null,
 
     rotation = quat.create(),
     translation = vec3.fromValues(0, 0, 0),
@@ -28,6 +29,7 @@ export default ({
 
         mesh,
         camera,
+        light,
 
         localMatrix: mat4.create(),
         worldMatrix: mat4.create(),

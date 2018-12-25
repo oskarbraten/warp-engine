@@ -104,7 +104,7 @@ module.exports = "#version 300 es\n\n__DEFINES__\n\nlayout(location = 0) in vec4
 /* 1 */
 /***/ (function(module, exports) {
 
-module.exports = "#version 300 es\n\n__DEFINES__\n\nprecision highp float;\n\nconst vec3 u_LightDirection = vec3(0.5, 0.5, 0.0);\nconst vec3 u_LightColor = vec3(1.0, 1.0, 1.0);\n\n#ifdef USE_IBL\n    uniform samplerCube u_DiffuseEnvSampler;\n    uniform samplerCube u_SpecularEnvSampler;\n    uniform sampler2D u_brdfLUT;\n#endif\n\n#ifdef HAS_BASECOLORMAP\n    uniform sampler2D u_BaseColorSampler;\n#endif\n#ifdef HAS_NORMALMAP\n    uniform sampler2D u_NormalSampler;\n    uniform float u_NormalScale;\n#endif\n#ifdef HAS_EMISSIVEMAP\n    uniform sampler2D u_EmissiveSampler;\n    uniform vec3 u_EmissiveFactor;\n#endif\n#ifdef HAS_METALROUGHNESSMAP\n    uniform sampler2D u_MetallicRoughnessSampler;\n#endif\n#ifdef HAS_OCCLUSIONMAP\n    uniform sampler2D u_OcclusionSampler;\n    uniform float u_OcclusionStrength;\n#endif\n\nuniform vec2 u_MetallicRoughnessValues;\nuniform vec4 u_BaseColorFactor;\nuniform vec3 u_Camera;\n\nin vec3 position;\nin vec2 texcoord_0;\n\n#ifdef HAS_NORMALS\n    #ifdef HAS_TANGENTS\n        in mat3 TBN;\n    #else\n        in vec3 normal;\n    #endif\n#endif\n\nout vec4 fColor;\n\n// Encapsulate the various inputs used by the various functions in the shading equation\n// We store values in this struct to simplify the integration of alternative implementations\n// of the shading terms, outlined in the Readme.MD Appendix.\nstruct PBRInfo\n{\n    float NdotL;                  // cos angle between normal and light direction\n    float NdotV;                  // cos angle between normal and view direction\n    float NdotH;                  // cos angle between normal and half vector\n    float LdotH;                  // cos angle between light direction and half vector\n    float VdotH;                  // cos angle between view direction and half vector\n    float perceptualRoughness;    // roughness value, as authored by the model creator (input to shader)\n    float metalness;              // metallic value at the surface\n    vec3 reflectance0;            // full reflectance color (normal incidence angle)\n    vec3 reflectance90;           // reflectance color at grazing angle\n    float alphaRoughness;         // roughness mapped to a more linear change in the roughness (proposed by [2])\n    vec3 diffuseColor;            // color contribution from diffuse lighting\n    vec3 specularColor;           // color contribution from specular lighting\n};\n\nconst float M_PI = 3.141592653589793;\nconst float c_MinRoughness = 0.04;\n\nvec4 SRGBtoLINEAR(vec4 srgbIn)\n{\n    #ifdef MANUAL_SRGB\n    #ifdef SRGB_FAST_APPROXIMATION\n    vec3 linOut = pow(srgbIn.xyz,vec3(2.2));\n    #else //SRGB_FAST_APPROXIMATION\n    vec3 bLess = step(vec3(0.04045),srgbIn.xyz);\n    vec3 linOut = mix( srgbIn.xyz/vec3(12.92), pow((srgbIn.xyz+vec3(0.055))/vec3(1.055),vec3(2.4)), bLess );\n    #endif //SRGB_FAST_APPROXIMATION\n    return vec4(linOut,srgbIn.w);;\n    #else //MANUAL_SRGB\n    return srgbIn;\n    #endif //MANUAL_SRGB\n}\n\n// Find the normal for this fragment, pulling either from a predefined normal map\n// or from the interpolated mesh normal and tangent attributes.\nvec3 getNormal()\n{\n    // Retrieve the tangent space matrix\n#ifndef HAS_TANGENTS\n    vec3 pos_dx = dFdx(position);\n    vec3 pos_dy = dFdy(position);\n    vec3 tex_dx = dFdx(vec3(texcoord_0, 0.0));\n    vec3 tex_dy = dFdy(vec3(texcoord_0, 0.0));\n    vec3 t = (tex_dy.t * pos_dx - tex_dx.t * pos_dy) / (tex_dx.s * tex_dy.t - tex_dy.s * tex_dx.t);\n\n#ifdef HAS_NORMALS\n    vec3 ng = normalize(normal);\n#else\n    vec3 ng = cross(pos_dx, pos_dy);\n#endif\n\n    t = normalize(t - ng * dot(ng, t));\n    vec3 b = normalize(cross(ng, t));\n    mat3 tbn = mat3(t, b, ng);\n#else // HAS_TANGENTS\n    mat3 tbn = TBN;\n#endif\n\n#ifdef HAS_NORMALMAP\n    vec3 n = texture(u_NormalSampler, texcoord_0).rgb;\n    n = normalize(tbn * ((2.0 * n - 1.0) * vec3(u_NormalScale, u_NormalScale, 1.0)));\n#else\n    // The tbn matrix is linearly interpolated, so we need to re-normalize\n    vec3 n = normalize(tbn[2].xyz);\n#endif\n\n    return n;\n}\n\n// Calculation of the lighting contribution from an optional Image Based Light source.\n// Precomputed Environment Maps are required uniform inputs and are computed as outlined in [1].\n// See our README.md on Environment Maps [3] for additional discussion.\n#ifdef USE_IBL\nvec3 getIBLContribution(PBRInfo pbrInputs, vec3 n, vec3 reflection)\n{\n    float mipCount = 9.0; // resolution of 512x512\n    float lod = (pbrInputs.perceptualRoughness * mipCount);\n    // retrieve a scale and bias to F0. See [1], Figure 3\n    vec3 brdf = SRGBtoLINEAR(texture(u_brdfLUT, vec2(pbrInputs.NdotV, 1.0 - pbrInputs.perceptualRoughness))).rgb;\n    vec3 diffuseLight = SRGBtoLINEAR(textureCube(u_DiffuseEnvSampler, n)).rgb;\n\n#ifdef USE_TEX_LOD\n    vec3 specularLight = SRGBtoLINEAR(textureCubeLodEXT(u_SpecularEnvSampler, reflection, lod)).rgb;\n#else\n    vec3 specularLight = SRGBtoLINEAR(textureCube(u_SpecularEnvSampler, reflection)).rgb;\n#endif\n\n    vec3 diffuse = diffuseLight * pbrInputs.diffuseColor;\n    vec3 specular = specularLight * (pbrInputs.specularColor * brdf.x + brdf.y);\n\n    // For presentation, this allows us to disable IBL terms\n    diffuse *= u_ScaleIBLAmbient.x;\n    specular *= u_ScaleIBLAmbient.y;\n\n    return diffuse + specular;\n}\n#endif\n\n// Basic Lambertian diffuse\n// Implementation from Lambert's Photometria https://archive.org/details/lambertsphotome00lambgoog\n// See also [1], Equation 1\nvec3 diffuse(PBRInfo pbrInputs)\n{\n    return pbrInputs.diffuseColor / M_PI;\n}\n\n// The following equation models the Fresnel reflectance term of the spec equation (aka F())\n// Implementation of fresnel from [4], Equation 15\nvec3 specularReflection(PBRInfo pbrInputs)\n{\n    return pbrInputs.reflectance0 + (pbrInputs.reflectance90 - pbrInputs.reflectance0) * pow(clamp(1.0 - pbrInputs.VdotH, 0.0, 1.0), 5.0);\n}\n\n// This calculates the specular geometric attenuation (aka G()),\n// where rougher material will reflect less light back to the viewer.\n// This implementation is based on [1] Equation 4, and we adopt their modifications to\n// alphaRoughness as input as originally proposed in [2].\nfloat geometricOcclusion(PBRInfo pbrInputs) {\n    float NdotL = pbrInputs.NdotL;\n    float NdotV = pbrInputs.NdotV;\n    float r = pbrInputs.alphaRoughness;\n\n    float attenuationL = 2.0 * NdotL / (NdotL + sqrt(r * r + (1.0 - r * r) * (NdotL * NdotL)));\n    float attenuationV = 2.0 * NdotV / (NdotV + sqrt(r * r + (1.0 - r * r) * (NdotV * NdotV)));\n    return attenuationL * attenuationV;\n}\n\n// The following equation(s) model the distribution of microfacet normals across the area being drawn (aka D())\n// Implementation from \"Average Irregularity Representation of a Roughened Surface for Ray Reflection\" by T. S. Trowbridge, and K. P. Reitz\n// Follows the distribution function recommended in the SIGGRAPH 2013 course notes from EPIC Games [1], Equation 3.\nfloat microfacetDistribution(PBRInfo pbrInputs) {\n    float roughnessSq = pbrInputs.alphaRoughness * pbrInputs.alphaRoughness;\n    float f = (pbrInputs.NdotH * roughnessSq - pbrInputs.NdotH) * pbrInputs.NdotH + 1.0;\n    return roughnessSq / (M_PI * f * f);\n}\n\nvoid main() {\n    // Metallic and Roughness material properties are packed together\n    // In glTF, these factors can be specified by fixed scalar values\n    // or from a metallic-roughness map\n    float perceptualRoughness = u_MetallicRoughnessValues.y;\n    float metallic = u_MetallicRoughnessValues.x;\n\n    #ifdef HAS_METALROUGHNESSMAP\n        // Roughness is stored in the 'g' channel, metallic is stored in the 'b' channel.\n        // This layout intentionally reserves the 'r' channel for (optional) occlusion map data\n        vec4 mrSample = texture(u_MetallicRoughnessSampler, texcoord_0);\n        perceptualRoughness = mrSample.g * perceptualRoughness;\n        metallic = mrSample.b * metallic;\n    #endif\n\n    perceptualRoughness = clamp(perceptualRoughness, c_MinRoughness, 1.0);\n    metallic = clamp(metallic, 0.0, 1.0);\n\n    // Roughness is authored as perceptual roughness; as is convention,\n    // convert to material roughness by squaring the perceptual roughness [2].\n    float alphaRoughness = perceptualRoughness * perceptualRoughness;\n\n    // The albedo may be defined from a base texture or a flat color\n    #ifdef HAS_BASECOLORMAP\n        vec4 baseColor = SRGBtoLINEAR(texture(u_BaseColorSampler, texcoord_0)) * u_BaseColorFactor;\n    #else\n        vec4 baseColor = u_BaseColorFactor;\n    #endif\n\n    vec3 f0 = vec3(0.04);\n    vec3 diffuseColor = baseColor.rgb * (vec3(1.0) - f0);\n    diffuseColor *= 1.0 - metallic;\n    vec3 specularColor = mix(f0, baseColor.rgb, metallic);\n\n    // Compute reflectance.\n    float reflectance = max(max(specularColor.r, specularColor.g), specularColor.b);\n\n    // For typical incident reflectance range (between 4% to 100%) set the grazing reflectance to 100% for typical fresnel effect.\n    // For very low reflectance range on highly diffuse objects (below 4%), incrementally reduce grazing reflecance to 0%.\n    float reflectance90 = clamp(reflectance * 25.0, 0.0, 1.0);\n    vec3 specularEnvironmentR0 = specularColor.rgb;\n    vec3 specularEnvironmentR90 = vec3(1.0, 1.0, 1.0) * reflectance90;\n\n    vec3 n = getNormal();                             // normal at surface point\n    vec3 v = normalize(u_Camera - position);        // Vector from surface point to camera\n    vec3 l = normalize(u_LightDirection);             // Vector from surface point to light\n    vec3 h = normalize(l+v);                          // Half vector between both l and v\n    vec3 reflection = -normalize(reflect(v, n));\n\n    float NdotL = clamp(dot(n, l), 0.001, 1.0);\n    float NdotV = clamp(abs(dot(n, v)), 0.001, 1.0);\n    float NdotH = clamp(dot(n, h), 0.0, 1.0);\n    float LdotH = clamp(dot(l, h), 0.0, 1.0);\n    float VdotH = clamp(dot(v, h), 0.0, 1.0);\n\n    PBRInfo pbrInputs = PBRInfo(\n        NdotL,\n        NdotV,\n        NdotH,\n        LdotH,\n        VdotH,\n        perceptualRoughness,\n        metallic,\n        specularEnvironmentR0,\n        specularEnvironmentR90,\n        alphaRoughness,\n        diffuseColor,\n        specularColor\n    );\n\n    // Calculate the shading terms for the microfacet specular shading model\n    vec3 F = specularReflection(pbrInputs);\n    float G = geometricOcclusion(pbrInputs);\n    float D = microfacetDistribution(pbrInputs);\n\n    // Calculation of analytical lighting contribution\n    vec3 diffuseContrib = (1.0 - F) * diffuse(pbrInputs);\n    vec3 specContrib = F * G * D / (4.0 * NdotL * NdotV);\n    // Obtain final intensity as reflectance (BRDF) scaled by the energy of the light (cosine law)\n    vec3 color = NdotL * u_LightColor * (diffuseContrib + specContrib);\n\n    // Calculate lighting contribution from image based lighting source (IBL)\n    #ifdef USE_IBL\n        color += getIBLContribution(pbrInputs, n, reflection);\n    #endif\n\n    // Apply optional PBR terms for additional (optional) shading\n    #ifdef HAS_OCCLUSIONMAP\n        float ao = texture(u_OcclusionSampler, texcoord_0).r;\n        color = mix(color, color * ao, u_OcclusionStrength);\n    #endif\n\n    #ifdef HAS_EMISSIVEMAP\n        vec3 emissive = SRGBtoLINEAR(texture(u_EmissiveSampler, texcoord_0)).rgb * u_EmissiveFactor;\n        color += emissive;\n    #endif\n\n    fColor = vec4(pow(color,vec3(1.0/2.2)), baseColor.a);\n}"
+module.exports = "#version 300 es\n\n__DEFINES__\n\nprecision highp float;\n\nconst uint LIGHT_POINT = 0U;\nconst uint LIGHT_DIRECTIONAL = 1U;\nconst uint LIGHT_SPOT = 2U;\n\nuniform int u_NumberOfLights;\n\nstruct Light {\n    vec4 position;\n    vec4 color;\n    uint type;\n    float range;\n    float innerConeAngle;\n    float outerConeAngle;\n};\n\nlayout(std140) uniform LightBlock {\n    Light lights[MAX_NUMBER_OF_LIGHTS];\n};\n\n#ifdef USE_IBL\n    uniform samplerCube u_DiffuseEnvSampler;\n    uniform samplerCube u_SpecularEnvSampler;\n    uniform sampler2D u_brdfLUT;\n#endif\n\n#ifdef HAS_BASECOLORMAP\n    uniform sampler2D u_BaseColorSampler;\n#endif\n#ifdef HAS_NORMALMAP\n    uniform sampler2D u_NormalSampler;\n    uniform float u_NormalScale;\n#endif\n#ifdef HAS_EMISSIVEMAP\n    uniform sampler2D u_EmissiveSampler;\n    uniform vec3 u_EmissiveFactor;\n#endif\n#ifdef HAS_METALROUGHNESSMAP\n    uniform sampler2D u_MetallicRoughnessSampler;\n#endif\n#ifdef HAS_OCCLUSIONMAP\n    uniform sampler2D u_OcclusionSampler;\n    uniform float u_OcclusionStrength;\n#endif\n\nuniform vec2 u_MetallicRoughnessValues;\nuniform vec4 u_BaseColorFactor;\nuniform vec3 u_Camera;\n\nin vec3 position;\nin vec2 texcoord_0;\n\n#ifdef HAS_NORMALS\n    #ifdef HAS_TANGENTS\n        in mat3 TBN;\n    #else\n        in vec3 normal;\n    #endif\n#endif\n\nout vec4 fColor;\n\n// Encapsulate the various inputs used by the various functions in the shading equation\n// We store values in this struct to simplify the integration of alternative implementations\n// of the shading terms, outlined in the Readme.MD Appendix.\nstruct PBRInfo {\n    float NdotL;                  // cos angle between normal and light direction\n    float NdotV;                  // cos angle between normal and view direction\n    float NdotH;                  // cos angle between normal and half vector\n    float LdotH;                  // cos angle between light direction and half vector\n    float VdotH;                  // cos angle between view direction and half vector\n    float perceptualRoughness;    // roughness value, as authored by the model creator (input to shader)\n    float metalness;              // metallic value at the surface\n    vec3 reflectance0;            // full reflectance color (normal incidence angle)\n    vec3 reflectance90;           // reflectance color at grazing angle\n    float alphaRoughness;         // roughness mapped to a more linear change in the roughness (proposed by [2])\n    vec3 diffuseColor;            // color contribution from diffuse lighting\n    vec3 specularColor;           // color contribution from specular lighting\n};\n\nconst float M_PI = 3.141592653589793;\nconst float c_MinRoughness = 0.04;\n\nvec4 SRGBtoLINEAR(vec4 srgbIn) {\n    #ifdef MANUAL_SRGB\n    #ifdef SRGB_FAST_APPROXIMATION\n    vec3 linOut = pow(srgbIn.xyz,vec3(2.2));\n    #else //SRGB_FAST_APPROXIMATION\n    vec3 bLess = step(vec3(0.04045),srgbIn.xyz);\n    vec3 linOut = mix( srgbIn.xyz/vec3(12.92), pow((srgbIn.xyz+vec3(0.055))/vec3(1.055),vec3(2.4)), bLess );\n    #endif //SRGB_FAST_APPROXIMATION\n    return vec4(linOut,srgbIn.w);;\n    #else //MANUAL_SRGB\n    return srgbIn;\n    #endif //MANUAL_SRGB\n}\n\n// Find the normal for this fragment, pulling either from a predefined normal map\n// or from the interpolated mesh normal and tangent attributes.\nvec3 getNormal() {\n    // Retrieve the tangent space matrix\n#ifndef HAS_TANGENTS\n\n    vec3 pos_dx = dFdx(position);\n    vec3 pos_dy = dFdy(position);\n    vec3 tex_dx = dFdx(vec3(texcoord_0, 0.0));\n    vec3 tex_dy = dFdy(vec3(texcoord_0, 0.0));\n    vec3 t = (tex_dy.t * pos_dx - tex_dx.t * pos_dy) / (tex_dx.s * tex_dy.t - tex_dy.s * tex_dx.t);\n\n#ifdef HAS_NORMALS\n    vec3 ng = normalize(normal);\n#else\n    vec3 ng = cross(pos_dx, pos_dy);\n#endif\n\n    t = normalize(t - ng * dot(ng, t));\n    vec3 b = normalize(cross(ng, t));\n    mat3 tbn = mat3(t, b, ng);\n\n#else // HAS_TANGENTS\n    mat3 tbn = TBN;\n#endif\n\n#ifdef HAS_NORMALMAP\n    vec3 n = texture(u_NormalSampler, texcoord_0).rgb;\n    n = normalize(tbn * ((2.0 * n - 1.0) * vec3(u_NormalScale, u_NormalScale, 1.0)));\n#else\n    // The tbn matrix is linearly interpolated, so we need to re-normalize\n    vec3 n = normalize(tbn[2].xyz);\n#endif\n\n    return n;\n}\n\n// Calculation of the lighting contribution from an optional Image Based Light source.\n// Precomputed Environment Maps are required uniform inputs and are computed as outlined in [1].\n// See our README.md on Environment Maps [3] for additional discussion.\n#ifdef USE_IBL\nvec3 getIBLContribution(PBRInfo pbrInputs, vec3 n, vec3 reflection) {\n    float mipCount = 9.0; // resolution of 512x512\n    float lod = (pbrInputs.perceptualRoughness * mipCount);\n    // retrieve a scale and bias to F0. See [1], Figure 3\n    vec3 brdf = SRGBtoLINEAR(texture(u_brdfLUT, vec2(pbrInputs.NdotV, 1.0 - pbrInputs.perceptualRoughness))).rgb;\n    vec3 diffuseLight = SRGBtoLINEAR(textureCube(u_DiffuseEnvSampler, n)).rgb;\n\n#ifdef USE_TEX_LOD\n    vec3 specularLight = SRGBtoLINEAR(textureCubeLodEXT(u_SpecularEnvSampler, reflection, lod)).rgb;\n#else\n    vec3 specularLight = SRGBtoLINEAR(textureCube(u_SpecularEnvSampler, reflection)).rgb;\n#endif\n\n    vec3 diffuse = diffuseLight * pbrInputs.diffuseColor;\n    vec3 specular = specularLight * (pbrInputs.specularColor * brdf.x + brdf.y);\n\n    // For presentation, this allows us to disable IBL terms\n    diffuse *= u_ScaleIBLAmbient.x;\n    specular *= u_ScaleIBLAmbient.y;\n\n    return diffuse + specular;\n}\n#endif\n\n// Basic Lambertian diffuse\n// Implementation from Lambert's Photometria https://archive.org/details/lambertsphotome00lambgoog\n// See also [1], Equation 1\nvec3 diffuse(PBRInfo pbrInputs) {\n    return pbrInputs.diffuseColor / M_PI;\n}\n\n// The following equation models the Fresnel reflectance term of the spec equation (aka F())\n// Implementation of fresnel from [4], Equation 15\nvec3 specularReflection(PBRInfo pbrInputs) {\n    return pbrInputs.reflectance0 + (pbrInputs.reflectance90 - pbrInputs.reflectance0) * pow(clamp(1.0 - pbrInputs.VdotH, 0.0, 1.0), 5.0);\n}\n\n// This calculates the specular geometric attenuation (aka G()),\n// where rougher material will reflect less light back to the viewer.\n// This implementation is based on [1] Equation 4, and we adopt their modifications to\n// alphaRoughness as input as originally proposed in [2].\nfloat geometricOcclusion(PBRInfo pbrInputs) {\n    float NdotL = pbrInputs.NdotL;\n    float NdotV = pbrInputs.NdotV;\n    float r = pbrInputs.alphaRoughness;\n\n    float attenuationL = 2.0 * NdotL / (NdotL + sqrt(r * r + (1.0 - r * r) * (NdotL * NdotL)));\n    float attenuationV = 2.0 * NdotV / (NdotV + sqrt(r * r + (1.0 - r * r) * (NdotV * NdotV)));\n    return attenuationL * attenuationV;\n}\n\n// The following equation(s) model the distribution of microfacet normals across the area being drawn (aka D())\n// Implementation from \"Average Irregularity Representation of a Roughened Surface for Ray Reflection\" by T. S. Trowbridge, and K. P. Reitz\n// Follows the distribution function recommended in the SIGGRAPH 2013 course notes from EPIC Games [1], Equation 3.\nfloat microfacetDistribution(PBRInfo pbrInputs) {\n    float roughnessSq = pbrInputs.alphaRoughness * pbrInputs.alphaRoughness;\n    float f = (pbrInputs.NdotH * roughnessSq - pbrInputs.NdotH) * pbrInputs.NdotH + 1.0;\n    return roughnessSq / (M_PI * f * f);\n}\n\nvoid main() {\n    // Metallic and Roughness material properties are packed together\n    // In glTF, these factors can be specified by fixed scalar values\n    // or from a metallic-roughness map\n    float perceptualRoughness = u_MetallicRoughnessValues.y;\n    float metallic = u_MetallicRoughnessValues.x;\n\n    #ifdef HAS_METALROUGHNESSMAP\n        // Roughness is stored in the 'g' channel, metallic is stored in the 'b' channel.\n        // This layout intentionally reserves the 'r' channel for (optional) occlusion map data\n        vec4 mrSample = texture(u_MetallicRoughnessSampler, texcoord_0);\n        perceptualRoughness = mrSample.g * perceptualRoughness;\n        metallic = mrSample.b * metallic;\n    #endif\n\n    perceptualRoughness = clamp(perceptualRoughness, c_MinRoughness, 1.0);\n    metallic = clamp(metallic, 0.0, 1.0);\n\n    // Roughness is authored as perceptual roughness; as is convention,\n    // convert to material roughness by squaring the perceptual roughness [2].\n    float alphaRoughness = perceptualRoughness * perceptualRoughness;\n\n    // The albedo may be defined from a base texture or a flat color\n    #ifdef HAS_BASECOLORMAP\n        vec4 baseColor = SRGBtoLINEAR(texture(u_BaseColorSampler, texcoord_0)) * u_BaseColorFactor;\n    #else\n        vec4 baseColor = u_BaseColorFactor;\n    #endif\n\n    vec3 f0 = vec3(0.04);\n    vec3 diffuseColor = baseColor.rgb * (vec3(1.0) - f0);\n    diffuseColor *= 1.0 - metallic;\n    vec3 specularColor = mix(f0, baseColor.rgb, metallic);\n\n    // Compute reflectance.\n    float reflectance = max(max(specularColor.r, specularColor.g), specularColor.b);\n\n    // For typical incident reflectance range (between 4% to 100%) set the grazing reflectance to 100% for typical fresnel effect.\n    // For very low reflectance range on highly diffuse objects (below 4%), incrementally reduce grazing reflecance to 0%.\n    float reflectance90 = clamp(reflectance * 25.0, 0.0, 1.0);\n    vec3 specularEnvironmentR0 = specularColor.rgb;\n    vec3 specularEnvironmentR90 = vec3(1.0, 1.0, 1.0) * reflectance90;\n\n    vec3 n = getNormal();                             // normal at surface point\n    vec3 v = normalize(u_Camera - position);          // Vector from surface point to camera\n    vec3 reflection = -normalize(reflect(v, n));\n\n    float NdotV = clamp(abs(dot(n, v)), 0.001, 1.0);\n\n    PBRInfo pbrInputs = PBRInfo(\n        0.0,\n        NdotV,\n        0.0,\n        0.0,\n        0.0,\n        perceptualRoughness,\n        metallic,\n        specularEnvironmentR0,\n        specularEnvironmentR90,\n        alphaRoughness,\n        diffuseColor,\n        specularColor\n    );\n    \n    vec3 color = vec3(0.0, 0.0, 0.0);\n\n    for (int i = 0; i < u_NumberOfLights; i++) {\n        //if (i >= u_NumberOfLights) break; // TODO: check if this is faster.\n\n        vec3 lightDirection = lights[i].position.xyz;\n        float attenuation = 1.0;\n\n        if (lights[i].type == LIGHT_POINT) {\n\n            lightDirection -= position; // vector from surface point to light.\n\n            // Compute attenuation.\n            float distanceToLight = length(lightDirection);\n            float range = lights[i].range;\n\n            if (range > 0.0) {\n                attenuation = clamp(1.0 - pow((distanceToLight / range), 4.0), 0.0, 1.0) / pow(distanceToLight, 2.0);\n            } else {\n                attenuation = 1.0 / 0.01 + pow(distanceToLight, 2.0);\n            }\n\n        }\n\n        vec3 l = normalize(lightDirection);   // Vector from surface point to light (normalized)\n        vec3 h = normalize(l+v);              // Half vector between both l and v\n        \n        float NdotL = clamp(dot(n, l), 0.001, 1.0);\n        float NdotH = clamp(dot(n, h), 0.0, 1.0);\n        float LdotH = clamp(dot(l, h), 0.0, 1.0);\n        float VdotH = clamp(dot(v, h), 0.0, 1.0);\n\n        // update input struct.\n        pbrInputs.NdotL = NdotL;\n        pbrInputs.NdotH = NdotH;\n        pbrInputs.LdotH = LdotH;\n        pbrInputs.VdotH = VdotH;\n\n        // Calculate the shading terms for the microfacet specular shading model\n        vec3 F = specularReflection(pbrInputs);\n        float G = geometricOcclusion(pbrInputs);\n        float D = microfacetDistribution(pbrInputs);\n\n        // Calculation of analytical lighting contribution\n        vec3 diffuseContrib = (1.0 - F) * diffuse(pbrInputs);\n        vec3 specContrib = F * G * D / (4.0 * NdotL * NdotV);\n\n        // Obtain final intensity as reflectance (BRDF) scaled by the energy of the light (cosine law)\n        color += NdotL * (attenuation * (lights[i].color.rgb * lights[i].color.a * (diffuseContrib + specContrib)));\n\n    }\n\n    // Calculate lighting contribution from image based lighting source (IBL)\n    #ifdef USE_IBL\n        color += getIBLContribution(pbrInputs, n, reflection);\n    #endif\n\n    // Apply optional PBR terms for additional (optional) shading\n    #ifdef HAS_OCCLUSIONMAP\n        float ao = texture(u_OcclusionSampler, texcoord_0).r;\n        color = mix(color, color * ao, u_OcclusionStrength);\n    #endif\n\n    #ifdef HAS_EMISSIVEMAP\n        vec3 emissive = SRGBtoLINEAR(texture(u_EmissiveSampler, texcoord_0)).rgb * u_EmissiveFactor;\n        color += emissive;\n    #endif\n\n    fColor = vec4(pow(color,vec3(1.0/2.2)), baseColor.a);\n\n}"
 
 /***/ }),
 /* 2 */,
@@ -331,7 +331,19 @@ __webpack_require__.d(quat_namespaceObject, "setAxes", function() { return setAx
 
 const GLTF_VERSION = '2.0';
 
-const MAX_LIGHTS = 500;
+const MAX_NUMBER_OF_LIGHTS = 50;
+
+const LIGHT = Object.freeze({
+    POINT: 0,
+    DIRECTIONAL: 1,
+    SPOT: 2
+});
+
+const UBO_BINDING = Object.freeze({
+    LIGHTS: 0
+});
+
+const IS_LITTLE_ENDIAN = new Uint8Array(new Uint32Array([0x12345678]).buffer)[0] === 0x78;
 
 const ALPHA_MODE = {
     OPAQUE: 0,
@@ -431,7 +443,7 @@ const TARGET = Object.freeze({
 
         acquireRenderables() {
 
-            let renderables = [];
+            const renderables = [];
 
 
             for (let i = 0; i < this.nodes.length; i++) {
@@ -458,6 +470,32 @@ const TARGET = Object.freeze({
 
             return renderables;
 
+        },
+
+        acquireLights() {
+
+            const lights = [];
+
+            for (let i = 0; i < this.nodes.length; i++) {
+
+                const node = this.nodes[i];
+
+                if (node.light) {
+
+                    lights.push([
+                        node.light,
+                        node.worldMatrix
+                    ]);
+
+                }
+
+            }
+
+            // TODO: perform frustum culling?
+
+
+            return lights;
+            
         }
         
     };
@@ -5251,6 +5289,7 @@ var setAxes = function () {
 
     mesh = null,
     camera = null,
+    light = null,
 
     rotation = quat_namespaceObject.create(),
     translation = vec3_namespaceObject.fromValues(0, 0, 0),
@@ -5268,6 +5307,7 @@ var setAxes = function () {
 
         mesh,
         camera,
+        light,
 
         localMatrix: mat4_namespaceObject.create(),
         worldMatrix: mat4_namespaceObject.create(),
@@ -5374,67 +5414,55 @@ var setAxes = function () {
 
     return node;
 });
-// CONCATENATED MODULE: ./src/lib/camera/orthographic.js
-/**
- * An orthographic camera containing properties to create an orthographic projection matrix.
- */
+// CONCATENATED MODULE: ./src/lib/core/camera.js
 
 
 
-/* harmony default export */ var orthographic = (({ xmag = 1.0, ymag = 1.0, zfar = 100, znear = 0 }, name = null) => {
+/* harmony default export */ var core_camera = ({
+    createOrthographic(xmag = 1.0, ymag = 1.0, zfar = 100, znear = 0) {
+        return {
 
-    return {
-        
-        type: 'orthographic',
-        orthographic: {
-            xmag,
-            ymag,
-            zfar,
-            znear
-        },
-        perspective: null,
-        name,
+            type: 'orthographic',
+            orthographic: {
+                xmag,
+                ymag,
+                zfar,
+                znear
+            },
+            perspective: null,
+            name,
 
-        projectionMatrix: mat4_namespaceObject.ortho(mat4_namespaceObject.create(), -xmag, xmag, -ymag, ymag, znear, zfar),
-        
-        updateProjectionMatrix() {
-            const { xmag, ymag, zfar, znear } = this.orthographic;
-            this.projectionMatrix = mat4_namespaceObject.ortho(this.projectionMatrix, -xmag, xmag, -ymag, ymag, znear, zfar);
+            projectionMatrix: mat4_namespaceObject.ortho(mat4_namespaceObject.create(), -xmag, xmag, -ymag, ymag, znear, zfar),
+
+        };
+    },
+    createPerspective(aspectRatio, yfov = 1.0472, zfar = null, znear = 1.0) {
+        return {
+
+            type: 'perspective',
+            perspective: {
+                aspectRatio,
+                yfov,
+                zfar,
+                znear
+            },
+            orthographic: null,
+            name,
+
+            projectionMatrix: mat4_namespaceObject.perspective(mat4_namespaceObject.create(), yfov, aspectRatio, znear, zfar),
+
+        };
+    },
+
+    updateProjectionMatrix(camera) {
+        if (camera.type === PROJECTION.ORTHOGRAPHIC) {
+            const { xmag, ymag, zfar, znear } = camera.orthographic;
+            camera.projectionMatrix = mat4_namespaceObject.ortho(camera.projectionMatrix, -xmag, xmag, -ymag, ymag, znear, zfar);
+        } else {
+            const { aspectRatio, yfov, zfar, znear } = camera.perspective;
+            camera.projectionMatrix = mat4_namespaceObject.perspective(mat4_namespaceObject.create(), yfov, aspectRatio, znear, zfar);
         }
-
-    };
-
-});
-// CONCATENATED MODULE: ./src/lib/camera/perspective.js
-/**
- * A perspective camera containing properties to create a perspective projection matrix.
- */
-
-
-
-/* harmony default export */ var camera_perspective = (({ aspectRatio, yfov = 1.0472, zfar = null, znear = 1.0}, name = null ) => {
-
-    return {
-        
-        type: 'perspective',
-        perspective: {
-            aspectRatio,
-            yfov,
-            zfar,
-            znear
-        },
-        orthographic: null,
-        name,
-
-        projectionMatrix: mat4_namespaceObject.perspective(mat4_namespaceObject.create(), yfov, aspectRatio, znear, zfar),
-
-        updateProjectionMatrix() {
-            const { aspectRatio, yfov, zfar, znear } = this.perspective;
-            this.projectionMatrix = mat4_namespaceObject.perspective(mat4_namespaceObject.create(), yfov, aspectRatio, znear, zfar);
-        }
-
-    };
-
+    }
 });
 // CONCATENATED MODULE: ./src/lib/mesh/mesh.js
 /**
@@ -5645,7 +5673,6 @@ var setAxes = function () {
 
 
 
-
 const SUPPORTED_VERSION = GLTF_VERSION.split('.').map(a => parseInt(a));
 
 /* harmony default export */ var importer = (async (url) => {
@@ -5742,7 +5769,7 @@ const SUPPORTED_VERSION = GLTF_VERSION.split('.').map(a => parseInt(a));
 
                 const bv = bufferViews[bufferView];
                 const buffer = new DataView(bv.buffer, bv.byteOffset, bv.byteLength);
-                const blob = new Blob([ buffer ], { type: mimeType });
+                const blob = new Blob([buffer], { type: mimeType });
 
                 const image = new Image();
                 image.src = URL.createObjectURL(blob);
@@ -5914,16 +5941,17 @@ const SUPPORTED_VERSION = GLTF_VERSION.split('.').map(a => parseInt(a));
     let cameras = [];
     if (gltf.cameras) {
         cameras = gltf.cameras.map(({
-            name,
             type,
             orthographic: orthographicProperties,
             perspective: perspectiveProperties
         }) => {
 
             if (type === PROJECTION.ORTHOGRAPHIC) {
-                return orthographic(orthographicProperties, name);
+                const { xmag, ymag, zfar, znear } = orthographicProperties;
+                return core_camera.createOrthographic(xmag, ymag, zfar, znear);
             } else if (type === PROJECTION.PERSPECTIVE) {
-                return camera_perspective(perspectiveProperties, name);
+                const { aspectRatio, yfov, zfar, znear } = perspectiveProperties;
+                return core_camera.createPerspective(aspectRatio, yfov, zfar, znear);
             } else {
                 // TODO: type not defined, throw?
                 return null;
@@ -6028,9 +6056,14 @@ var pbr_fragment_shader_default = /*#__PURE__*/__webpack_require__.n(pbr_fragmen
 
 
 
+
+
 /* harmony default export */ var standard = ((context, material) => {
 
     let fragmentDefines = '';
+
+    // always set the maximum number of lights.
+    fragmentDefines += `#define MAX_NUMBER_OF_LIGHTS ${MAX_NUMBER_OF_LIGHTS}\n`;
 
     if (material.baseColorTexture !== null) {
         fragmentDefines += '#define HAS_BASECOLORMAP\n';
@@ -6063,6 +6096,8 @@ var pbr_fragment_shader_default = /*#__PURE__*/__webpack_require__.n(pbr_fragmen
             modelViewProjectionMatrix: context.getUniformLocation(program, 'modelViewProjectionMatrix'),
             modelMatrix: context.getUniformLocation(program, 'modelMatrix'),
             normalMatrix: context.getUniformLocation(program, 'normalMatrix'),
+
+            numberOfLights: context.getUniformLocation(program, 'u_NumberOfLights'),
 
             camera: context.getUniformLocation(program, 'u_Camera'),
 
@@ -6105,6 +6140,15 @@ var pbr_fragment_shader_default = /*#__PURE__*/__webpack_require__.n(pbr_fragmen
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.CULL_FACE);
 
+    const lightsUniformBuffer = gl.createBuffer();
+    gl.bindBufferBase(gl.UNIFORM_BUFFER, UBO_BINDING.LIGHTS, lightsUniformBuffer);
+
+    const lightsBuffer = new ArrayBuffer((MAX_NUMBER_OF_LIGHTS * 12) * 8); // allocate buffer holding the lights.
+    const lightsBufferView = new DataView(lightsBuffer);
+
+    // instantiate buffer on GPU.
+    gl.bufferData(gl.UNIFORM_BUFFER, lightsBuffer, gl.DYNAMIC_DRAW);
+
     const renderer = {
 
         domElement,
@@ -6117,7 +6161,7 @@ var pbr_fragment_shader_default = /*#__PURE__*/__webpack_require__.n(pbr_fragmen
             gl.clearColor(1.0, 1.0, 1.0, 1.0);
         },
 
-        draw(renderable, cameraNode) {
+        draw(renderable, cameraNode, numberOfLights = 0) {
 
             const [primitive, worldMatrix] = renderable;
 
@@ -6134,6 +6178,9 @@ var pbr_fragment_shader_default = /*#__PURE__*/__webpack_require__.n(pbr_fragmen
             gl.uniformMatrix4fv(shader.uniformLocations.modelMatrix, false, worldMatrix);
             gl.uniformMatrix4fv(shader.uniformLocations.modelViewProjectionMatrix, false, modelViewProjectionMatrix);
             gl.uniformMatrix4fv(shader.uniformLocations.normalMatrix, false, normalMatrix);
+
+            // upload number of lights.
+            gl.uniform1i(shader.uniformLocations.numberOfLights, numberOfLights);
 
             const cameraPosition = mat4_namespaceObject.getTranslation(vec3_namespaceObject.create(), cameraNode.worldMatrix);
             gl.uniform3fv(shader.uniformLocations.camera, cameraPosition);
@@ -6198,13 +6245,64 @@ var pbr_fragment_shader_default = /*#__PURE__*/__webpack_require__.n(pbr_fragmen
 
         },
 
-        render(renderQueue, cameraNode) {
+        render(renderQueue, cameraNode, lights) {
 
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
+            // LIGHT PACKING:
+            //
+            // position: vec4
+            // color: vec3
+            // intensity: f32
+            // type: i32
+            // range: f32
+            // innerConeAngle: f32
+            // outerConeAngle: f32
+            //
+            // (combine color and intensity to a vec4)
+            // VVVV - VVVV - IFFF
             
+            // TODO: handle number of lights being larger than the capacity in a more intelligent way?
+
+            for (let i = 0; i < lights.length && i < MAX_NUMBER_OF_LIGHTS; i++) {
+
+                const [light, worldMatrix] = lights[i];
+
+                const position = vec4_namespaceObject.create();
+                vec4_namespaceObject.transformMat4(position, vec4_namespaceObject.fromValues(0.0, 0.0, 0.0, 1.0), worldMatrix);
+
+                const offset = i * 12;
+
+                // POSITION:
+                lightsBufferView.setFloat32((offset + 0) * 4, position[0], IS_LITTLE_ENDIAN);
+                lightsBufferView.setFloat32((offset + 1) * 4, position[1], IS_LITTLE_ENDIAN);
+                lightsBufferView.setFloat32((offset + 2) * 4, position[2], IS_LITTLE_ENDIAN);
+                lightsBufferView.setFloat32((offset + 3) * 4, position[3], IS_LITTLE_ENDIAN);
+
+                // COLOR + INTENSITY:
+                lightsBufferView.setFloat32((offset + 4) * 4, light.color[0], IS_LITTLE_ENDIAN);
+                lightsBufferView.setFloat32((offset + 5) * 4, light.color[1], IS_LITTLE_ENDIAN);
+                lightsBufferView.setFloat32((offset + 6) * 4, light.color[2], IS_LITTLE_ENDIAN);
+                lightsBufferView.setFloat32((offset + 7) * 4, light.intensity, IS_LITTLE_ENDIAN);
+
+                // TYPE + RANGE + INNER + OUTER
+                lightsBufferView.setUint32((offset + 8) * 4, light.type, IS_LITTLE_ENDIAN);
+                lightsBufferView.setFloat32((offset + 9) * 4, light.range, IS_LITTLE_ENDIAN);
+                if (light.type === LIGHT.SPOT) {
+                    lightsBufferView.setFloat32((offset + 10) * 4, light.spot.innerConeAngle, IS_LITTLE_ENDIAN);
+                    lightsBufferView.setFloat32((offset + 11) * 4, light.spot.outerConeAngle, IS_LITTLE_ENDIAN);
+                }
+
+            }
+
+            // update buffer:
+            // TODO: only update buffer when lights have changed (use some kind of dirty flag?)
+            gl.bufferSubData(gl.UNIFORM_BUFFER, 0, lightsBuffer);
+
+            const numberOfLights = Math.min(lights.length, MAX_NUMBER_OF_LIGHTS);
+
             for (let i = 0; i < renderQueue.length; i++) {
-                this.draw(renderQueue[i], cameraNode);
+                this.draw(renderQueue[i], cameraNode, numberOfLights);
             }
 
         },
@@ -6325,6 +6423,9 @@ var pbr_fragment_shader_default = /*#__PURE__*/__webpack_require__.n(pbr_fragmen
                 material.emissiveTexture.texture.extras.gl_texture = this.loadTexture(material.emissiveTexture.texture);
             }
 
+            // UBO:
+            gl.uniformBlockBinding(shader.program, gl.getUniformBlockIndex(shader.program, 'LightBlock'), UBO_BINDING.LIGHT);
+
         },
 
         loadTexture(texture) {
@@ -6421,38 +6522,6 @@ var pbr_fragment_shader_default = /*#__PURE__*/__webpack_require__.n(pbr_fragmen
 
     return renderer;
 
-    // loadTexture(url) {
-    //     let image = new Image();
-
-    //     image.src = url;
-
-    //     let texture = this.gl.createTexture();
-
-    //     this.gl.activeTexture(this.gl.TEXTURE0);
-    //     this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
-    //     this.gl.pixelStorei(this.gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, this.gl.NONE);
-
-    //     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
-    //     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
-    //     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
-    //     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
-
-    //     this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, 1, 1, 0, this.gl.RGBA, this.gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 255]));
-
-    //     image.addEventListener('load', () => {
-
-    //         this.gl.activeTexture(this.gl.TEXTURE0);
-    //         this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
-    //         this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, image);
-
-    //         this.gl.generateMipmap(this.gl.TEXTURE_2D);
-    //         this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST_MIPMAP_LINEAR);
-    //         this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
-    //     });
-
-    //     return texture;
-    // }
-
     // loadCubeMap(urls) {
     //     let ct = 0;
     //     let image = new Array(6);
@@ -6487,6 +6556,49 @@ var pbr_fragment_shader_default = /*#__PURE__*/__webpack_require__.n(pbr_fragmen
     //     return cubeMap;
     // }
 });
+// CONCATENATED MODULE: ./src/lib/core/light.js
+
+
+
+function light_create({
+    type = LIGHT.POINT,
+    color = vec3_namespaceObject.fromValues(1.0, 1.0, 1.0),
+    intensity = 1.0,
+    range = 20.0,
+    spot = null
+}) {
+
+    return {
+        type,
+        color,
+        intensity,
+        range,
+        spot
+    };
+
+}
+
+/* harmony default export */ var core_light = ({
+    
+    createPoint(color = vec3_namespaceObject.fromValues(1.0, 1.0, 1.0), intensity = 1.0, range = 20.0) {
+        return light_create({
+            type: LIGHT.POINT,
+            color,
+            intensity,
+            range
+        });
+    },
+    
+    createDirectional(color = vec3_namespaceObject.fromValues(1.0, 1.0, 1.0), intensity = 1.0, range = 20.0) {
+        return light_create({
+            type: LIGHT.DIRECTIONAL,
+            color,
+            intensity,
+            range
+        });
+    }
+
+});
 // CONCATENATED MODULE: ./src/index.js
 /**
  * Warp
@@ -6503,13 +6615,12 @@ var pbr_fragment_shader_default = /*#__PURE__*/__webpack_require__.n(pbr_fragmen
 
 
 
-
 /* harmony default export */ var src = __webpack_exports__["default"] = ({
     node: graph_node,
     importer: importer,
     renderer: core_renderer,
-    perspectiveCamera: camera_perspective,
-    orthographicCamera: orthographic
+    camera: core_camera,
+    light: core_light
 });
 
 

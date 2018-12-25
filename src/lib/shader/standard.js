@@ -1,3 +1,5 @@
+import { MAX_NUMBER_OF_LIGHTS } from '../core/constants';
+
 import shaderBuilder from './shaderBuilder.js';
 
 import pbrVertexShaderSource from '../shader/code/pbr-vertex-shader.glsl';
@@ -6,6 +8,9 @@ import pbrFragmentShaderSource from '../shader/code/pbr-fragment-shader.glsl';
 export default (context, material) => {
 
     let fragmentDefines = '';
+
+    // always set the maximum number of lights.
+    fragmentDefines += `#define MAX_NUMBER_OF_LIGHTS ${MAX_NUMBER_OF_LIGHTS}\n`;
 
     if (material.baseColorTexture !== null) {
         fragmentDefines += '#define HAS_BASECOLORMAP\n';
@@ -38,6 +43,8 @@ export default (context, material) => {
             modelViewProjectionMatrix: context.getUniformLocation(program, 'modelViewProjectionMatrix'),
             modelMatrix: context.getUniformLocation(program, 'modelMatrix'),
             normalMatrix: context.getUniformLocation(program, 'normalMatrix'),
+
+            numberOfLights: context.getUniformLocation(program, 'u_NumberOfLights'),
 
             camera: context.getUniformLocation(program, 'u_Camera'),
 

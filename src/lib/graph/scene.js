@@ -20,7 +20,7 @@ export default (nodes = [], name = null) => {
 
         acquireRenderables() {
 
-            let renderables = [];
+            const renderables = [];
 
 
             for (let i = 0; i < this.nodes.length; i++) {
@@ -47,6 +47,32 @@ export default (nodes = [], name = null) => {
 
             return renderables;
 
+        },
+
+        acquireLights() {
+
+            const lights = [];
+
+            for (let i = 0; i < this.nodes.length; i++) {
+
+                const node = this.nodes[i];
+
+                if (node.light) {
+
+                    lights.push([
+                        node.light,
+                        node.worldMatrix
+                    ]);
+
+                }
+
+            }
+
+            // TODO: perform frustum culling?
+
+
+            return lights;
+            
         }
         
     };

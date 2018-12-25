@@ -3,8 +3,7 @@ import { GLTF_VERSION, COMPONENT, VALID_ACCESSOR_TYPES, PROJECTION, TARGET } fro
 import scene from './graph/scene';
 import node from './graph/node';
 
-import orthographic from './camera/orthographic';
-import perspective from './camera/perspective';
+import camera from './core/camera';
 
 import mesh from './mesh/mesh';
 import primitive from './mesh/primitive';
@@ -111,7 +110,7 @@ export default async (url) => {
 
                 const bv = bufferViews[bufferView];
                 const buffer = new DataView(bv.buffer, bv.byteOffset, bv.byteLength);
-                const blob = new Blob([ buffer ], { type: mimeType });
+                const blob = new Blob([buffer], { type: mimeType });
 
                 const image = new Image();
                 image.src = URL.createObjectURL(blob);
@@ -283,16 +282,17 @@ export default async (url) => {
     let cameras = [];
     if (gltf.cameras) {
         cameras = gltf.cameras.map(({
-            name,
             type,
             orthographic: orthographicProperties,
             perspective: perspectiveProperties
         }) => {
 
             if (type === PROJECTION.ORTHOGRAPHIC) {
-                return orthographic(orthographicProperties, name);
+                const { xmag, ymag, zfar, znear } = orthographicProperties;
+                return camera.createOrthographic(xmag, ymag, zfar, znear);
             } else if (type === PROJECTION.PERSPECTIVE) {
-                return perspective(perspectiveProperties, name);
+                const { aspectRatio, yfov, zfar, znear } = perspectiveProperties;
+                return camera.createPerspective(aspectRatio, yfov, zfar, znear);
             } else {
                 // TODO: type not defined, throw?
                 return null;

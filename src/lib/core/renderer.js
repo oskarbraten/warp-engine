@@ -1,7 +1,7 @@
 
-import { mat3, mat4, vec3 } from 'gl-matrix';
+import { mat3, mat4, vec3, vec4 } from 'gl-matrix';
 
-import { ATTRIBUTE_LOCATION, TYPE, COMPONENT } from './constants';
+import { ATTRIBUTE_LOCATION, TYPE, COMPONENT, MAX_NUMBER_OF_LIGHTS, UBO_BINDING, IS_LITTLE_ENDIAN, LIGHT } from './constants';
 import standardShader from '../shader/standard';
 
 export default (context = null) => {
@@ -18,6 +18,15 @@ export default (context = null) => {
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.CULL_FACE);
 
+    const lightsUniformBuffer = gl.createBuffer();
+    gl.bindBufferBase(gl.UNIFORM_BUFFER, UBO_BINDING.LIGHTS, lightsUniformBuffer);
+
+    const lightsBuffer = new ArrayBuffer((MAX_NUMBER_OF_LIGHTS * 12) * 8); // allocate buffer holding the lights.
+    const lightsBufferView = new DataView(lightsBuffer);
+
+    // instantiate buffer on GPU.
+    gl.bufferData(gl.UNIFORM_BUFFER, lightsBuffer, gl.DYNAMIC_DRAW);
+
     const renderer = {
 
         domElement,
@@ -30,7 +39,7 @@ export default (context = null) => {
             gl.clearColor(1.0, 1.0, 1.0, 1.0);
         },
 
-        draw(renderable, cameraNode) {
+        draw(renderable, cameraNode, numberOfLights = 0) {
 
             const [primitive, worldMatrix] = renderable;
 
@@ -47,6 +56,9 @@ export default (context = null) => {
             gl.uniformMatrix4fv(shader.uniformLocations.modelMatrix, false, worldMatrix);
             gl.uniformMatrix4fv(shader.uniformLocations.modelViewProjectionMatrix, false, modelViewProjectionMatrix);
             gl.uniformMatrix4fv(shader.uniformLocations.normalMatrix, false, normalMatrix);
+
+            // upload number of lights.
+            gl.uniform1i(shader.uniformLocations.numberOfLights, numberOfLights);
 
             const cameraPosition = mat4.getTranslation(vec3.create(), cameraNode.worldMatrix);
             gl.uniform3fv(shader.uniformLocations.camera, cameraPosition);
@@ -111,13 +123,64 @@ export default (context = null) => {
 
         },
 
-        render(renderQueue, cameraNode) {
+        render(renderQueue, cameraNode, lights) {
 
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
+            // LIGHT PACKING:
+            //
+            // position: vec4
+            // color: vec3
+            // intensity: f32
+            // type: i32
+            // range: f32
+            // innerConeAngle: f32
+            // outerConeAngle: f32
+            //
+            // (combine color and intensity to a vec4)
+            // VVVV - VVVV - IFFF
             
+            // TODO: handle number of lights being larger than the capacity in a more intelligent way?
+
+            for (let i = 0; i < lights.length && i < MAX_NUMBER_OF_LIGHTS; i++) {
+
+                const [light, worldMatrix] = lights[i];
+
+                const position = vec4.create();
+                vec4.transformMat4(position, vec4.fromValues(0.0, 0.0, 0.0, 1.0), worldMatrix);
+
+                const offset = i * 12;
+
+                // POSITION:
+                lightsBufferView.setFloat32((offset + 0) * 4, position[0], IS_LITTLE_ENDIAN);
+                lightsBufferView.setFloat32((offset + 1) * 4, position[1], IS_LITTLE_ENDIAN);
+                lightsBufferView.setFloat32((offset + 2) * 4, position[2], IS_LITTLE_ENDIAN);
+                lightsBufferView.setFloat32((offset + 3) * 4, position[3], IS_LITTLE_ENDIAN);
+
+                // COLOR + INTENSITY:
+                lightsBufferView.setFloat32((offset + 4) * 4, light.color[0], IS_LITTLE_ENDIAN);
+                lightsBufferView.setFloat32((offset + 5) * 4, light.color[1], IS_LITTLE_ENDIAN);
+                lightsBufferView.setFloat32((offset + 6) * 4, light.color[2], IS_LITTLE_ENDIAN);
+                lightsBufferView.setFloat32((offset + 7) * 4, light.intensity, IS_LITTLE_ENDIAN);
+
+                // TYPE + RANGE + INNER + OUTER
+                lightsBufferView.setUint32((offset + 8) * 4, light.type, IS_LITTLE_ENDIAN);
+                lightsBufferView.setFloat32((offset + 9) * 4, light.range, IS_LITTLE_ENDIAN);
+                if (light.type === LIGHT.SPOT) {
+                    lightsBufferView.setFloat32((offset + 10) * 4, light.spot.innerConeAngle, IS_LITTLE_ENDIAN);
+                    lightsBufferView.setFloat32((offset + 11) * 4, light.spot.outerConeAngle, IS_LITTLE_ENDIAN);
+                }
+
+            }
+
+            // update buffer:
+            // TODO: only update buffer when lights have changed (use some kind of dirty flag?)
+            gl.bufferSubData(gl.UNIFORM_BUFFER, 0, lightsBuffer);
+
+            const numberOfLights = Math.min(lights.length, MAX_NUMBER_OF_LIGHTS);
+
             for (let i = 0; i < renderQueue.length; i++) {
-                this.draw(renderQueue[i], cameraNode);
+                this.draw(renderQueue[i], cameraNode, numberOfLights);
             }
 
         },
@@ -238,6 +301,9 @@ export default (context = null) => {
                 material.emissiveTexture.texture.extras.gl_texture = this.loadTexture(material.emissiveTexture.texture);
             }
 
+            // UBO:
+            gl.uniformBlockBinding(shader.program, gl.getUniformBlockIndex(shader.program, 'LightBlock'), UBO_BINDING.LIGHT);
+
         },
 
         loadTexture(texture) {
@@ -333,38 +399,6 @@ export default (context = null) => {
     };
 
     return renderer;
-
-    // loadTexture(url) {
-    //     let image = new Image();
-
-    //     image.src = url;
-
-    //     let texture = this.gl.createTexture();
-
-    //     this.gl.activeTexture(this.gl.TEXTURE0);
-    //     this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
-    //     this.gl.pixelStorei(this.gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, this.gl.NONE);
-
-    //     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
-    //     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
-    //     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
-    //     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
-
-    //     this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, 1, 1, 0, this.gl.RGBA, this.gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 255]));
-
-    //     image.addEventListener('load', () => {
-
-    //         this.gl.activeTexture(this.gl.TEXTURE0);
-    //         this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
-    //         this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, image);
-
-    //         this.gl.generateMipmap(this.gl.TEXTURE_2D);
-    //         this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST_MIPMAP_LINEAR);
-    //         this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
-    //     });
-
-    //     return texture;
-    // }
 
     // loadCubeMap(urls) {
     //     let ct = 0;

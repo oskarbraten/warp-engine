@@ -1,7 +1,19 @@
 
 export const GLTF_VERSION = '2.0';
 
-export const MAX_LIGHTS = 500;
+export const MAX_NUMBER_OF_LIGHTS = 50;
+
+export const LIGHT = Object.freeze({
+    POINT: 0,
+    DIRECTIONAL: 1,
+    SPOT: 2
+});
+
+export const UBO_BINDING = Object.freeze({
+    LIGHTS: 0
+});
+
+export const IS_LITTLE_ENDIAN = new Uint8Array(new Uint32Array([0x12345678]).buffer)[0] === 0x78;
 
 export const ALPHA_MODE = {
     OPAQUE: 0,

@@ -15,11 +15,11 @@ Warp.importer('./assets/cubes_textured.gltf').then(({ scene }) => {
         renderer.load(primitive);
     });
 
-    let camera = Warp.perspectiveCamera({ aspectRatio: (window.innerWidth / window.innerHeight), yfov: 70, zfar: 5000, znear: 0.1 });
+    let camera = Warp.camera.createPerspective((window.innerWidth / window.innerHeight), 70, 5000, 0.1);
 
     window.addEventListener('resize', () => {
         camera.perspective.aspectRatio = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
+        Warp.camera.updateProjectionMatrix(camera);
 
         renderer.setSize(window.innerWidth, window.innerHeight);
     }, false);
@@ -27,6 +27,13 @@ Warp.importer('./assets/cubes_textured.gltf').then(({ scene }) => {
     let cameraNode = Warp.node({ name: 'Camera', camera });
 
     scene.nodes.push(cameraNode);
+
+    let light = Warp.light.createPoint([1.0, 1.0, 1.0], 1.0);
+    let lightNode = Warp.node({ name: 'Light', light });
+
+    lightNode.applyTranslation(0, 1.5, 1.25);
+
+    scene.nodes.push(lightNode);
 
     let cameraController = new CameraController(cameraNode);
 
@@ -123,9 +130,10 @@ Warp.importer('./assets/cubes_textured.gltf').then(({ scene }) => {
 
         scene.updateTransforms();
 
-        renderer.render(scene.acquireRenderables(), cameraNode);
+        renderer.render(scene.acquireRenderables(), cameraNode, scene.acquireLights());
 
         window.requestAnimationFrame(loop);
+
     }
 
     window.requestAnimationFrame(loop);

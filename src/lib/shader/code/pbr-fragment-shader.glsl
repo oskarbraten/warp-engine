@@ -4,8 +4,24 @@ __DEFINES__
 
 precision highp float;
 
-const vec3 u_LightDirection = vec3(0.5, 0.5, 0.0);
-const vec3 u_LightColor = vec3(1.0, 1.0, 1.0);
+const uint LIGHT_POINT = 0U;
+const uint LIGHT_DIRECTIONAL = 1U;
+const uint LIGHT_SPOT = 2U;
+
+uniform int u_NumberOfLights;
+
+struct Light {
+    vec4 position;
+    vec4 color;
+    uint type;
+    float range;
+    float innerConeAngle;
+    float outerConeAngle;
+};
+
+layout(std140) uniform LightBlock {
+    Light lights[MAX_NUMBER_OF_LIGHTS];
+};
 
 #ifdef USE_IBL
     uniform samplerCube u_DiffuseEnvSampler;
@@ -52,8 +68,7 @@ out vec4 fColor;
 // Encapsulate the various inputs used by the various functions in the shading equation
 // We store values in this struct to simplify the integration of alternative implementations
 // of the shading terms, outlined in the Readme.MD Appendix.
-struct PBRInfo
-{
+struct PBRInfo {
     float NdotL;                  // cos angle between normal and light direction
     float NdotV;                  // cos angle between normal and view direction
     float NdotH;                  // cos angle between normal and half vector
@@ -71,8 +86,7 @@ struct PBRInfo
 const float M_PI = 3.141592653589793;
 const float c_MinRoughness = 0.04;
 
-vec4 SRGBtoLINEAR(vec4 srgbIn)
-{
+vec4 SRGBtoLINEAR(vec4 srgbIn) {
     #ifdef MANUAL_SRGB
     #ifdef SRGB_FAST_APPROXIMATION
     vec3 linOut = pow(srgbIn.xyz,vec3(2.2));
@@ -88,10 +102,10 @@ vec4 SRGBtoLINEAR(vec4 srgbIn)
 
 // Find the normal for this fragment, pulling either from a predefined normal map
 // or from the interpolated mesh normal and tangent attributes.
-vec3 getNormal()
-{
+vec3 getNormal() {
     // Retrieve the tangent space matrix
 #ifndef HAS_TANGENTS
+
     vec3 pos_dx = dFdx(position);
     vec3 pos_dy = dFdy(position);
     vec3 tex_dx = dFdx(vec3(texcoord_0, 0.0));
@@ -107,6 +121,7 @@ vec3 getNormal()
     t = normalize(t - ng * dot(ng, t));
     vec3 b = normalize(cross(ng, t));
     mat3 tbn = mat3(t, b, ng);
+
 #else // HAS_TANGENTS
     mat3 tbn = TBN;
 #endif
@@ -126,8 +141,7 @@ vec3 getNormal()
 // Precomputed Environment Maps are required uniform inputs and are computed as outlined in [1].
 // See our README.md on Environment Maps [3] for additional discussion.
 #ifdef USE_IBL
-vec3 getIBLContribution(PBRInfo pbrInputs, vec3 n, vec3 reflection)
-{
+vec3 getIBLContribution(PBRInfo pbrInputs, vec3 n, vec3 reflection) {
     float mipCount = 9.0; // resolution of 512x512
     float lod = (pbrInputs.perceptualRoughness * mipCount);
     // retrieve a scale and bias to F0. See [1], Figure 3
@@ -154,15 +168,13 @@ vec3 getIBLContribution(PBRInfo pbrInputs, vec3 n, vec3 reflection)
 // Basic Lambertian diffuse
 // Implementation from Lambert's Photometria https://archive.org/details/lambertsphotome00lambgoog
 // See also [1], Equation 1
-vec3 diffuse(PBRInfo pbrInputs)
-{
+vec3 diffuse(PBRInfo pbrInputs) {
     return pbrInputs.diffuseColor / M_PI;
 }
 
 // The following equation models the Fresnel reflectance term of the spec equation (aka F())
 // Implementation of fresnel from [4], Equation 15
-vec3 specularReflection(PBRInfo pbrInputs)
-{
+vec3 specularReflection(PBRInfo pbrInputs) {
     return pbrInputs.reflectance0 + (pbrInputs.reflectance90 - pbrInputs.reflectance0) * pow(clamp(1.0 - pbrInputs.VdotH, 0.0, 1.0), 5.0);
 }
 
@@ -233,23 +245,17 @@ void main() {
     vec3 specularEnvironmentR90 = vec3(1.0, 1.0, 1.0) * reflectance90;
 
     vec3 n = getNormal();                             // normal at surface point
-    vec3 v = normalize(u_Camera - position);        // Vector from surface point to camera
-    vec3 l = normalize(u_LightDirection);             // Vector from surface point to light
-    vec3 h = normalize(l+v);                          // Half vector between both l and v
+    vec3 v = normalize(u_Camera - position);          // Vector from surface point to camera
     vec3 reflection = -normalize(reflect(v, n));
 
-    float NdotL = clamp(dot(n, l), 0.001, 1.0);
     float NdotV = clamp(abs(dot(n, v)), 0.001, 1.0);
-    float NdotH = clamp(dot(n, h), 0.0, 1.0);
-    float LdotH = clamp(dot(l, h), 0.0, 1.0);
-    float VdotH = clamp(dot(v, h), 0.0, 1.0);
 
     PBRInfo pbrInputs = PBRInfo(
-        NdotL,
+        0.0,
         NdotV,
-        NdotH,
-        LdotH,
-        VdotH,
+        0.0,
+        0.0,
+        0.0,
         perceptualRoughness,
         metallic,
         specularEnvironmentR0,
@@ -258,17 +264,58 @@ void main() {
         diffuseColor,
         specularColor
     );
+    
+    vec3 color = vec3(0.0, 0.0, 0.0);
 
-    // Calculate the shading terms for the microfacet specular shading model
-    vec3 F = specularReflection(pbrInputs);
-    float G = geometricOcclusion(pbrInputs);
-    float D = microfacetDistribution(pbrInputs);
+    for (int i = 0; i < u_NumberOfLights; i++) {
+        //if (i >= u_NumberOfLights) break; // TODO: check if this is faster.
 
-    // Calculation of analytical lighting contribution
-    vec3 diffuseContrib = (1.0 - F) * diffuse(pbrInputs);
-    vec3 specContrib = F * G * D / (4.0 * NdotL * NdotV);
-    // Obtain final intensity as reflectance (BRDF) scaled by the energy of the light (cosine law)
-    vec3 color = NdotL * u_LightColor * (diffuseContrib + specContrib);
+        vec3 lightDirection = lights[i].position.xyz;
+        float attenuation = 1.0;
+
+        if (lights[i].type == LIGHT_POINT) {
+
+            lightDirection -= position; // vector from surface point to light.
+
+            // Compute attenuation.
+            float distanceToLight = length(lightDirection);
+            float range = lights[i].range;
+
+            if (range > 0.0) {
+                attenuation = clamp(1.0 - pow((distanceToLight / range), 4.0), 0.0, 1.0) / pow(distanceToLight, 2.0);
+            } else {
+                attenuation = 1.0 / 0.01 + pow(distanceToLight, 2.0);
+            }
+
+        }
+
+        vec3 l = normalize(lightDirection);   // Vector from surface point to light (normalized)
+        vec3 h = normalize(l+v);              // Half vector between both l and v
+        
+        float NdotL = clamp(dot(n, l), 0.001, 1.0);
+        float NdotH = clamp(dot(n, h), 0.0, 1.0);
+        float LdotH = clamp(dot(l, h), 0.0, 1.0);
+        float VdotH = clamp(dot(v, h), 0.0, 1.0);
+
+        // update input struct.
+        pbrInputs.NdotL = NdotL;
+        pbrInputs.NdotH = NdotH;
+        pbrInputs.LdotH = LdotH;
+        pbrInputs.VdotH = VdotH;
+
+        // Calculate the shading terms for the microfacet specular shading model
+        vec3 F = specularReflection(pbrInputs);
+        float G = geometricOcclusion(pbrInputs);
+        float D = microfacetDistribution(pbrInputs);
+
+        // Calculation of analytical lighting contribution
+        vec3 diffuseContrib = (1.0 - F) * diffuse(pbrInputs);
+        vec3 specContrib = F * G * D / (4.0 * NdotL * NdotV);
+
+        // Obtain final intensity as reflectance (BRDF) scaled by the energy of the light (cosine law)
+        color += NdotL * (attenuation * (lights[i].color.rgb * lights[i].color.a * (diffuseContrib + specContrib)));
+
+    }
 
     // Calculate lighting contribution from image based lighting source (IBL)
     #ifdef USE_IBL
@@ -287,4 +334,5 @@ void main() {
     #endif
 
     fColor = vec4(pow(color,vec3(1.0/2.2)), baseColor.a);
+
 }
