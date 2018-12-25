@@ -94,7 +94,10 @@ module.exports = [
                     to: 'assets'
                 }
             ]),
-            new Serve({ static: path.join(process.cwd(), '/example/build') })
+            new Serve({
+                static: path.join(process.cwd(), '/example/build'),
+                hmr: false
+            })
         ],
         watch: true,
         optimization: {
