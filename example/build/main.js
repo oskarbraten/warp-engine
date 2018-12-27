@@ -81,934 +81,34 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 8);
+/******/ 	return __webpack_require__(__webpack_require__.s = 6);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
 /***/ (function(module, exports) {
 
-/*
-  Copyright © 2018 Andrew Powell
-
-  This Source Code Form is subject to the terms of the Mozilla Public
-  License, v. 2.0. If a copy of the MPL was not distributed with this
-  file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
-  The above copyright notice and this permission notice shall be
-  included in all copies or substantial portions of this Source Code Form.
-*/
-const addHtml = (html, parent) => {
-  const div = document.createElement('div');
-  const nodes = [];
-
-  div.innerHTML = html.trim();
-
-  while (div.firstChild) {
-    nodes.push((parent || document.body).appendChild(div.firstChild));
-  }
-
-  return nodes;
-};
-
-const addCss = (css) => {
-  const style = document.createElement('style');
-
-  style.type = 'text/css';
-
-  if (css.styleSheet) {
-    style.styleSheet.cssText = css;
-  } else {
-    style.appendChild(document.createTextNode(css));
-  }
-
-  // append the stylesheet for the svg
-  document.head.appendChild(style);
-};
-
-const socketMessage = (socket, handler) => {
-  socket.addEventListener('message', (message) => {
-    const { action, data } = JSON.parse(message.data);
-    handler(action, data);
-  });
-};
-
-module.exports = { addCss, addHtml, socketMessage };
-
+module.exports = "#version 300 es\n\n__DEFINES__\n\nlayout(location = 0) in vec4 in_position;\nlayout(location = 1) in vec4 in_normal;\nlayout(location = 2) in vec4 in_tangent;\nlayout(location = 3) in vec2 in_texcoord_0;\n\nuniform mat4 modelViewProjectionMatrix;\nuniform mat4 modelMatrix;\nuniform mat4 normalMatrix;\n\nout vec3 position;\nout vec2 texcoord_0;\n\nout mat3 TBN;\nout vec3 normal;\n\nvoid main() {\n    vec4 pos = modelMatrix * in_position;\n    position = vec3(pos.xyz) / pos.w;\n    \n    vec3 normalW = normalize(vec3(normalMatrix * vec4(in_normal.xyz, 0.0)));\n    vec3 tangentW = normalize(vec3(modelMatrix * vec4(in_tangent.xyz, 0.0)));\n    vec3 bitangentW = cross(normalW, tangentW) * in_tangent.w;\n    TBN = mat3(tangentW, bitangentW, normalW);\n\n    texcoord_0 = in_texcoord_0;\n\n    gl_Position = modelViewProjectionMatrix * in_position; // needs w for proper perspective correction\n}\n"
 
 /***/ }),
 /* 1 */
 /***/ (function(module, exports) {
 
-/*
-  Copyright © 2018 Andrew Powell
-
-  This Source Code Form is subject to the terms of the Mozilla Public
-  License, v. 2.0. If a copy of the MPL was not distributed with this
-  file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
-  The above copyright notice and this permission notice shall be
-  included in all copies or substantial portions of this Source Code Form.
-*/
-const { error, info, warn } = console;
-const log = {
-  error: error.bind(console, '⬡ wps:'),
-  info: info.bind(console, '⬡ wps:'),
-  refresh: 'Please refresh the page',
-  warn: warn.bind(console, '⬡ wps:')
-};
-
-module.exports = log;
-
+module.exports = "#version 300 es\n\n__DEFINES__\n\n#define MANUAL_SRGB // TODO: investigate use of gamma correction.\n\nprecision highp float;\n\nconst uint LIGHT_DIRECTIONAL = 0U;\nconst uint LIGHT_POINT = 1U;\nconst uint LIGHT_SPOT = 2U;\n\nuniform int u_NumberOfLights;\n\nstruct Light {\n    uint type;\n    float range;\n    float angle_scale;\n    float angle_offset;\n    vec4 color; // intensity in the alpha-component.\n    vec3 position;\n    vec3 forward;\n};\n\nlayout(std140) uniform LightBlock {\n    Light lights[MAX_NUMBER_OF_LIGHTS];\n};\n\n#ifdef USE_IBL\n    uniform samplerCube u_DiffuseEnvSampler;\n    uniform samplerCube u_SpecularEnvSampler;\n    uniform sampler2D u_brdfLUT;\n#endif\n\n#ifdef HAS_BASECOLORMAP\n    uniform sampler2D u_BaseColorSampler;\n#endif\n#ifdef HAS_NORMALMAP\n    uniform sampler2D u_NormalSampler;\n    uniform float u_NormalScale;\n#endif\n#ifdef HAS_EMISSIVEMAP\n    uniform sampler2D u_EmissiveSampler;\n    uniform vec3 u_EmissiveFactor;\n#endif\n#ifdef HAS_METALROUGHNESSMAP\n    uniform sampler2D u_MetallicRoughnessSampler;\n#endif\n#ifdef HAS_OCCLUSIONMAP\n    uniform sampler2D u_OcclusionSampler;\n    uniform float u_OcclusionStrength;\n#endif\n\nuniform vec2 u_MetallicRoughnessValues;\nuniform vec4 u_BaseColorFactor;\nuniform vec3 u_Camera;\n\nin vec3 position;\nin vec2 texcoord_0;\n\n#ifdef HAS_NORMALS\n    #ifdef HAS_TANGENTS\n        in mat3 TBN;\n    #else\n        in vec3 normal;\n    #endif\n#endif\n\nout vec4 fColor;\n\n// Encapsulate the various inputs used by the various functions in the shading equation\n// We store values in this struct to simplify the integration of alternative implementations\n// of the shading terms, outlined in the Readme.MD Appendix.\nstruct PBRInfo {\n    float NdotL;                  // cos angle between normal and light direction\n    float NdotV;                  // cos angle between normal and view direction\n    float NdotH;                  // cos angle between normal and half vector\n    float LdotH;                  // cos angle between light direction and half vector\n    float VdotH;                  // cos angle between view direction and half vector\n    float perceptualRoughness;    // roughness value, as authored by the model creator (input to shader)\n    float metalness;              // metallic value at the surface\n    vec3 reflectance0;            // full reflectance color (normal incidence angle)\n    vec3 reflectance90;           // reflectance color at grazing angle\n    float alphaRoughness;         // roughness mapped to a more linear change in the roughness (proposed by [2])\n    vec3 diffuseColor;            // color contribution from diffuse lighting\n    vec3 specularColor;           // color contribution from specular lighting\n};\n\nconst float M_PI = 3.141592653589793;\nconst float c_MinRoughness = 0.04;\n\nvec4 SRGBtoLINEAR(vec4 srgbIn) {\n    #ifdef MANUAL_SRGB\n    #ifdef SRGB_FAST_APPROXIMATION\n    vec3 linOut = pow(srgbIn.xyz,vec3(2.2));\n    #else //SRGB_FAST_APPROXIMATION\n    vec3 bLess = step(vec3(0.04045),srgbIn.xyz);\n    vec3 linOut = mix( srgbIn.xyz/vec3(12.92), pow((srgbIn.xyz+vec3(0.055))/vec3(1.055),vec3(2.4)), bLess );\n    #endif //SRGB_FAST_APPROXIMATION\n    return vec4(linOut,srgbIn.w);\n    #else //MANUAL_SRGB\n    return srgbIn;\n    #endif //MANUAL_SRGB\n}\n\n// Find the normal for this fragment, pulling either from a predefined normal map\n// or from the interpolated mesh normal and tangent attributes.\nvec3 getNormal() {\n    // Retrieve the tangent space matrix\n#ifndef HAS_TANGENTS\n\n    vec3 pos_dx = dFdx(position);\n    vec3 pos_dy = dFdy(position);\n    vec3 tex_dx = dFdx(vec3(texcoord_0, 0.0));\n    vec3 tex_dy = dFdy(vec3(texcoord_0, 0.0));\n    vec3 t = (tex_dy.t * pos_dx - tex_dx.t * pos_dy) / (tex_dx.s * tex_dy.t - tex_dy.s * tex_dx.t);\n\n#ifdef HAS_NORMALS\n    vec3 ng = normalize(normal);\n#else\n    vec3 ng = cross(pos_dx, pos_dy);\n#endif\n\n    t = normalize(t - ng * dot(ng, t));\n    vec3 b = normalize(cross(ng, t));\n    mat3 tbn = mat3(t, b, ng);\n\n#else // HAS_TANGENTS\n    mat3 tbn = TBN;\n#endif\n\n#ifdef HAS_NORMALMAP\n    vec3 n = texture(u_NormalSampler, texcoord_0).rgb;\n    n = normalize(tbn * ((2.0 * n - 1.0) * vec3(u_NormalScale, u_NormalScale, 1.0)));\n#else\n    // The tbn matrix is linearly interpolated, so we need to re-normalize\n    vec3 n = normalize(tbn[2].xyz);\n#endif\n\n    return n;\n}\n\n// Calculation of the lighting contribution from an optional Image Based Light source.\n// Precomputed Environment Maps are required uniform inputs and are computed as outlined in [1].\n// See our README.md on Environment Maps [3] for additional discussion.\n#ifdef USE_IBL\nvec3 getIBLContribution(PBRInfo pbrInputs, vec3 n, vec3 reflection) {\n    float mipCount = 9.0; // resolution of 512x512\n    float lod = (pbrInputs.perceptualRoughness * mipCount);\n    // retrieve a scale and bias to F0. See [1], Figure 3\n    vec3 brdf = SRGBtoLINEAR(texture(u_brdfLUT, vec2(pbrInputs.NdotV, 1.0 - pbrInputs.perceptualRoughness))).rgb;\n    vec3 diffuseLight = SRGBtoLINEAR(textureCube(u_DiffuseEnvSampler, n)).rgb;\n\n#ifdef USE_TEX_LOD\n    vec3 specularLight = SRGBtoLINEAR(textureCubeLodEXT(u_SpecularEnvSampler, reflection, lod)).rgb;\n#else\n    vec3 specularLight = SRGBtoLINEAR(textureCube(u_SpecularEnvSampler, reflection)).rgb;\n#endif\n\n    vec3 diffuse = diffuseLight * pbrInputs.diffuseColor;\n    vec3 specular = specularLight * (pbrInputs.specularColor * brdf.x + brdf.y);\n\n    // For presentation, this allows us to disable IBL terms\n    diffuse *= u_ScaleIBLAmbient.x;\n    specular *= u_ScaleIBLAmbient.y;\n\n    return diffuse + specular;\n}\n#endif\n\n// Basic Lambertian diffuse\n// Implementation from Lambert's Photometria https://archive.org/details/lambertsphotome00lambgoog\n// See also [1], Equation 1\nvec3 diffuse(PBRInfo pbrInputs) {\n    return pbrInputs.diffuseColor / M_PI;\n}\n\n// The following equation models the Fresnel reflectance term of the spec equation (aka F())\n// Implementation of fresnel from [4], Equation 15\nvec3 specularReflection(PBRInfo pbrInputs) {\n    return pbrInputs.reflectance0 + (pbrInputs.reflectance90 - pbrInputs.reflectance0) * pow(clamp(1.0 - pbrInputs.VdotH, 0.0, 1.0), 5.0);\n}\n\n// This calculates the specular geometric attenuation (aka G()),\n// where rougher material will reflect less light back to the viewer.\n// This implementation is based on [1] Equation 4, and we adopt their modifications to\n// alphaRoughness as input as originally proposed in [2].\nfloat geometricOcclusion(PBRInfo pbrInputs) {\n    float NdotL = pbrInputs.NdotL;\n    float NdotV = pbrInputs.NdotV;\n    float r = pbrInputs.alphaRoughness;\n\n    float attenuationL = 2.0 * NdotL / (NdotL + sqrt(r * r + (1.0 - r * r) * (NdotL * NdotL)));\n    float attenuationV = 2.0 * NdotV / (NdotV + sqrt(r * r + (1.0 - r * r) * (NdotV * NdotV)));\n    return attenuationL * attenuationV;\n}\n\n// The following equation(s) model the distribution of microfacet normals across the area being drawn (aka D())\n// Implementation from \"Average Irregularity Representation of a Roughened Surface for Ray Reflection\" by T. S. Trowbridge, and K. P. Reitz\n// Follows the distribution function recommended in the SIGGRAPH 2013 course notes from EPIC Games [1], Equation 3.\nfloat microfacetDistribution(PBRInfo pbrInputs) {\n    float roughnessSq = pbrInputs.alphaRoughness * pbrInputs.alphaRoughness;\n    float f = (pbrInputs.NdotH * roughnessSq - pbrInputs.NdotH) * pbrInputs.NdotH + 1.0;\n    return roughnessSq / (M_PI * f * f);\n}\n\n// Punctual light attenuation\n/* From Frostbite PBR Course\n * http://www.frostbite.com/wp-content/uploads/2014/11/course_notes_moving_frostbite_to_pbr.pdf */\n\nfloat smooth_attenuation(float distance_squared, float range_inverse_squared) {\n    float factor = distance_squared * range_inverse_squared;\n    float smooth_factor = clamp(1.0 - (distance_squared * range_inverse_squared), 0.0, 1.0);\n    return smooth_factor * smooth_factor;\n}\n\nfloat distance_attenuation(float distance_squared, float range_inverse_squared) {\n    return smooth_attenuation(distance_squared, range_inverse_squared) / max(distance_squared, 0.01);\n}\n\n// For spotlight:\nfloat angular_attenuation(vec3 L, vec3 forward, float angle_scale, float angle_offset) {\n    float cd = dot(forward, L);\n    float attenuation = clamp(cd * angle_scale + angle_offset, 0.0, 1.0);\n    attenuation *= attenuation;\n\n    return attenuation;\n}\n\n\nvoid main() {\n    // Metallic and Roughness material properties are packed together\n    // In glTF, these factors can be specified by fixed scalar values\n    // or from a metallic-roughness map\n    float perceptualRoughness = u_MetallicRoughnessValues.y;\n    float metallic = u_MetallicRoughnessValues.x;\n\n    #ifdef HAS_METALROUGHNESSMAP\n        // Roughness is stored in the 'g' channel, metallic is stored in the 'b' channel.\n        // This layout intentionally reserves the 'r' channel for (optional) occlusion map data\n        vec4 mrSample = texture(u_MetallicRoughnessSampler, texcoord_0);\n        perceptualRoughness = mrSample.g * perceptualRoughness;\n        metallic = mrSample.b * metallic;\n    #endif\n\n    perceptualRoughness = clamp(perceptualRoughness, c_MinRoughness, 1.0);\n    metallic = clamp(metallic, 0.0, 1.0);\n\n    // Roughness is authored as perceptual roughness; as is convention,\n    // convert to material roughness by squaring the perceptual roughness [2].\n    float alphaRoughness = perceptualRoughness * perceptualRoughness;\n\n    // The albedo may be defined from a base texture or a flat color\n    #ifdef HAS_BASECOLORMAP\n        vec4 baseColor = SRGBtoLINEAR(texture(u_BaseColorSampler, texcoord_0)) * u_BaseColorFactor;\n    #else\n        vec4 baseColor = u_BaseColorFactor;\n    #endif\n\n    vec3 f0 = vec3(0.04);\n    vec3 diffuseColor = baseColor.rgb * (vec3(1.0) - f0);\n    diffuseColor *= 1.0 - metallic;\n    vec3 specularColor = mix(f0, baseColor.rgb, metallic);\n\n    // Compute reflectance.\n    float reflectance = max(max(specularColor.r, specularColor.g), specularColor.b);\n\n    // For typical incident reflectance range (between 4% to 100%) set the grazing reflectance to 100% for typical fresnel effect.\n    // For very low reflectance range on highly diffuse objects (below 4%), incrementally reduce grazing reflecance to 0%.\n    float reflectance90 = clamp(reflectance * 25.0, 0.0, 1.0);\n    vec3 specularEnvironmentR0 = specularColor.rgb;\n    vec3 specularEnvironmentR90 = vec3(1.0, 1.0, 1.0) * reflectance90;\n\n    vec3 n = getNormal();                             // normal at surface point\n    vec3 v = normalize(u_Camera - position);          // Vector from surface point to camera\n    vec3 reflection = -normalize(reflect(v, n));\n\n    float NdotV = clamp(abs(dot(n, v)), 0.001, 1.0);\n\n    PBRInfo pbrInputs = PBRInfo(\n        0.0, // filled in later for each light.\n        NdotV,\n        0.0, // filled in later for each light.\n        0.0, // filled in later for each light.\n        0.0, // filled in later for each light.\n        perceptualRoughness,\n        metallic,\n        specularEnvironmentR0,\n        specularEnvironmentR90,\n        alphaRoughness,\n        diffuseColor,\n        specularColor\n    );\n    \n    vec3 color = vec3(0.0, 0.0, 0.0);\n\n    for (int i = 0; i < MAX_NUMBER_OF_LIGHTS; i++) {\n        if (i >= u_NumberOfLights) break; // TODO: check if this is faster than a dynamic loop.\n\n        vec3 light_direction;\n        vec3 light_color = lights[i].color.rgb;\n        float light_intensity = lights[i].color.a;\n\n        float attenuation = 1.0;\n\n        if (lights[i].type >= LIGHT_POINT) { // >= for both point and spot lights.\n\n            light_direction = lights[i].position - position; // Vector from surface point to light.\n\n            // Compute attenuation:\n            float distance_squared = dot(light_direction, light_direction);\n            float range_inverse_squared = 1.0 / (lights[i].range * lights[i].range); // TODO: precalculate?\n\n            if (lights[i].range > 0.0) {\n                attenuation = light_intensity * distance_attenuation(distance_squared, range_inverse_squared);\n            } else {\n                attenuation = light_intensity / max(distance_squared, 0.01);\n            }\n\n        } else {\n            // Directional lights emit light in the direction of the local -z axis.\n            light_direction = lights[i].forward;\n            attenuation = light_intensity; // TODO: check if this is physically correct.\n        }\n\n        vec3 l = normalize(light_direction);   // Vector from surface point to light (normalized)\n\n        if (lights[i].type == LIGHT_SPOT) {\n            attenuation *= angular_attenuation(l, lights[i].forward, lights[i].angle_scale, lights[i].angle_offset);\n        }\n\n        vec3 h = normalize(l + v);              // Half vector between both l and v\n        \n        float NdotL = clamp(dot(n, l), 0.001, 1.0);\n        float NdotH = clamp(dot(n, h), 0.0, 1.0);\n        float LdotH = clamp(dot(l, h), 0.0, 1.0);\n        float VdotH = clamp(dot(v, h), 0.0, 1.0);\n\n        // update input struct.\n        pbrInputs.NdotL = NdotL;\n        pbrInputs.NdotH = NdotH;\n        pbrInputs.LdotH = LdotH;\n        pbrInputs.VdotH = VdotH;\n\n        // Calculate the shading terms for the microfacet specular shading model\n        vec3 F = specularReflection(pbrInputs);\n        float G = geometricOcclusion(pbrInputs);\n        float D = microfacetDistribution(pbrInputs);\n\n        // Calculation of analytical lighting contribution\n        vec3 diffuseContrib = (1.0 - F) * diffuse(pbrInputs);\n        vec3 specContrib = F * G * D / (4.0 * NdotL * NdotV);\n\n        // Obtain final intensity as reflectance (BRDF) scaled by the energy of the light (cosine law)\n        color += (diffuseContrib + specContrib) * NdotL * light_color * attenuation;\n\n    }\n\n    // Calculate lighting contribution from image based lighting source (IBL)\n    #ifdef USE_IBL\n        color += getIBLContribution(pbrInputs, n, reflection);\n    #endif\n\n    // Apply optional PBR terms for additional (optional) shading\n    #ifdef HAS_OCCLUSIONMAP\n        float ao = texture(u_OcclusionSampler, texcoord_0).r;\n        color = mix(color, color * ao, u_OcclusionStrength);\n    #endif\n\n    #ifdef HAS_EMISSIVEMAP\n        vec3 emissive = SRGBtoLINEAR(texture(u_EmissiveSampler, texcoord_0)).rgb * u_EmissiveFactor;\n        color += emissive;\n    #endif\n\n    fColor = vec4(pow(color,vec3(1.0/2.2)), baseColor.a);\n}"
 
 /***/ }),
-/* 2 */
-/***/ (function(module, exports) {
-
-module.exports = "#version 300 es\n\n__DEFINES__\n\nlayout(location = 0) in vec4 in_position;\nlayout(location = 1) in vec4 in_normal;\nlayout(location = 2) in vec4 in_tangent;\nlayout(location = 3) in vec2 in_texcoord_0;\n\nuniform mat4 modelViewProjectionMatrix;\nuniform mat4 modelMatrix;\nuniform mat4 normalMatrix;\n\nout vec3 position;\nout vec2 texcoord_0;\n\nout mat3 TBN;\nout vec3 normal;\n\nvoid main() {\n    vec4 pos = modelMatrix * in_position;\n    position = vec3(pos.xyz) / pos.w;\n    \n    vec3 normalW = normalize(vec3(normalMatrix * vec4(in_normal.xyz, 0.0)));\n    vec3 tangentW = normalize(vec3(modelMatrix * vec4(in_tangent.xyz, 0.0)));\n    vec3 bitangentW = cross(normalW, tangentW) * in_tangent.w;\n    TBN = mat3(tangentW, bitangentW, normalW);\n\n    texcoord_0 = in_texcoord_0;\n\n    gl_Position = modelViewProjectionMatrix * in_position; // needs w for proper perspective correction\n}\n"
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports) {
-
-module.exports = "#version 300 es\n\n__DEFINES__\n\nprecision highp float;\n\nconst uint LIGHT_POINT = 0U;\nconst uint LIGHT_DIRECTIONAL = 1U;\nconst uint LIGHT_SPOT = 2U;\n\nuniform int u_NumberOfLights;\n\nstruct Light {\n    vec4 position;\n    vec4 color;\n    uint type;\n    float range;\n    float innerConeAngle;\n    float outerConeAngle;\n};\n\nlayout(std140) uniform LightBlock {\n    Light lights[MAX_NUMBER_OF_LIGHTS];\n};\n\n#ifdef USE_IBL\n    uniform samplerCube u_DiffuseEnvSampler;\n    uniform samplerCube u_SpecularEnvSampler;\n    uniform sampler2D u_brdfLUT;\n#endif\n\n#ifdef HAS_BASECOLORMAP\n    uniform sampler2D u_BaseColorSampler;\n#endif\n#ifdef HAS_NORMALMAP\n    uniform sampler2D u_NormalSampler;\n    uniform float u_NormalScale;\n#endif\n#ifdef HAS_EMISSIVEMAP\n    uniform sampler2D u_EmissiveSampler;\n    uniform vec3 u_EmissiveFactor;\n#endif\n#ifdef HAS_METALROUGHNESSMAP\n    uniform sampler2D u_MetallicRoughnessSampler;\n#endif\n#ifdef HAS_OCCLUSIONMAP\n    uniform sampler2D u_OcclusionSampler;\n    uniform float u_OcclusionStrength;\n#endif\n\nuniform vec2 u_MetallicRoughnessValues;\nuniform vec4 u_BaseColorFactor;\nuniform vec3 u_Camera;\n\nin vec3 position;\nin vec2 texcoord_0;\n\n#ifdef HAS_NORMALS\n    #ifdef HAS_TANGENTS\n        in mat3 TBN;\n    #else\n        in vec3 normal;\n    #endif\n#endif\n\nout vec4 fColor;\n\n// Encapsulate the various inputs used by the various functions in the shading equation\n// We store values in this struct to simplify the integration of alternative implementations\n// of the shading terms, outlined in the Readme.MD Appendix.\nstruct PBRInfo {\n    float NdotL;                  // cos angle between normal and light direction\n    float NdotV;                  // cos angle between normal and view direction\n    float NdotH;                  // cos angle between normal and half vector\n    float LdotH;                  // cos angle between light direction and half vector\n    float VdotH;                  // cos angle between view direction and half vector\n    float perceptualRoughness;    // roughness value, as authored by the model creator (input to shader)\n    float metalness;              // metallic value at the surface\n    vec3 reflectance0;            // full reflectance color (normal incidence angle)\n    vec3 reflectance90;           // reflectance color at grazing angle\n    float alphaRoughness;         // roughness mapped to a more linear change in the roughness (proposed by [2])\n    vec3 diffuseColor;            // color contribution from diffuse lighting\n    vec3 specularColor;           // color contribution from specular lighting\n};\n\nconst float M_PI = 3.141592653589793;\nconst float c_MinRoughness = 0.04;\n\nvec4 SRGBtoLINEAR(vec4 srgbIn) {\n    #ifdef MANUAL_SRGB\n    #ifdef SRGB_FAST_APPROXIMATION\n    vec3 linOut = pow(srgbIn.xyz,vec3(2.2));\n    #else //SRGB_FAST_APPROXIMATION\n    vec3 bLess = step(vec3(0.04045),srgbIn.xyz);\n    vec3 linOut = mix( srgbIn.xyz/vec3(12.92), pow((srgbIn.xyz+vec3(0.055))/vec3(1.055),vec3(2.4)), bLess );\n    #endif //SRGB_FAST_APPROXIMATION\n    return vec4(linOut,srgbIn.w);;\n    #else //MANUAL_SRGB\n    return srgbIn;\n    #endif //MANUAL_SRGB\n}\n\n// Find the normal for this fragment, pulling either from a predefined normal map\n// or from the interpolated mesh normal and tangent attributes.\nvec3 getNormal() {\n    // Retrieve the tangent space matrix\n#ifndef HAS_TANGENTS\n\n    vec3 pos_dx = dFdx(position);\n    vec3 pos_dy = dFdy(position);\n    vec3 tex_dx = dFdx(vec3(texcoord_0, 0.0));\n    vec3 tex_dy = dFdy(vec3(texcoord_0, 0.0));\n    vec3 t = (tex_dy.t * pos_dx - tex_dx.t * pos_dy) / (tex_dx.s * tex_dy.t - tex_dy.s * tex_dx.t);\n\n#ifdef HAS_NORMALS\n    vec3 ng = normalize(normal);\n#else\n    vec3 ng = cross(pos_dx, pos_dy);\n#endif\n\n    t = normalize(t - ng * dot(ng, t));\n    vec3 b = normalize(cross(ng, t));\n    mat3 tbn = mat3(t, b, ng);\n\n#else // HAS_TANGENTS\n    mat3 tbn = TBN;\n#endif\n\n#ifdef HAS_NORMALMAP\n    vec3 n = texture(u_NormalSampler, texcoord_0).rgb;\n    n = normalize(tbn * ((2.0 * n - 1.0) * vec3(u_NormalScale, u_NormalScale, 1.0)));\n#else\n    // The tbn matrix is linearly interpolated, so we need to re-normalize\n    vec3 n = normalize(tbn[2].xyz);\n#endif\n\n    return n;\n}\n\n// Calculation of the lighting contribution from an optional Image Based Light source.\n// Precomputed Environment Maps are required uniform inputs and are computed as outlined in [1].\n// See our README.md on Environment Maps [3] for additional discussion.\n#ifdef USE_IBL\nvec3 getIBLContribution(PBRInfo pbrInputs, vec3 n, vec3 reflection) {\n    float mipCount = 9.0; // resolution of 512x512\n    float lod = (pbrInputs.perceptualRoughness * mipCount);\n    // retrieve a scale and bias to F0. See [1], Figure 3\n    vec3 brdf = SRGBtoLINEAR(texture(u_brdfLUT, vec2(pbrInputs.NdotV, 1.0 - pbrInputs.perceptualRoughness))).rgb;\n    vec3 diffuseLight = SRGBtoLINEAR(textureCube(u_DiffuseEnvSampler, n)).rgb;\n\n#ifdef USE_TEX_LOD\n    vec3 specularLight = SRGBtoLINEAR(textureCubeLodEXT(u_SpecularEnvSampler, reflection, lod)).rgb;\n#else\n    vec3 specularLight = SRGBtoLINEAR(textureCube(u_SpecularEnvSampler, reflection)).rgb;\n#endif\n\n    vec3 diffuse = diffuseLight * pbrInputs.diffuseColor;\n    vec3 specular = specularLight * (pbrInputs.specularColor * brdf.x + brdf.y);\n\n    // For presentation, this allows us to disable IBL terms\n    diffuse *= u_ScaleIBLAmbient.x;\n    specular *= u_ScaleIBLAmbient.y;\n\n    return diffuse + specular;\n}\n#endif\n\n// Basic Lambertian diffuse\n// Implementation from Lambert's Photometria https://archive.org/details/lambertsphotome00lambgoog\n// See also [1], Equation 1\nvec3 diffuse(PBRInfo pbrInputs) {\n    return pbrInputs.diffuseColor / M_PI;\n}\n\n// The following equation models the Fresnel reflectance term of the spec equation (aka F())\n// Implementation of fresnel from [4], Equation 15\nvec3 specularReflection(PBRInfo pbrInputs) {\n    return pbrInputs.reflectance0 + (pbrInputs.reflectance90 - pbrInputs.reflectance0) * pow(clamp(1.0 - pbrInputs.VdotH, 0.0, 1.0), 5.0);\n}\n\n// This calculates the specular geometric attenuation (aka G()),\n// where rougher material will reflect less light back to the viewer.\n// This implementation is based on [1] Equation 4, and we adopt their modifications to\n// alphaRoughness as input as originally proposed in [2].\nfloat geometricOcclusion(PBRInfo pbrInputs) {\n    float NdotL = pbrInputs.NdotL;\n    float NdotV = pbrInputs.NdotV;\n    float r = pbrInputs.alphaRoughness;\n\n    float attenuationL = 2.0 * NdotL / (NdotL + sqrt(r * r + (1.0 - r * r) * (NdotL * NdotL)));\n    float attenuationV = 2.0 * NdotV / (NdotV + sqrt(r * r + (1.0 - r * r) * (NdotV * NdotV)));\n    return attenuationL * attenuationV;\n}\n\n// The following equation(s) model the distribution of microfacet normals across the area being drawn (aka D())\n// Implementation from \"Average Irregularity Representation of a Roughened Surface for Ray Reflection\" by T. S. Trowbridge, and K. P. Reitz\n// Follows the distribution function recommended in the SIGGRAPH 2013 course notes from EPIC Games [1], Equation 3.\nfloat microfacetDistribution(PBRInfo pbrInputs) {\n    float roughnessSq = pbrInputs.alphaRoughness * pbrInputs.alphaRoughness;\n    float f = (pbrInputs.NdotH * roughnessSq - pbrInputs.NdotH) * pbrInputs.NdotH + 1.0;\n    return roughnessSq / (M_PI * f * f);\n}\n\nvoid main() {\n    // Metallic and Roughness material properties are packed together\n    // In glTF, these factors can be specified by fixed scalar values\n    // or from a metallic-roughness map\n    float perceptualRoughness = u_MetallicRoughnessValues.y;\n    float metallic = u_MetallicRoughnessValues.x;\n\n    #ifdef HAS_METALROUGHNESSMAP\n        // Roughness is stored in the 'g' channel, metallic is stored in the 'b' channel.\n        // This layout intentionally reserves the 'r' channel for (optional) occlusion map data\n        vec4 mrSample = texture(u_MetallicRoughnessSampler, texcoord_0);\n        perceptualRoughness = mrSample.g * perceptualRoughness;\n        metallic = mrSample.b * metallic;\n    #endif\n\n    perceptualRoughness = clamp(perceptualRoughness, c_MinRoughness, 1.0);\n    metallic = clamp(metallic, 0.0, 1.0);\n\n    // Roughness is authored as perceptual roughness; as is convention,\n    // convert to material roughness by squaring the perceptual roughness [2].\n    float alphaRoughness = perceptualRoughness * perceptualRoughness;\n\n    // The albedo may be defined from a base texture or a flat color\n    #ifdef HAS_BASECOLORMAP\n        vec4 baseColor = SRGBtoLINEAR(texture(u_BaseColorSampler, texcoord_0)) * u_BaseColorFactor;\n    #else\n        vec4 baseColor = u_BaseColorFactor;\n    #endif\n\n    vec3 f0 = vec3(0.04);\n    vec3 diffuseColor = baseColor.rgb * (vec3(1.0) - f0);\n    diffuseColor *= 1.0 - metallic;\n    vec3 specularColor = mix(f0, baseColor.rgb, metallic);\n\n    // Compute reflectance.\n    float reflectance = max(max(specularColor.r, specularColor.g), specularColor.b);\n\n    // For typical incident reflectance range (between 4% to 100%) set the grazing reflectance to 100% for typical fresnel effect.\n    // For very low reflectance range on highly diffuse objects (below 4%), incrementally reduce grazing reflecance to 0%.\n    float reflectance90 = clamp(reflectance * 25.0, 0.0, 1.0);\n    vec3 specularEnvironmentR0 = specularColor.rgb;\n    vec3 specularEnvironmentR90 = vec3(1.0, 1.0, 1.0) * reflectance90;\n\n    vec3 n = getNormal();                             // normal at surface point\n    vec3 v = normalize(u_Camera - position);          // Vector from surface point to camera\n    vec3 reflection = -normalize(reflect(v, n));\n\n    float NdotV = clamp(abs(dot(n, v)), 0.001, 1.0);\n\n    PBRInfo pbrInputs = PBRInfo(\n        0.0,\n        NdotV,\n        0.0,\n        0.0,\n        0.0,\n        perceptualRoughness,\n        metallic,\n        specularEnvironmentR0,\n        specularEnvironmentR90,\n        alphaRoughness,\n        diffuseColor,\n        specularColor\n    );\n    \n    vec3 color = vec3(0.0, 0.0, 0.0);\n\n    for (int i = 0; i < u_NumberOfLights; i++) {\n        //if (i >= u_NumberOfLights) break; // TODO: check if this is faster.\n\n        vec3 lightDirection = lights[i].position.xyz;\n        float attenuation = 1.0;\n\n        if (lights[i].type == LIGHT_POINT) {\n\n            lightDirection -= position; // vector from surface point to light.\n\n            // Compute attenuation.\n            float distanceToLight = length(lightDirection);\n            float range = lights[i].range;\n\n            if (range > 0.0) {\n                attenuation = clamp(1.0 - pow((distanceToLight / range), 4.0), 0.0, 1.0) / pow(distanceToLight, 2.0);\n            } else {\n                attenuation = 1.0 / 0.01 + pow(distanceToLight, 2.0);\n            }\n\n        }\n\n        vec3 l = normalize(lightDirection);   // Vector from surface point to light (normalized)\n        vec3 h = normalize(l+v);              // Half vector between both l and v\n        \n        float NdotL = clamp(dot(n, l), 0.001, 1.0);\n        float NdotH = clamp(dot(n, h), 0.0, 1.0);\n        float LdotH = clamp(dot(l, h), 0.0, 1.0);\n        float VdotH = clamp(dot(v, h), 0.0, 1.0);\n\n        // update input struct.\n        pbrInputs.NdotL = NdotL;\n        pbrInputs.NdotH = NdotH;\n        pbrInputs.LdotH = LdotH;\n        pbrInputs.VdotH = VdotH;\n\n        // Calculate the shading terms for the microfacet specular shading model\n        vec3 F = specularReflection(pbrInputs);\n        float G = geometricOcclusion(pbrInputs);\n        float D = microfacetDistribution(pbrInputs);\n\n        // Calculation of analytical lighting contribution\n        vec3 diffuseContrib = (1.0 - F) * diffuse(pbrInputs);\n        vec3 specContrib = F * G * D / (4.0 * NdotL * NdotV);\n\n        // Obtain final intensity as reflectance (BRDF) scaled by the energy of the light (cosine law)\n        color += NdotL * (attenuation * (lights[i].color.rgb * lights[i].color.a * (diffuseContrib + specContrib)));\n\n    }\n\n    // Calculate lighting contribution from image based lighting source (IBL)\n    #ifdef USE_IBL\n        color += getIBLContribution(pbrInputs, n, reflection);\n    #endif\n\n    // Apply optional PBR terms for additional (optional) shading\n    #ifdef HAS_OCCLUSIONMAP\n        float ao = texture(u_OcclusionSampler, texcoord_0).r;\n        color = mix(color, color * ao, u_OcclusionStrength);\n    #endif\n\n    #ifdef HAS_EMISSIVEMAP\n        vec3 emissive = SRGBtoLINEAR(texture(u_EmissiveSampler, texcoord_0)).rgb * u_EmissiveFactor;\n        color += emissive;\n    #endif\n\n    fColor = vec4(pow(color,vec3(1.0/2.2)), baseColor.a);\n\n}"
-
-/***/ }),
+/* 2 */,
+/* 3 */,
 /* 4 */,
 /* 5 */,
-/* 6 */,
-/* 7 */,
-/* 8 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(16);
-module.exports = __webpack_require__(9);
+module.exports = __webpack_require__(7);
 
 
 /***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/*
-  Copyright © 2018 Andrew Powell
-
-  This Source Code Form is subject to the terms of the Mozilla Public
-  License, v. 2.0. If a copy of the MPL was not distributed with this
-  file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
-  The above copyright notice and this permission notice shall be
-  included in all copies or substantial portions of this Source Code Form.
-*/
-
-/**
- * @note This file exists merely as an easy reference for folks adding it to their configuration entries
- */
-
-(() => {
-  if (window.webpackPluginServe) {
-    return;
-  }
-
-  window.webpackPluginServe = true;
-
-  // eslint-disable-next-line global-require
-  __webpack_require__(10);
-})();
-
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/*
-  Copyright © 2018 Andrew Powell
-
-  This Source Code Form is subject to the terms of the Mozilla Public
-  License, v. 2.0. If a copy of the MPL was not distributed with this
-  file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
-  The above copyright notice and this permission notice shall be
-  included in all copies or substantial portions of this Source Code Form.
-*/
-const { replace } = __webpack_require__(11);
-const { error, info, refresh, warn } = __webpack_require__(1);
-const { init: initProgress } = __webpack_require__(13);
-const { init: initMinimalProgress } = __webpack_require__(14);
-const { init: initStatus } = __webpack_require__(15);
-
-// eslint-disable-next-line no-undef, no-unused-vars
-const options = {"client":null,"compress":null,"historyFallback":false,"hmr":false,"host":null,"liveReload":false,"log":{"level":"info","prefix":{"template":"{{level}}"},"name":"webpack-plugin-serve"},"open":false,"port":55555,"progress":true,"secure":false,"static":"/home/oskarbraten/Documents/warp-engine/example/build","status":true,"address":"[::]:55555"};
-const { address, client, progress, secure, status } = options;
-const protocol = secure ? 'wss' : 'ws';
-const socket = new WebSocket(`${protocol}://${(client || {}).address || address}/wps`);
-
-// prevents ECONNRESET errors on the server
-window.addEventListener('beforeunload', () => socket.close());
-
-socket.addEventListener('message', (message) => {
-  const { action, data } = JSON.parse(message.data);
-  const { errors, hash = '<?>', warnings } = data || {};
-  const shortHash = hash.slice(0, 7);
-
-  switch (action) {
-    case 'connected':
-      info('WebSocket connected');
-      break;
-    case 'errors':
-      error(`Build ${shortHash} produced errors:\n`, errors);
-      break;
-    case 'reload':
-      window.location.reload();
-      break;
-    case 'replace':
-      replace(hash);
-      break;
-    case 'warnings':
-      warn(`Build ${shortHash} produced warnings:\n`, warnings);
-      break;
-    default:
-  }
-});
-
-socket.onclose = () => warn(`The client WebSocket was closed. ${refresh}`);
-
-if (progress === 'minimal') {
-  initMinimalProgress(options, socket);
-} else if (progress) {
-  initProgress(options, socket);
-}
-
-if (status) {
-  initStatus(options, socket);
-}
-
-if (false) {} else {
-  warn('Hot Module Replacement is inactive');
-}
-
-if ( true && options.liveReload) {
-  info('Live Reload is active');
-}
-
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(module) {/*
-  Copyright © 2018 Andrew Powell
-
-  This Source Code Form is subject to the terms of the Mozilla Public
-  License, v. 2.0. If a copy of the MPL was not distributed with this
-  file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
-  The above copyright notice and this permission notice shall be
-  included in all copies or substantial portions of this Source Code Form.
-*/
-const { error, info, refresh, warn } = __webpack_require__(1);
-
-const { apply, check, status } = module.hot;
-let latest = true;
-
-const hmr = {
-  onUnaccepted(data) {
-    warn('Change in unaccepted module(s):\n', data);
-    warn(data);
-  },
-  onDeclined(data) {
-    warn('Change in declined module(s):\n', data);
-  },
-  onErrored(data) {
-    error('Error in module(s):\n', data);
-  }
-};
-
-const replace = async (hash) => {
-  if (hash) {
-    // eslint-disable-next-line no-undef
-    latest = hash.includes(__webpack_hash__);
-  }
-
-  if (!latest) {
-    const hmrStatus = status();
-
-    if (hmrStatus === 'abort' || hmrStatus === 'fail') {
-      warn(`An HMR update was triggered, but ${hmrStatus}ed. ${refresh}`);
-      return;
-    }
-
-    let modules = await check(false);
-
-    if (!modules) {
-      warn(`No modules found for replacement. ${refresh}`);
-      return;
-    }
-
-    modules = await apply(hmr);
-
-    if (modules) {
-      latest = true;
-      info(`Build ${hash.slice(0, 7)} replaced:\n`, modules);
-    }
-  }
-};
-
-module.exports = { replace };
-
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(12)(module)))
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports) {
-
-module.exports = function(module) {
-	if (!module.webpackPolyfill) {
-		module.deprecate = function() {};
-		module.paths = [];
-		// module.parent = undefined by default
-		if (!module.children) module.children = [];
-		Object.defineProperty(module, "loaded", {
-			enumerable: true,
-			get: function() {
-				return module.l;
-			}
-		});
-		Object.defineProperty(module, "id", {
-			enumerable: true,
-			get: function() {
-				return module.i;
-			}
-		});
-		module.webpackPolyfill = 1;
-	}
-	return module;
-};
-
-
-/***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/*
-  Copyright © 2018 Andrew Powell, Matheus Gonçalves da Silva
-
-  This Source Code Form is subject to the terms of the Mozilla Public
-  License, v. 2.0. If a copy of the MPL was not distributed with this
-  file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
-  The above copyright notice and this permission notice shall be
-  included in all copies or substantial portions of this Source Code Form.
-*/
-const { addCss, addHtml } = __webpack_require__(0);
-
-const ns = 'wps-progress';
-const css = `
-@import url('https://fonts.googleapis.com/css?family=Open+Sans:400,700');
-
-#${ns}{
-  width: 200px;
-  height: 200px;
-  position: absolute;
-  right: 5%;
-  top: 5%;
-  transition: opacity .25s ease-in-out;
-  z-index: 1000;
-}
-
-#${ns}-bg {
-  fill: #282d35;
-}
-
-#${ns}-fill {
-  fill: rgba(0, 0, 0, 0);
-  stroke: rgb(186, 223, 172);
-  stroke-dasharray: 219.99078369140625;
-  stroke-dashoffset: -219.99078369140625;
-  stroke-width: 10;
-  transform: rotate(90deg)translate(0px, -80px);
-  transition: stroke-dashoffset 1s;
-}
-
-#${ns}-percent {
-  font-family: 'Open Sans';
-  font-size: 18px;
-  fill: #ffffff;
-}
-
-#${ns}-percent-value {
-  alignment-baseline: middle;
-  text-anchor: middle;
-}
-
-#${ns}-percent-super {
-  fill: #bdc3c7;
-  font-size: .45em;
-  baseline-shift: 10%;
-}
-
-.${ns}-noselect {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  cursor: default;
-}
-
-@keyframes ${ns}-hidden-display {
-	0% {
-		opacity: 1;
-		transform: scale(1);
-		-webkit-transform: scale(1);
-	}
-	99% {
-		display: inline-flex;
-		opacity: 0;
-		transform: scale(0);
-		-webkit-transform: scale(0);
-	}
-	100% {
-		display: none;
-		opacity: 0;
-		transform: scale(0);
-		-webkit-transform: scale(0);
-	}
-}
-
-.${ns}-hidden{
-  animation: ${ns}-hidden-display .3s;
-  animation-fill-mode:forwards;
-  display: inline-flex;
-}
-`;
-
-const html = `
-<svg id="${ns}" class="${ns}-noselect ${ns}-hidden" x="0px" y="0px" viewBox="0 0 80 80">
-  <circle id="${ns}-bg" cx="50%" cy="50%" r="35"></circle>
-  <path id="${ns}-fill" d="M5,40a35,35 0 1,0 70,0a35,35 0 1,0 -70,0" />
-  <text id="${ns}-percent" x="50%" y="51%"><tspan id="${ns}-percent-value">0</tspan><tspan id="${ns}-percent-super">%</tspan></text>
-</svg>
-`;
-
-const update = (percent) => {
-  const max = -219.99078369140625;
-  const value = document.querySelector(`#${ns}-percent-value`);
-  const track = document.querySelector(`#${ns}-fill`);
-  const offset = ((100 - percent) / 100) * max;
-
-  track.setAttribute('style', `stroke-dashoffset: ${offset}`);
-  value.innerHTML = percent.toString();
-};
-
-const reset = (svg) => {
-  svg.classList.add(`${ns}-hidden`);
-  setTimeout(() => update(0), 1e3);
-};
-
-const init = (options, socket) => {
-  document.addEventListener('DOMContentLoaded', () => {
-    addCss(css);
-    addHtml(html);
-  });
-
-  socket.addEventListener('message', (message) => {
-    const { action, data } = JSON.parse(message.data);
-
-    if (action !== 'progress') {
-      return;
-    }
-
-    const percent = Math.floor(data.percent * 100);
-    const svg = document.querySelector(`#${ns}`);
-
-    if (!svg) {
-      return;
-    }
-
-    // we can safely call this even if it doesn't have the class
-    svg.classList.remove(`${ns}-hidden`);
-
-    if (data.percent === 1) {
-      setTimeout(() => reset(svg), 5e3);
-    }
-
-    update(percent);
-  });
-};
-
-module.exports = { init };
-
-
-/***/ }),
-/* 14 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/*
-  Copyright © 2018 Andrew Powell, Matheus Gonçalves da Silva
-
-  This Source Code Form is subject to the terms of the Mozilla Public
-  License, v. 2.0. If a copy of the MPL was not distributed with this
-  file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
-  The above copyright notice and this permission notice shall be
-  included in all copies or substantial portions of this Source Code Form.
-*/
-const { addCss, addHtml } = __webpack_require__(0);
-
-const ns = 'wps-progress-minimal';
-const html = `
-<div id="${ns}" class="${ns}-hidden">
-  <div id="${ns}-bar"></div>
-</div>
-`;
-const css = `
-#${ns} {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 4px;
-  width: 100vw;
-}
-
-#${ns}-bar {
-  width: 0%;
-  height: 4px;
-  background-color: rgb(186, 223, 172);
-  transition: width 1s ease-in-out;
-}
-
-.${ns}-hidden{
-  display: none;
-}
-`;
-
-const update = (percent) => {
-  const bar = document.querySelector(`#${ns}-bar`);
-  bar.style.width = `${percent}%`;
-};
-
-const reset = (wrapper) => {
-  wrapper.classList.add(`${ns}-hidden`);
-  setTimeout(() => update(0), 1e3);
-};
-
-const init = (options, socket) => {
-  document.addEventListener('DOMContentLoaded', () => {
-    addHtml(html);
-    addCss(css);
-  });
-
-  socket.addEventListener('message', (message) => {
-    const { action, data } = JSON.parse(message.data);
-
-    if (action !== 'progress') {
-      return;
-    }
-
-    const percent = Math.floor(data.percent * 100);
-    const wrapper = document.querySelector(`#${ns}`);
-
-    wrapper.classList.remove(`${ns}-hidden`);
-
-    if (data.percent === 1) {
-      setTimeout(() => reset(wrapper), 5e3);
-    }
-
-    update(percent);
-  });
-};
-
-module.exports = {
-  init
-};
-
-
-/***/ }),
-/* 15 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/*
-  Copyright © 2018 Andrew Powell
-
-  This Source Code Form is subject to the terms of the Mozilla Public
-  License, v. 2.0. If a copy of the MPL was not distributed with this
-  file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
-  The above copyright notice and this permission notice shall be
-  included in all copies or substantial portions of this Source Code Form.
-*/
-const { addCss, addHtml, socketMessage } = __webpack_require__(0);
-
-const ns = 'wps-status';
-const css = `
-@import url('https://fonts.googleapis.com/css?family=Open+Sans:400,700');
-
-#${ns} {
-  background: #282d35;
-  border-radius: 0.6em;
-  display: flex;
-  flex-direction: column;
-	font-family: 'Open Sans', Helvetica, Arial, sans-serif;
-	font-size: 10px;
-  height: 90%;
-  margin: 0 auto;
-  max-height: 20em;
-  min-height: 20em;
-  opacity: 1;
-  overflow: hidden;
-  padding-bottom: 3em;
-  position: relative;
-  transition: opacity .25s ease-in-out;
-  width: 95%;
-}
-
-@keyframes ${ns}-hidden-display {
-	0% {
-		opacity: 1;
-	}
-	99% {
-		display: inline-flex;
-		opacity: 0;
-	}
-	100% {
-		display: none;
-		opacity: 0;
-	}
-}
-
-#${ns}.${ns}-hidden {
-  animation: ${ns}-hidden-display .3s;
-  animation-fill-mode:forwards;
-  display: none;
-}
-
-#${ns}.${ns}-min {
-  animation: minimize 10s;
-  bottom: 2em;
-  cursor: pointer;
-  height: 6em;
-  min-height: 6em;
-  padding-bottom: 0;
-  position: absolute;
-  right: 2em;
-  width: 6em;
-}
-
-#${ns}.${ns}-min #${ns}-beacon {
-  display: block;
-}
-
-#${ns}-title {
-  color: #fff;
-  font-size: 1.2em;
-  font-weight: normal;
-  margin: 0;
-  padding: 0.6em 0;
-  text-align: center;
-  width: 100%;
-}
-
-#${ns}.${ns}-min #${ns}-title {
-  display: none;
-}
-
-#${ns}-title-errors {
-  color: #ff5f58;
-  font-style: normal;
-  padding-left: 1em;
-}
-
-#${ns}-title-warnings {
-  color: #ffbd2e;
-  font-style: normal;
-  padding-left: 1em;
-}
-
-#${ns}-problems {
-  overflow-y: auto;
-  padding: 1em 2em;
-}
-
-#${ns}-problems pre {
-  color: #ddd;
-  display: block;
-  font-size: 1.3em;
-	font-family: 'Open Sans', Helvetica, Arial, sans-serif;
-  white-space: pre-wrap;
-}
-
-#${ns}-problems pre em {
-  background: #ff5f58;
-  border-radius: 0.3em;
-  color: #641e16;
-  font-style: normal;
-  line-height: 3em;
-  margin-right: 0.4em;
-  padding: 0.1em 0.4em;
-  text-transform: uppercase;
-}
-
-pre#${ns}-warnings em {
-  background: #ffbd2e;
-  color: #3e2723;
-}
-
-pre#${ns}-success {
-  display: none;
-  text-align: center;
-}
-
-pre#${ns}-success em {
-  background: #7fb900;
-  color: #004d40;
-}
-
-#${ns}-problems.${ns}-success #${ns}-success {
-  display: block;
-}
-
-#${ns}.${ns}-min #${ns}-problems {
-  display: none;
-}
-
-#${ns}-nav {
-  opacity: 0.5;
-  padding: 1.2em;
-  position: absolute;
-}
-
-#${ns}.${ns}-min #${ns}-nav {
-  display: none;
-}
-
-#${ns}-nav:hover {
-  opacity: 1;
-}
-
-#${ns}-nav div {
-  background: #ff5f58;
-  border-radius: 1.2em;
-  cursor: pointer;
-  display: inline-block;
-  height: 1.2em;
-  position: relative;
-  width: 1.2em;
-}
-
-div#${ns}-min {
-  background: #ffbd2e;
-  margin-left: 0.8em;
-}
-
-#${ns}-beacon {
-  border-radius: 3em;
-  display: none;
-  font-size: 10px;
-  height: 3em;
-  margin: 1.6em auto;
-  position: relative;
-  width: 3em;
-}
-
-#${ns}-beacon:before, #${ns}-beacon:after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(127,185,0, 0.2);
-  border-radius: 3em;
-  opacity: 0;
-}
-
-#${ns}-beacon:before {
-  animation: ${ns}-pulse 3s infinite linear;
-  transform: scale(1);
-}
-
-#${ns}-beacon:after {
-  animation: ${ns}-pulse 3s 2s infinite linear;
-}
-
-
-@keyframes ${ns}-pulse {
-  0% {
-    opacity: 0;
-    transform: scale(0.6);
-  }
-  33% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(1.4);
-  }
-}
-
-#${ns}-beacon mark {
-  background: rgba(127, 185, 0, 1);
-  border-radius: 100% 100%;
-  height: 1em;
-  left: 1em;
-  position: absolute;
-  top: 1em;
-  width: 1em;
-}
-
-#${ns}-beacon.${ns}-error mark {
-  background: #ff5f58;
-}
-
-#${ns}-beacon.${ns}-error:before, #${ns}-beacon.error:after {
-  background: rgba(255, 95, 88, 0.2);
-}
-
-#${ns}-beacon.${ns}-warning mark {
-  background: #ffbd2e;
-}
-
-#${ns}-beacon.${ns}-warning:before, #${ns}-beacon.warning:after {
-  background: rgba(255, 189, 46, 0.2);
-}
-`;
-
-const html = `
-<aside id="${ns}" class="${ns}-hidden" title="build status">
-  <figure id="${ns}-beacon">
-    <mark/>
-  </figure>
-  <nav id="${ns}-nav">
-    <div id="${ns}-close" title="close"></div>
-    <div id="${ns}-min" title="minmize"></div>
-  </nav>
-  <h1 id="${ns}-title">
-    build status
-    <em id="${ns}-title-errors"></em>
-    <em id="${ns}-title-warnings"></em>
-  </h1>
-  <article id="${ns}-problems">
-    <pre id="${ns}-success"><em>Build Successful</em></pre>
-    <pre id="${ns}-errors"></pre>
-    <pre id="${ns}-warnings"></pre>
-  </article>
-</aside>
-`;
-
-const init = (options, socket) => {
-  const hidden = `${ns}-hidden`;
-  let aside;
-  let beacon;
-  let problems;
-  let preErrors;
-  let preWarnings;
-  let titleErrors;
-  let titleWarnings;
-
-  const reset = () => {
-    preErrors.innerHTML = '';
-    preWarnings.innerHTML = '';
-    problems.classList.remove(`${ns}-success`);
-    beacon.className = '';
-  };
-
-  const addErrors = (errors) => {
-    if (errors.length) {
-      beacon.classList.add(`${ns}-error`);
-
-      for (const error of errors) {
-        const markup = `<em>Error</em> in ${error}`;
-        addHtml(markup, preErrors);
-      }
-
-      titleErrors.innerText = `${errors.length} Error(s)`;
-    } else {
-      titleErrors.innerText = '';
-    }
-    aside.classList.remove(hidden);
-  };
-
-  const addWarnings = (warnings) => {
-    if (warnings.length) {
-      if (!beacon.classList.contains(`${ns}-error`)) {
-        beacon.classList.add(`${ns}-warning`);
-      }
-
-      for (const warning of warnings) {
-        const markup = `<em>Warning</em> in ${warning}`;
-        addHtml(markup, preWarnings);
-      }
-
-      titleWarnings.innerText = `${warnings.length} Warning(s)`;
-    } else {
-      titleWarnings.innerText = '';
-    }
-
-    aside.classList.remove(hidden);
-  };
-
-  document.addEventListener('DOMContentLoaded', () => {
-    addCss(css);
-    [aside] = addHtml(html);
-    beacon = document.querySelector(`#${ns}-beacon`);
-    problems = document.querySelector(`#${ns}-problems`);
-    preErrors = document.querySelector(`#${ns}-errors`);
-    preWarnings = document.querySelector(`#${ns}-warnings`);
-    titleErrors = document.querySelector(`#${ns}-title-errors`);
-    titleWarnings = document.querySelector(`#${ns}-title-warnings`);
-
-    const close = document.querySelector(`#${ns}-close`);
-    const min = document.querySelector(`#${ns}-min`);
-
-    aside.addEventListener('click', () => {
-      aside.classList.remove(`${ns}-min`);
-    });
-
-    close.addEventListener('click', () => {
-      aside.classList.add(`${ns}-hidden`);
-    });
-
-    min.addEventListener('click', (e) => {
-      aside.classList.add(`${ns}-min`);
-      e.stopImmediatePropagation();
-    });
-  });
-
-  socketMessage(socket, (action, data) => {
-    if (!aside) {
-      return;
-    }
-
-    switch (action) {
-      case 'problems':
-        reset();
-        addErrors(data.errors);
-        addWarnings(data.warnings);
-        aside.classList.remove(hidden);
-        break;
-      case 'replace':
-        if (!preErrors.children.length && !preWarnings.children.length) {
-          return;
-        }
-
-        reset();
-        problems.classList.add(`${ns}-success`);
-        aside.classList.remove(hidden);
-
-        setTimeout(() => aside.classList.add(hidden), 3e3);
-        break;
-      default:
-    }
-  });
-};
-
-module.exports = { init };
-
-
-/***/ }),
-/* 16 */
+/* 7 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1228,11 +328,11 @@ __webpack_require__.d(quat_namespaceObject, "setAxes", function() { return setAx
 
 const GLTF_VERSION = '2.0';
 
-const MAX_NUMBER_OF_LIGHTS = 50;
+const MAX_NUMBER_OF_LIGHTS = 20;
 
 const LIGHT = Object.freeze({
-    POINT: 0,
-    DIRECTIONAL: 1,
+    DIRECTIONAL: 0,
+    POINT: 1,
     SPOT: 2
 });
 
@@ -6940,11 +6040,11 @@ function compile(gl, source, type) {
 
 });
 // EXTERNAL MODULE: ./src/lib/shader/code/pbr-vertex-shader.glsl
-var pbr_vertex_shader = __webpack_require__(2);
+var pbr_vertex_shader = __webpack_require__(0);
 var pbr_vertex_shader_default = /*#__PURE__*/__webpack_require__.n(pbr_vertex_shader);
 
 // EXTERNAL MODULE: ./src/lib/shader/code/pbr-fragment-shader.glsl
-var pbr_fragment_shader = __webpack_require__(3);
+var pbr_fragment_shader = __webpack_require__(1);
 var pbr_fragment_shader_default = /*#__PURE__*/__webpack_require__.n(pbr_fragment_shader);
 
 // CONCATENATED MODULE: ./src/lib/shader/standard.js
@@ -7040,7 +6140,7 @@ var pbr_fragment_shader_default = /*#__PURE__*/__webpack_require__.n(pbr_fragmen
     const lightsUniformBuffer = gl.createBuffer();
     gl.bindBufferBase(gl.UNIFORM_BUFFER, UBO_BINDING.LIGHTS, lightsUniformBuffer);
 
-    const lightsBuffer = new ArrayBuffer((MAX_NUMBER_OF_LIGHTS * 12) * 8); // allocate buffer holding the lights.
+    const lightsBuffer = new ArrayBuffer((MAX_NUMBER_OF_LIGHTS * 16) * 8); // allocate buffer holding the lights.
     const lightsBufferView = new DataView(lightsBuffer);
 
     // instantiate buffer on GPU.
@@ -7148,33 +6248,39 @@ var pbr_fragment_shader_default = /*#__PURE__*/__webpack_require__.n(pbr_fragmen
 
             // LIGHT PACKING:
             //
-            // position: vec4
+            // position: vec3
             // color: vec3
             // intensity: f32
             // type: i32
             // range: f32
-            // innerConeAngle: f32
-            // outerConeAngle: f32
+            // lightAngleScale: f32
+            // lightAngleOffset: f32
+            // forward: vec3
             //
             // (combine color and intensity to a vec4)
             // VVVV - VVVV - IFFF
-            
+
             // TODO: handle number of lights being larger than the capacity in a more intelligent way?
 
             for (let i = 0; i < lights.length && i < MAX_NUMBER_OF_LIGHTS; i++) {
 
                 const [light, worldMatrix] = lights[i];
 
-                const position = vec4_namespaceObject.create();
-                vec4_namespaceObject.transformMat4(position, vec4_namespaceObject.fromValues(0.0, 0.0, 0.0, 1.0), worldMatrix);
+                const position = vec3_namespaceObject.create();
+                vec3_namespaceObject.transformMat4(position, position, worldMatrix);
 
-                const offset = i * 12;
+                const offset = i * 16;
 
-                // POSITION:
-                lightsBufferView.setFloat32((offset + 0) * 4, position[0], IS_LITTLE_ENDIAN);
-                lightsBufferView.setFloat32((offset + 1) * 4, position[1], IS_LITTLE_ENDIAN);
-                lightsBufferView.setFloat32((offset + 2) * 4, position[2], IS_LITTLE_ENDIAN);
-                lightsBufferView.setFloat32((offset + 3) * 4, position[3], IS_LITTLE_ENDIAN);
+                // TYPE + RANGE
+                lightsBufferView.setUint32((offset + 0) * 4, light.type, IS_LITTLE_ENDIAN);
+                lightsBufferView.setFloat32((offset + 1) * 4, light.range, IS_LITTLE_ENDIAN);
+
+                if (light.type === LIGHT.SPOT) {
+                    // SCALE + OFFSET
+                    lightsBufferView.setFloat32((offset + 2) * 4, light.spot.angleScale, IS_LITTLE_ENDIAN);
+                    lightsBufferView.setFloat32((offset + 3) * 4, light.spot.angleOffset, IS_LITTLE_ENDIAN);
+                    
+                }
 
                 // COLOR + INTENSITY:
                 lightsBufferView.setFloat32((offset + 4) * 4, light.color[0], IS_LITTLE_ENDIAN);
@@ -7182,13 +6288,17 @@ var pbr_fragment_shader_default = /*#__PURE__*/__webpack_require__.n(pbr_fragmen
                 lightsBufferView.setFloat32((offset + 6) * 4, light.color[2], IS_LITTLE_ENDIAN);
                 lightsBufferView.setFloat32((offset + 7) * 4, light.intensity, IS_LITTLE_ENDIAN);
 
-                // TYPE + RANGE + INNER + OUTER
-                lightsBufferView.setUint32((offset + 8) * 4, light.type, IS_LITTLE_ENDIAN);
-                lightsBufferView.setFloat32((offset + 9) * 4, light.range, IS_LITTLE_ENDIAN);
-                if (light.type === LIGHT.SPOT) {
-                    lightsBufferView.setFloat32((offset + 10) * 4, light.spot.innerConeAngle, IS_LITTLE_ENDIAN);
-                    lightsBufferView.setFloat32((offset + 11) * 4, light.spot.outerConeAngle, IS_LITTLE_ENDIAN);
-                }
+                // POSITION:
+                lightsBufferView.setFloat32((offset + 8) * 4, position[0], IS_LITTLE_ENDIAN);
+                lightsBufferView.setFloat32((offset + 9) * 4, position[1], IS_LITTLE_ENDIAN);
+                lightsBufferView.setFloat32((offset + 10) * 4, position[2], IS_LITTLE_ENDIAN);
+                //lightsBufferView.setFloat32((offset + 11) * 4, 1.0, IS_LITTLE_ENDIAN);
+
+                // FORWARD (extract the forward vector from the worldMatrix)
+                lightsBufferView.setFloat32((offset + 12) * 4, worldMatrix[8], IS_LITTLE_ENDIAN);
+                lightsBufferView.setFloat32((offset + 13) * 4, worldMatrix[9], IS_LITTLE_ENDIAN);
+                lightsBufferView.setFloat32((offset + 14) * 4, worldMatrix[10], IS_LITTLE_ENDIAN);
+                //lightsBufferView.setFloat32((offset + 15) * 4, 1.0, IS_LITTLE_ENDIAN);
 
             }
 
@@ -7476,23 +6586,46 @@ function light_create({
 }
 
 /* harmony default export */ var core_light = ({
+
+    createDirectional(color = vec3_namespaceObject.fromValues(1.0, 1.0, 1.0), intensity) {
+
+        return light_create({
+            type: LIGHT.DIRECTIONAL,
+            color,
+            intensity
+        });
+
+    },
     
-    createPoint(color = vec3_namespaceObject.fromValues(1.0, 1.0, 1.0), intensity = 1.0, range = 20.0) {
+    createPoint(color = vec3_namespaceObject.fromValues(1.0, 1.0, 1.0), intensity, range) {
+
         return light_create({
             type: LIGHT.POINT,
             color,
             intensity,
             range
         });
+
     },
-    
-    createDirectional(color = vec3_namespaceObject.fromValues(1.0, 1.0, 1.0), intensity = 1.0, range = 20.0) {
+
+    createSpot(color = vec3_namespaceObject.fromValues(1.0, 1.0, 1.0), intensity, range, innerConeAngle = 0.0, outerConeAngle = (Math.PI / 4.0)) {
+        
+        const angleScale = 1.0 / Math.max(0.001, Math.cos(innerConeAngle) - Math.cos(outerConeAngle));
+        const angleOffset = (-Math.cos(outerConeAngle)) * angleScale;
+        
         return light_create({
-            type: LIGHT.DIRECTIONAL,
+            type: LIGHT.SPOT,
             color,
             intensity,
-            range
+            range,
+            spot: {
+                innerConeAngle,
+                outerConeAngle,
+                angleScale,
+                angleOffset
+            }
         });
+
     }
 
 });
@@ -7568,7 +6701,7 @@ class CameraController_CameraController {
 
 
 
-src.importer('./assets/cubes_textured.gltf').then(({ scene }) => {
+src.importer('./assets/test_light_1.gltf').then(({ scene }) => {
 
     console.log(scene);
 
@@ -7593,12 +6726,17 @@ src.importer('./assets/cubes_textured.gltf').then(({ scene }) => {
 
     let cameraNode = src.node({ name: 'Camera', camera });
 
+    cameraNode.applyTranslation(12, 8, 8);
+    cameraNode.applyRotationY(Math.PI/4 + 0.1);
+    cameraNode.applyRotationX(-0.5);
+
     scene.nodes.push(cameraNode);
 
-    let light = src.light.createPoint([1.0, 1.0, 1.0], 1.0);
+    let light = src.light.createSpot([1.0, 1.0, 1.0], 50.0, 10);
     let lightNode = src.node({ name: 'Light', light });
 
-    lightNode.applyTranslation(0, 1.5, 1.25);
+    lightNode.applyTranslation(0, 5, 0);
+    lightNode.applyRotationX(-Math.PI/2 + 0.3);
 
     scene.nodes.push(lightNode);
 
@@ -7694,6 +6832,8 @@ src.importer('./assets/cubes_textured.gltf').then(({ scene }) => {
         // reset movement buffers.
         yaw = 0;
         pitch = 0;
+
+        //lightNode.applyRotationX(0.01);
 
         scene.updateTransforms();
 

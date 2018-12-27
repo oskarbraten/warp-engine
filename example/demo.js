@@ -1,7 +1,7 @@
 import Warp from '../src/index';
 import CameraController from './controls/CameraController';
 
-Warp.importer('./assets/cubes_textured.gltf').then(({ scene }) => {
+Warp.importer('./assets/test_light_1.gltf').then(({ scene }) => {
 
     console.log(scene);
 
@@ -26,12 +26,17 @@ Warp.importer('./assets/cubes_textured.gltf').then(({ scene }) => {
 
     let cameraNode = Warp.node({ name: 'Camera', camera });
 
+    cameraNode.applyTranslation(12, 8, 8);
+    cameraNode.applyRotationY(Math.PI/4 + 0.1);
+    cameraNode.applyRotationX(-0.5);
+
     scene.nodes.push(cameraNode);
 
-    let light = Warp.light.createPoint([1.0, 1.0, 1.0], 1.0);
+    let light = Warp.light.createSpot([1.0, 1.0, 1.0], 50.0, 10);
     let lightNode = Warp.node({ name: 'Light', light });
 
-    lightNode.applyTranslation(0, 1.5, 1.25);
+    lightNode.applyTranslation(0, 5, 0);
+    lightNode.applyRotationX(-Math.PI/2 + 0.3);
 
     scene.nodes.push(lightNode);
 
@@ -127,6 +132,8 @@ Warp.importer('./assets/cubes_textured.gltf').then(({ scene }) => {
         // reset movement buffers.
         yaw = 0;
         pitch = 0;
+
+        //lightNode.applyRotationX(0.01);
 
         scene.updateTransforms();
 

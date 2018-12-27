@@ -1,5 +1,5 @@
 
-import { mat3, mat4, vec3, vec4 } from 'gl-matrix';
+import { mat3, mat4, vec3 } from 'gl-matrix';
 
 import { ATTRIBUTE_LOCATION, TYPE, COMPONENT, MAX_NUMBER_OF_LIGHTS, UBO_BINDING, IS_LITTLE_ENDIAN, LIGHT } from './constants';
 import standardShader from '../shader/standard';
@@ -21,7 +21,7 @@ export default (context = null) => {
     const lightsUniformBuffer = gl.createBuffer();
     gl.bindBufferBase(gl.UNIFORM_BUFFER, UBO_BINDING.LIGHTS, lightsUniformBuffer);
 
-    const lightsBuffer = new ArrayBuffer((MAX_NUMBER_OF_LIGHTS * 12) * 8); // allocate buffer holding the lights.
+    const lightsBuffer = new ArrayBuffer((MAX_NUMBER_OF_LIGHTS * 16) * 8); // allocate buffer holding the lights.
     const lightsBufferView = new DataView(lightsBuffer);
 
     // instantiate buffer on GPU.
@@ -129,33 +129,39 @@ export default (context = null) => {
 
             // LIGHT PACKING:
             //
-            // position: vec4
+            // position: vec3
             // color: vec3
             // intensity: f32
             // type: i32
             // range: f32
-            // innerConeAngle: f32
-            // outerConeAngle: f32
+            // lightAngleScale: f32
+            // lightAngleOffset: f32
+            // forward: vec3
             //
             // (combine color and intensity to a vec4)
             // VVVV - VVVV - IFFF
-            
+
             // TODO: handle number of lights being larger than the capacity in a more intelligent way?
 
             for (let i = 0; i < lights.length && i < MAX_NUMBER_OF_LIGHTS; i++) {
 
                 const [light, worldMatrix] = lights[i];
 
-                const position = vec4.create();
-                vec4.transformMat4(position, vec4.fromValues(0.0, 0.0, 0.0, 1.0), worldMatrix);
+                const position = vec3.create();
+                vec3.transformMat4(position, position, worldMatrix);
 
-                const offset = i * 12;
+                const offset = i * 16;
 
-                // POSITION:
-                lightsBufferView.setFloat32((offset + 0) * 4, position[0], IS_LITTLE_ENDIAN);
-                lightsBufferView.setFloat32((offset + 1) * 4, position[1], IS_LITTLE_ENDIAN);
-                lightsBufferView.setFloat32((offset + 2) * 4, position[2], IS_LITTLE_ENDIAN);
-                lightsBufferView.setFloat32((offset + 3) * 4, position[3], IS_LITTLE_ENDIAN);
+                // TYPE + RANGE
+                lightsBufferView.setUint32((offset + 0) * 4, light.type, IS_LITTLE_ENDIAN);
+                lightsBufferView.setFloat32((offset + 1) * 4, light.range, IS_LITTLE_ENDIAN);
+
+                if (light.type === LIGHT.SPOT) {
+                    // SCALE + OFFSET
+                    lightsBufferView.setFloat32((offset + 2) * 4, light.spot.angleScale, IS_LITTLE_ENDIAN);
+                    lightsBufferView.setFloat32((offset + 3) * 4, light.spot.angleOffset, IS_LITTLE_ENDIAN);
+                    
+                }
 
                 // COLOR + INTENSITY:
                 lightsBufferView.setFloat32((offset + 4) * 4, light.color[0], IS_LITTLE_ENDIAN);
@@ -163,13 +169,17 @@ export default (context = null) => {
                 lightsBufferView.setFloat32((offset + 6) * 4, light.color[2], IS_LITTLE_ENDIAN);
                 lightsBufferView.setFloat32((offset + 7) * 4, light.intensity, IS_LITTLE_ENDIAN);
 
-                // TYPE + RANGE + INNER + OUTER
-                lightsBufferView.setUint32((offset + 8) * 4, light.type, IS_LITTLE_ENDIAN);
-                lightsBufferView.setFloat32((offset + 9) * 4, light.range, IS_LITTLE_ENDIAN);
-                if (light.type === LIGHT.SPOT) {
-                    lightsBufferView.setFloat32((offset + 10) * 4, light.spot.innerConeAngle, IS_LITTLE_ENDIAN);
-                    lightsBufferView.setFloat32((offset + 11) * 4, light.spot.outerConeAngle, IS_LITTLE_ENDIAN);
-                }
+                // POSITION:
+                lightsBufferView.setFloat32((offset + 8) * 4, position[0], IS_LITTLE_ENDIAN);
+                lightsBufferView.setFloat32((offset + 9) * 4, position[1], IS_LITTLE_ENDIAN);
+                lightsBufferView.setFloat32((offset + 10) * 4, position[2], IS_LITTLE_ENDIAN);
+                //lightsBufferView.setFloat32((offset + 11) * 4, 1.0, IS_LITTLE_ENDIAN);
+
+                // FORWARD (extract the forward vector from the worldMatrix)
+                lightsBufferView.setFloat32((offset + 12) * 4, worldMatrix[8], IS_LITTLE_ENDIAN);
+                lightsBufferView.setFloat32((offset + 13) * 4, worldMatrix[9], IS_LITTLE_ENDIAN);
+                lightsBufferView.setFloat32((offset + 14) * 4, worldMatrix[10], IS_LITTLE_ENDIAN);
+                //lightsBufferView.setFloat32((offset + 15) * 4, 1.0, IS_LITTLE_ENDIAN);
 
             }
 

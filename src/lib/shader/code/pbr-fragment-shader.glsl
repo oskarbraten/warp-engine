@@ -2,21 +2,24 @@
 
 __DEFINES__
 
+#define MANUAL_SRGB // TODO: investigate use of gamma correction.
+
 precision highp float;
 
-const uint LIGHT_POINT = 0U;
-const uint LIGHT_DIRECTIONAL = 1U;
+const uint LIGHT_DIRECTIONAL = 0U;
+const uint LIGHT_POINT = 1U;
 const uint LIGHT_SPOT = 2U;
 
 uniform int u_NumberOfLights;
 
 struct Light {
-    vec4 position;
-    vec4 color;
     uint type;
     float range;
-    float innerConeAngle;
-    float outerConeAngle;
+    float angle_scale;
+    float angle_offset;
+    vec4 color; // intensity in the alpha-component.
+    vec3 position;
+    vec3 forward;
 };
 
 layout(std140) uniform LightBlock {
@@ -94,7 +97,7 @@ vec4 SRGBtoLINEAR(vec4 srgbIn) {
     vec3 bLess = step(vec3(0.04045),srgbIn.xyz);
     vec3 linOut = mix( srgbIn.xyz/vec3(12.92), pow((srgbIn.xyz+vec3(0.055))/vec3(1.055),vec3(2.4)), bLess );
     #endif //SRGB_FAST_APPROXIMATION
-    return vec4(linOut,srgbIn.w);;
+    return vec4(linOut,srgbIn.w);
     #else //MANUAL_SRGB
     return srgbIn;
     #endif //MANUAL_SRGB
@@ -201,6 +204,30 @@ float microfacetDistribution(PBRInfo pbrInputs) {
     return roughnessSq / (M_PI * f * f);
 }
 
+// Punctual light attenuation
+/* From Frostbite PBR Course
+ * http://www.frostbite.com/wp-content/uploads/2014/11/course_notes_moving_frostbite_to_pbr.pdf */
+
+float smooth_attenuation(float distance_squared, float range_inverse_squared) {
+    float factor = distance_squared * range_inverse_squared;
+    float smooth_factor = clamp(1.0 - (distance_squared * range_inverse_squared), 0.0, 1.0);
+    return smooth_factor * smooth_factor;
+}
+
+float distance_attenuation(float distance_squared, float range_inverse_squared) {
+    return smooth_attenuation(distance_squared, range_inverse_squared) / max(distance_squared, 0.01);
+}
+
+// For spotlight:
+float angular_attenuation(vec3 L, vec3 forward, float angle_scale, float angle_offset) {
+    float cd = dot(forward, L);
+    float attenuation = clamp(cd * angle_scale + angle_offset, 0.0, 1.0);
+    attenuation *= attenuation;
+
+    return attenuation;
+}
+
+
 void main() {
     // Metallic and Roughness material properties are packed together
     // In glTF, these factors can be specified by fixed scalar values
@@ -251,11 +278,11 @@ void main() {
     float NdotV = clamp(abs(dot(n, v)), 0.001, 1.0);
 
     PBRInfo pbrInputs = PBRInfo(
-        0.0,
+        0.0, // filled in later for each light.
         NdotV,
-        0.0,
-        0.0,
-        0.0,
+        0.0, // filled in later for each light.
+        0.0, // filled in later for each light.
+        0.0, // filled in later for each light.
         perceptualRoughness,
         metallic,
         specularEnvironmentR0,
@@ -267,30 +294,42 @@ void main() {
     
     vec3 color = vec3(0.0, 0.0, 0.0);
 
-    for (int i = 0; i < u_NumberOfLights; i++) {
-        //if (i >= u_NumberOfLights) break; // TODO: check if this is faster.
+    for (int i = 0; i < MAX_NUMBER_OF_LIGHTS; i++) {
+        if (i >= u_NumberOfLights) break; // TODO: check if this is faster than a dynamic loop.
 
-        vec3 lightDirection = lights[i].position.xyz;
+        vec3 light_direction;
+        vec3 light_color = lights[i].color.rgb;
+        float light_intensity = lights[i].color.a;
+
         float attenuation = 1.0;
 
-        if (lights[i].type == LIGHT_POINT) {
+        if (lights[i].type >= LIGHT_POINT) { // >= for both point and spot lights.
 
-            lightDirection -= position; // vector from surface point to light.
+            light_direction = lights[i].position - position; // Vector from surface point to light.
 
-            // Compute attenuation.
-            float distanceToLight = length(lightDirection);
-            float range = lights[i].range;
+            // Compute attenuation:
+            float distance_squared = dot(light_direction, light_direction);
+            float range_inverse_squared = 1.0 / (lights[i].range * lights[i].range); // TODO: precalculate?
 
-            if (range > 0.0) {
-                attenuation = clamp(1.0 - pow((distanceToLight / range), 4.0), 0.0, 1.0) / pow(distanceToLight, 2.0);
+            if (lights[i].range > 0.0) {
+                attenuation = light_intensity * distance_attenuation(distance_squared, range_inverse_squared);
             } else {
-                attenuation = 1.0 / 0.01 + pow(distanceToLight, 2.0);
+                attenuation = light_intensity / max(distance_squared, 0.01);
             }
 
+        } else {
+            // Directional lights emit light in the direction of the local -z axis.
+            light_direction = lights[i].forward;
+            attenuation = light_intensity; // TODO: check if this is physically correct.
         }
 
-        vec3 l = normalize(lightDirection);   // Vector from surface point to light (normalized)
-        vec3 h = normalize(l+v);              // Half vector between both l and v
+        vec3 l = normalize(light_direction);   // Vector from surface point to light (normalized)
+
+        if (lights[i].type == LIGHT_SPOT) {
+            attenuation *= angular_attenuation(l, lights[i].forward, lights[i].angle_scale, lights[i].angle_offset);
+        }
+
+        vec3 h = normalize(l + v);              // Half vector between both l and v
         
         float NdotL = clamp(dot(n, l), 0.001, 1.0);
         float NdotH = clamp(dot(n, h), 0.0, 1.0);
@@ -313,7 +352,7 @@ void main() {
         vec3 specContrib = F * G * D / (4.0 * NdotL * NdotV);
 
         // Obtain final intensity as reflectance (BRDF) scaled by the energy of the light (cosine law)
-        color += NdotL * (attenuation * (lights[i].color.rgb * lights[i].color.a * (diffuseContrib + specContrib)));
+        color += (diffuseContrib + specContrib) * NdotL * light_color * attenuation;
 
     }
 
@@ -334,5 +373,4 @@ void main() {
     #endif
 
     fColor = vec4(pow(color,vec3(1.0/2.2)), baseColor.a);
-
 }

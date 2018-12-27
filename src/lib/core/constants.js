@@ -1,11 +1,11 @@
 
 export const GLTF_VERSION = '2.0';
 
-export const MAX_NUMBER_OF_LIGHTS = 50;
+export const MAX_NUMBER_OF_LIGHTS = 20;
 
 export const LIGHT = Object.freeze({
-    POINT: 0,
-    DIRECTIONAL: 1,
+    DIRECTIONAL: 0,
+    POINT: 1,
     SPOT: 2
 });
 

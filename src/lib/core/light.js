@@ -20,23 +20,46 @@ function create({
 }
 
 export default {
+
+    createDirectional(color = vec3.fromValues(1.0, 1.0, 1.0), intensity) {
+
+        return create({
+            type: LIGHT.DIRECTIONAL,
+            color,
+            intensity
+        });
+
+    },
     
-    createPoint(color = vec3.fromValues(1.0, 1.0, 1.0), intensity = 1.0, range = 20.0) {
+    createPoint(color = vec3.fromValues(1.0, 1.0, 1.0), intensity, range) {
+
         return create({
             type: LIGHT.POINT,
             color,
             intensity,
             range
         });
+
     },
-    
-    createDirectional(color = vec3.fromValues(1.0, 1.0, 1.0), intensity = 1.0, range = 20.0) {
+
+    createSpot(color = vec3.fromValues(1.0, 1.0, 1.0), intensity, range, innerConeAngle = 0.0, outerConeAngle = (Math.PI / 4.0)) {
+        
+        const angleScale = 1.0 / Math.max(0.001, Math.cos(innerConeAngle) - Math.cos(outerConeAngle));
+        const angleOffset = (-Math.cos(outerConeAngle)) * angleScale;
+        
         return create({
-            type: LIGHT.DIRECTIONAL,
+            type: LIGHT.SPOT,
             color,
             intensity,
-            range
+            range,
+            spot: {
+                innerConeAngle,
+                outerConeAngle,
+                angleScale,
+                angleOffset
+            }
         });
+
     }
 
 };
