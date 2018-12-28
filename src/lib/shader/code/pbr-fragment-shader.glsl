@@ -58,13 +58,7 @@ uniform vec3 u_Camera;
 in vec3 position;
 in vec2 texcoord_0;
 
-#ifdef HAS_NORMALS
-    #ifdef HAS_TANGENTS
-        in mat3 TBN;
-    #else
-        in vec3 normal;
-    #endif
-#endif
+in mat3 TBN;
 
 out vec4 fColor;
 
@@ -107,35 +101,19 @@ vec4 SRGBtoLINEAR(vec4 srgbIn) {
 // or from the interpolated mesh normal and tangent attributes.
 vec3 getNormal() {
     // Retrieve the tangent space matrix
-#ifndef HAS_TANGENTS
-
-    vec3 pos_dx = dFdx(position);
-    vec3 pos_dy = dFdy(position);
-    vec3 tex_dx = dFdx(vec3(texcoord_0, 0.0));
-    vec3 tex_dy = dFdy(vec3(texcoord_0, 0.0));
-    vec3 t = (tex_dy.t * pos_dx - tex_dx.t * pos_dy) / (tex_dx.s * tex_dy.t - tex_dy.s * tex_dx.t);
-
-#ifdef HAS_NORMALS
-    vec3 ng = normalize(normal);
-#else
-    vec3 ng = cross(pos_dx, pos_dy);
-#endif
-
-    t = normalize(t - ng * dot(ng, t));
-    vec3 b = normalize(cross(ng, t));
-    mat3 tbn = mat3(t, b, ng);
-
-#else // HAS_TANGENTS
     mat3 tbn = TBN;
-#endif
 
-#ifdef HAS_NORMALMAP
+    #ifdef HAS_NORMALMAP
+
     vec3 n = texture(u_NormalSampler, texcoord_0).rgb;
     n = normalize(tbn * ((2.0 * n - 1.0) * vec3(u_NormalScale, u_NormalScale, 1.0)));
-#else
+
+    #else
+
     // The tbn matrix is linearly interpolated, so we need to re-normalize
     vec3 n = normalize(tbn[2].xyz);
-#endif
+
+    #endif
 
     return n;
 }
@@ -372,5 +350,5 @@ void main() {
         color += emissive;
     #endif
 
-    fColor = vec4(pow(color,vec3(1.0/2.2)), baseColor.a);
+    fColor = vec4(pow(color, vec3(1.0/2.2)), baseColor.a);
 }
