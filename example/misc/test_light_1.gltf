@@ -430,6 +430,26 @@
             "mimeType" : "image/png",
             "name" : "bark.png",
             "uri" : "bark.png"
+        },
+        {
+            "mimeType" : "image/png",
+            "name" : "basecolor.png",
+            "uri" : "oakfloor/basecolor.png"
+        },
+        {
+            "mimeType" : "image/png",
+            "name" : "normal.png",
+            "uri" : "oakfloor/normal.png"
+        },
+        {
+            "mimeType" : "image/png",
+            "name" : "roughness.png",
+            "uri" : "oakfloor/roughness.png"
+        },
+        {
+            "mimeType" : "image/png",
+            "name" : "ao.png",
+            "uri" : "floor_ao.png"
         }
     ],
     "materials" : [
@@ -445,16 +465,28 @@
             }
         },
         {
-            "name" : "Material",
+            "name" : "Oak floor",
             "pbrMetallicRoughness" : {
-                "baseColorFactor" : [
-                    0.8688856959342957,
-                    0.8688856959342957,
-                    0.8688856959342957,
-                    1
-                ],
-                "metallicFactor" : 0,
-                "roughnessFactor" : 1
+                "baseColorTexture" : {
+                    "index" : 1,
+                    "texCoord": 0
+                },
+                "metallicFactor" : 1,
+                "roughnessFactor" : 1,
+                "metallicRoughnessTexture": {
+                    "index": 3,
+                    "texCoord": 0
+                }
+            },
+            "normalTexture": {
+                "scale": 1,
+                "index": 2,
+                "texCoord": 0
+            },
+            "occlusionTexture":{
+                "strength": 0,
+                "index": 4,
+                "texCoord": 0
             }
         }
     ],
@@ -650,6 +682,18 @@
     "textures" : [
         {
             "source" : 0
+        },
+        {
+            "source" : 1
+        },
+        {
+            "source" : 2
+        },
+        {
+            "source" : 3
+        },
+        {
+            "source" : 4
         }
     ]
 }
