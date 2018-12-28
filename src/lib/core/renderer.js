@@ -1,3 +1,5 @@
+// TODO:
+// Fix bug where having only ambientOcclusionTexture results in a random baseColorTexture being used.
 
 import { mat3, mat4, vec3 } from 'gl-matrix';
 
@@ -51,11 +53,11 @@ export default (context = null) => {
             const viewMatrix = mat4.invert(mat4.create(), cameraNode.worldMatrix);
             const modelViewMatrix = mat4.multiply(mat4.create(), viewMatrix, worldMatrix);
             const modelViewProjectionMatrix = mat4.multiply(mat4.create(), cameraNode.camera.projectionMatrix, modelViewMatrix);
-            const normalMatrix = mat3.normalFromMat4(mat3.create(), modelViewMatrix);
+            const normalMatrix = mat3.normalFromMat4(mat3.create(), worldMatrix);
 
             gl.uniformMatrix4fv(shader.uniformLocations.modelMatrix, false, worldMatrix);
             gl.uniformMatrix4fv(shader.uniformLocations.modelViewProjectionMatrix, false, modelViewProjectionMatrix);
-            gl.uniformMatrix4fv(shader.uniformLocations.normalMatrix, false, normalMatrix);
+            gl.uniformMatrix3fv(shader.uniformLocations.normalMatrix, false, normalMatrix);
 
             // upload number of lights.
             gl.uniform1i(shader.uniformLocations.numberOfLights, numberOfLights);
@@ -83,14 +85,14 @@ export default (context = null) => {
                 gl.activeTexture(gl.TEXTURE2);
                 gl.bindTexture(gl.TEXTURE_2D, material.normalTexture.texture.extras.gl_texture);
                 gl.uniform1i(shader.uniformLocations.normalSampler, 2);
-                gl.uniform1f(shader.uniformLocations.normalScale, material.normalTexture.normalScale);
+                gl.uniform1f(shader.uniformLocations.normalScale, material.normalTexture.scale);
             }
 
             if (material.occlusionTexture !== null) {
                 gl.activeTexture(gl.TEXTURE3);
                 gl.bindTexture(gl.TEXTURE_2D, material.occlusionTexture.texture.extras.gl_texture);
                 gl.uniform1i(shader.uniformLocations.occlusionTexture, 3);
-                gl.uniform1f(shader.uniformLocations.occlusionStrength, material.occlusionTexture.occlusionStrength);
+                gl.uniform1f(shader.uniformLocations.occlusionStrength, material.occlusionTexture.strength);
             }
 
             if (material.emissiveTexture !== null) {
