@@ -1,5 +1,3 @@
-// TODO:
-// Fix bug where having only ambientOcclusionTexture results in a random baseColorTexture being used.
 
 import { mat3, mat4, vec3 } from 'gl-matrix';
 
@@ -47,6 +45,7 @@ export default (context = null) => {
 
             const material = primitive.material;
             const shader = material.extras.shader;
+
             gl.useProgram(shader.program);
 
             // vertex uniforms: (TODO: calculate only per mesh.)
@@ -91,14 +90,14 @@ export default (context = null) => {
             if (material.occlusionTexture !== null) {
                 gl.activeTexture(gl.TEXTURE3);
                 gl.bindTexture(gl.TEXTURE_2D, material.occlusionTexture.texture.extras.gl_texture);
-                gl.uniform1i(shader.uniformLocations.occlusionTexture, 3);
+                gl.uniform1i(shader.uniformLocations.occlusionSampler, 3);
                 gl.uniform1f(shader.uniformLocations.occlusionStrength, material.occlusionTexture.strength);
             }
 
             if (material.emissiveTexture !== null) {
                 gl.activeTexture(gl.TEXTURE4);
                 gl.bindTexture(gl.TEXTURE_2D, material.emissiveTexture.texture.extras.gl_texture);
-                gl.uniform1i(shader.uniformLocations.emissiveTexture, 4);
+                gl.uniform1i(shader.uniformLocations.emissiveSampler, 4);
                 gl.uniform3fv(shader.uniformLocations.emissiveFactor, material.emissiveFactor);
             }
 

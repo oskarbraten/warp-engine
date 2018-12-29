@@ -484,7 +484,7 @@
                 "texCoord": 0
             },
             "occlusionTexture":{
-                "strength": 0,
+                "strength": 1,
                 "index": 4,
                 "texCoord": 0
             }
