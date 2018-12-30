@@ -1,5 +1,6 @@
-# Example folder
-example/build
+# Build folders.
+example/build/
+dist/
 
 # Logs
 logs
