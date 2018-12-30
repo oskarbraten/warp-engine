@@ -40,28 +40,26 @@ export default (context, material) => {
         program,
         uniformLocations: {
             
-            modelViewProjectionMatrix: context.getUniformLocation(program, 'modelViewProjectionMatrix'),
-            modelViewMatrix: context.getUniformLocation(program, 'modelViewMatrix'),
-            normalMatrix: context.getUniformLocation(program, 'normalMatrix'),
+            modelViewProjectionMatrix: context.getUniformLocation(program, 'u_model_view_projection_matrix'),
+            modelViewMatrix: context.getUniformLocation(program, 'u_model_view_matrix'),
+            normalMatrix: context.getUniformLocation(program, 'u_normal_matrix'),
 
-            numberOfLights: context.getUniformLocation(program, 'u_NumberOfLights'),
+            numberOfLights: context.getUniformLocation(program, 'u_number_of_lights'),
 
-            camera: context.getUniformLocation(program, 'u_Camera'),
+            baseColorFactor: context.getUniformLocation(program, 'u_base_color_factor'),
+            metallicRoughnessValues: context.getUniformLocation(program, 'u_metallic_roughness_values'),
 
-            baseColorSampler: context.getUniformLocation(program, 'u_BaseColorSampler'),
-            baseColorFactor: context.getUniformLocation(program, 'u_BaseColorFactor'),
-
-            normalSampler: context.getUniformLocation(program, 'u_NormalSampler'),
-            normalScale: context.getUniformLocation(program, 'u_NormalScale'),
-
-            emissiveSampler: context.getUniformLocation(program, 'u_EmissiveSampler'),
-            emissiveFactor: context.getUniformLocation(program, 'u_EmissiveFactor'),
-
-            metallicRoughnessSampler: context.getUniformLocation(program, 'u_MetallicRoughnessSampler'),
-            metallicRoughnessValues: context.getUniformLocation(program, 'u_MetallicRoughnessValues'),
+            baseColorSampler: context.getUniformLocation(program, 'u_base_color_sampler'),
+            metallicRoughnessSampler: context.getUniformLocation(program, 'u_metallic_roughness_sampler'),
             
-            occlusionSampler: context.getUniformLocation(program, 'u_OcclusionSampler'),
-            occlusionStrength: context.getUniformLocation(program, 'u_OcclusionStrength')
+            normalSampler: context.getUniformLocation(program, 'u_normal_sampler'),
+            normalScale: context.getUniformLocation(program, 'u_normal_scale'),
+
+            occlusionSampler: context.getUniformLocation(program, 'u_occlusion_sampler'),
+            occlusionStrength: context.getUniformLocation(program, 'u_occlusion_strength'),
+
+            emissiveSampler: context.getUniformLocation(program, 'u_emissive_sampler'),
+            emissiveFactor: context.getUniformLocation(program, 'u_emissive_factor')
 
         }
     };
