@@ -449,7 +449,7 @@
         {
             "mimeType" : "image/png",
             "name" : "ao.png",
-            "uri" : "floor_ao.png"
+            "uri" : "oakfloor/ao.png"
         }
     ],
     "materials" : [
