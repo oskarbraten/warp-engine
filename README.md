@@ -1,26 +1,27 @@
 # warp-engine
 
-A super simple WebGL2 graphics library.
+A WebGL2 graphics engine inspired by the GLTF2.0 format.
 
 
 ### TODO:
 
-- [ ] Generalize material drawing pipeline.
-- [ ] Add support for custom materials with shaders.
-- [ ] Make camera a valid scene node.
-- [x] Implement proper primitive geometry classes.
-- [x] Add support for indexing.
-- [ ] Add support for multitexturing.
-- [x] Add support for light sources.
-- [ ] Rewrite lighting with UBO.
-- [ ] Improve performance by presorting scene
-- [ ] Improve performance by sorting scene graph
+#### General:
+- [ ] Primitive geometry utility functions
+- [ ] Area lights
 
+#### GLTF2.0:
+- [x] General functionality.
+- [ ] Animations
+- [ ] Morph targets and sparse accesors
+- [ ] Lights punctual
+- [ ] Generate normals and tangents they're not supplied
+
+#### Performance:
+- [ ] Render queue sorting (transparency, depth, shader-id, etc..)
 
 ### Future TODO:
-
-- [ ] PBR shader
-- [ ] Voxel global illumination
+- [ ] Voxel global illumination?
+- [ ] Deferred shading?
 
 
 
@@ -30,7 +31,9 @@ A super simple WebGL2 graphics library.
 
 ```glsl
 
-layout(location = 0) // for vPosition
-layout(location = 1) // for vTextureCoordinate;
+layout(location = 0) // position
+layout(location = 1) // normal
+layout(location = 2) // tangent
+layout(location = 3) // texcoord;
 
 ```
