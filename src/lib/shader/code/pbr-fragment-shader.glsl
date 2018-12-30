@@ -53,7 +53,6 @@ layout(std140) uniform LightBlock {
 
 uniform vec2 u_MetallicRoughnessValues;
 uniform vec4 u_BaseColorFactor;
-uniform vec3 u_Camera;
 
 in vec3 position;
 in vec2 texcoord_0;
@@ -249,8 +248,8 @@ void main() {
     vec3 specularEnvironmentR0 = specularColor.rgb;
     vec3 specularEnvironmentR90 = vec3(1.0, 1.0, 1.0) * reflectance90;
 
-    vec3 n = getNormal();                             // normal at surface point
-    vec3 v = normalize(u_Camera - position);          // Vector from surface point to camera
+    vec3 n = getNormal();           // normal at surface point
+    vec3 v = normalize(-position);  // Vector from surface point to camera, (camera is at the origin in eye-space)
     vec3 reflection = -normalize(reflect(v, n));
 
     float NdotV = clamp(abs(dot(n, v)), 0.001, 1.0);

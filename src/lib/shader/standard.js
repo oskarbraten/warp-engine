@@ -41,7 +41,7 @@ export default (context, material) => {
         uniformLocations: {
             
             modelViewProjectionMatrix: context.getUniformLocation(program, 'modelViewProjectionMatrix'),
-            modelMatrix: context.getUniformLocation(program, 'modelMatrix'),
+            modelViewMatrix: context.getUniformLocation(program, 'modelViewMatrix'),
             normalMatrix: context.getUniformLocation(program, 'normalMatrix'),
 
             numberOfLights: context.getUniformLocation(program, 'u_NumberOfLights'),

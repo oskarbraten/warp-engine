@@ -52,17 +52,14 @@ export default (context = null) => {
             const viewMatrix = mat4.invert(mat4.create(), cameraNode.worldMatrix);
             const modelViewMatrix = mat4.multiply(mat4.create(), viewMatrix, worldMatrix);
             const modelViewProjectionMatrix = mat4.multiply(mat4.create(), cameraNode.camera.projectionMatrix, modelViewMatrix);
-            const normalMatrix = mat3.normalFromMat4(mat3.create(), worldMatrix);
+            const normalMatrix = mat3.normalFromMat4(mat3.create(), modelViewMatrix);
 
-            gl.uniformMatrix4fv(shader.uniformLocations.modelMatrix, false, worldMatrix);
+            gl.uniformMatrix4fv(shader.uniformLocations.modelViewMatrix, false, modelViewMatrix);
             gl.uniformMatrix4fv(shader.uniformLocations.modelViewProjectionMatrix, false, modelViewProjectionMatrix);
             gl.uniformMatrix3fv(shader.uniformLocations.normalMatrix, false, normalMatrix);
 
             // upload number of lights.
             gl.uniform1i(shader.uniformLocations.numberOfLights, numberOfLights);
-
-            const cameraPosition = mat4.getTranslation(vec3.create(), cameraNode.worldMatrix);
-            gl.uniform3fv(shader.uniformLocations.camera, cameraPosition);
 
             // material uniforms:
             gl.uniform4fv(shader.uniformLocations.baseColorFactor, material.baseColorFactor);
@@ -118,7 +115,7 @@ export default (context = null) => {
 
             } else {
 
-                throw Error('Attempted to draw primitive with no VAO (Is the mesh loaded?).');
+                throw Error('Attempted to draw primitive with no VAO. Ensure that the primitive is loaded.');
 
             }
 
@@ -144,12 +141,16 @@ export default (context = null) => {
 
             // TODO: handle number of lights being larger than the capacity in a more intelligent way?
 
+            const viewMatrix = mat4.invert(mat4.create(), cameraNode.worldMatrix);
+
             for (let i = 0; i < lights.length && i < MAX_NUMBER_OF_LIGHTS; i++) {
 
                 const [light, worldMatrix] = lights[i];
 
+                const modelViewMatrix = mat4.multiply(mat4.create(), viewMatrix, worldMatrix);
+
                 const position = vec3.create();
-                vec3.transformMat4(position, position, worldMatrix);
+                vec3.transformMat4(position, position, modelViewMatrix);
 
                 const offset = i * 16;
 
