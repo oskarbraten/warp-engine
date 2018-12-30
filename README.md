@@ -34,6 +34,10 @@ A WebGL2 graphics engine inspired by the GLTF2.0 format.
 layout(location = 0) // position
 layout(location = 1) // normal
 layout(location = 2) // tangent
-layout(location = 3) // texcoord;
+layout(location = 3) // texcoord_0
+layout(location = 4) // texcoord_1
+layout(location = 5) // color_0
+layout(location = 6) // joints_0
+layout(location = 7) // weights_0
 
 ```
