@@ -32,14 +32,6 @@ Warp.importer('./assets/test_light_1.gltf').then(({ scene }) => {
 
     scene.nodes.push(cameraNode);
 
-    let light = Warp.light.createPoint([1.0, 1.0, 1.0], 160, 20);
-    let lightNode = Warp.node({ name: 'Light', light });
-
-    lightNode.applyTranslation(0, 5, 0);
-    lightNode.applyRotationX(-Math.PI/2 + 0.3);
-
-    scene.nodes.push(lightNode);
-
     let cameraController = new CameraController(cameraNode);
 
     let canvas = renderer.domElement;
