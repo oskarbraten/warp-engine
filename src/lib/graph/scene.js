@@ -22,10 +22,11 @@ export default (nodes = [], name = null) => {
 
             const renderables = [];
 
+            const queue = [].concat(this.nodes);
 
-            for (let i = 0; i < this.nodes.length; i++) {
+            while (queue.length > 0) {
 
-                const node = this.nodes[i];
+                const node = queue.pop();
 
                 if (node.mesh) {
 
@@ -40,6 +41,8 @@ export default (nodes = [], name = null) => {
 
                 }
 
+                queue.push(...node.children);
+
             }
 
             // TODO: perform frustum culling based on camera (passed as parameter)
@@ -53,9 +56,11 @@ export default (nodes = [], name = null) => {
 
             const lights = [];
 
-            for (let i = 0; i < this.nodes.length; i++) {
+            const queue = [].concat(this.nodes);
 
-                const node = this.nodes[i];
+            while (queue.length > 0) {
+
+                const node = queue.pop();
 
                 if (node.light) {
 
@@ -65,6 +70,8 @@ export default (nodes = [], name = null) => {
                     ]);
 
                 }
+
+                queue.push(...node.children);
 
             }
 
