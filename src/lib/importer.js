@@ -4,6 +4,7 @@ import scene from './graph/scene';
 import node from './graph/node';
 
 import camera from './core/camera';
+import light from './core/light';
 
 import mesh from './mesh/mesh';
 import primitive from './mesh/primitive';
@@ -301,6 +302,25 @@ export default async (url) => {
         });
     }
 
+    let lights = [];
+    if (gltf.extensionsUsed.includes('KHR_lights_punctual')) {
+        lights = gltf.extensions.KHR_lights_punctual.lights.map(({
+            color,
+            intensity,
+            type,
+            range,
+            spot
+        }) => {
+            if (type === 'directional') {
+                return light.createDirectional(color, intensity);
+            } else if (type === 'point') {
+                return light.createPoint(color, intensity, range);
+            } else {
+                return light.createSpot(color, intensity, range, spot.innerConeAngle, spot.outerConeAngle);
+            }
+        });
+    }
+
     // Note:
     // We assume that the nodes form a disjoint union of strict trees, as described in the specification.
     function createNode(index) {
@@ -315,13 +335,21 @@ export default async (url) => {
             mesh: meshIndex,
             camera: cameraIndex,
 
-            children: childIndices = []
+            children: childIndices = [],
+
+            extensions
 
         } = gltf.nodes[index];
+
+        let light = null;
+        if (typeof extensions !== 'undefined' && typeof extensions.KHR_lights_punctual !== 'undefined') {
+            light = lights[extensions.KHR_lights_punctual.light];
+        }
 
         return node({
             mesh: meshes[meshIndex],
             camera: cameras[cameraIndex],
+            light,
             rotation,
             translation,
             scale,
