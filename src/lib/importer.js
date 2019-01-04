@@ -303,7 +303,7 @@ export default async (url) => {
     }
 
     let lights = [];
-    if (gltf.extensionsUsed.includes('KHR_lights_punctual')) {
+    if (typeof gltf.extensionsUsed !== 'undefined' && gltf.extensionsUsed.includes('KHR_lights_punctual')) {
         lights = gltf.extensions.KHR_lights_punctual.lights.map(({
             color,
             intensity,
@@ -312,11 +312,11 @@ export default async (url) => {
             spot
         }) => {
             if (type === 'directional') {
-                return light.createDirectional(color, intensity);
+                return light.createDirectional(intensity, color);
             } else if (type === 'point') {
-                return light.createPoint(color, intensity, range);
+                return light.createPoint(intensity, color, range);
             } else {
-                return light.createSpot(color, intensity, range, spot.innerConeAngle, spot.outerConeAngle);
+                return light.createSpot(intensity, color, range, spot.innerConeAngle, spot.outerConeAngle);
             }
         });
     }
