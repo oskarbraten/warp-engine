@@ -90,3 +90,26 @@ export const TARGET = Object.freeze({
     ELEMENT_ARRAY_BUFFER: 34963,
     ARRAY_BUFFER: 34962
 });
+
+export const MODE = Object.freeze({
+    POINTS: 0,
+    LINES: 1,
+    LINE_LOOP: 2,
+    LINE_STRIP: 3,
+    TRIANGLES: 4,
+    TRIANGLE_STRIP: 5,
+    TRIANGLE_FAN: 6
+});
+
+export const ANIMATION_INTERPOLATION = Object.freeze({
+    LINEAR: 0,
+    STEP: 1,
+    CUBICSPLINE: 2
+});
+
+export const ANIMATION_PATH = Object.freeze({
+    TRANSLATION: 0,
+    ROTATION: 1,
+    SCALE: 2,
+    WEIGHTS: 3
+});

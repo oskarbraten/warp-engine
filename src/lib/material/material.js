@@ -44,7 +44,8 @@ export default ({
         doubleSided,
 
         name,
-        extras: {}
+
+        shader: null
     };
     
 };

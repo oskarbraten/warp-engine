@@ -19,7 +19,7 @@ export default ({
 
     matrix = null
 
-}, name = null) => {
+} = {}, name = null) => {
 
     const node = {
 
