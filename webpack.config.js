@@ -89,8 +89,8 @@ module.exports = [
             }),
             new CopyWebpackPlugin([
                 {
-                    from: 'example/misc/',
-                    to: 'assets'
+                    from: 'example/samples/',
+                    to: 'samples'
                 }
             ]),
             new Serve({

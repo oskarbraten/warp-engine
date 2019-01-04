@@ -1,7 +1,8 @@
 import Warp from '../src/index';
 import CameraController from './controls/CameraController';
 
-Warp.importer('./assets/test_light_1.gltf').then(({ scene }) => {
+Warp.importer('./samples/lights/test_light_1.gltf').then(({ scene }) => {
+//Warp.importer('./samples/BoxAnimated.gltf').then(({ scene }) => {
 
     console.log(scene);
 
@@ -14,6 +15,14 @@ Warp.importer('./assets/test_light_1.gltf').then(({ scene }) => {
     scene.acquireRenderables().forEach(([primitive]) => {
         renderer.load(primitive);
     });
+
+    let light = Warp.light.createPoint(50, [1, 1, 1], 10);
+    let baseLightNode = Warp.node();
+    let lightNode = Warp.node({ light, parent: baseLightNode });
+
+    lightNode.applyTranslation(10, 1.5, 0);
+
+    scene.nodes.push(baseLightNode);
 
     let camera = Warp.camera.createPerspective((window.innerWidth / window.innerHeight), 70, 5000, 0.1);
 
@@ -125,7 +134,7 @@ Warp.importer('./assets/test_light_1.gltf').then(({ scene }) => {
         yaw = 0;
         pitch = 0;
 
-        //lightNode.applyRotationX(0.01);
+        baseLightNode.applyRotationY(0.01);
 
         scene.updateTransforms();
 
