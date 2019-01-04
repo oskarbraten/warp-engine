@@ -1,8 +1,8 @@
 
 import { mat3, mat4, vec3 } from 'gl-matrix';
 
-import { ATTRIBUTE_LOCATION, TYPE, COMPONENT, MAX_NUMBER_OF_LIGHTS, UBO_BINDING, IS_LITTLE_ENDIAN, LIGHT } from './constants';
-import standardShader from '../shader/standard';
+import { ATTRIBUTE_LOCATION, TYPE, MAX_NUMBER_OF_LIGHTS, UBO_BINDING, IS_LITTLE_ENDIAN, LIGHT } from './constants';
+import standardShader from '../shader/shader';
 
 export default (context = null) => {
 
@@ -44,7 +44,7 @@ export default (context = null) => {
             const [primitive, worldMatrix] = renderable;
 
             const material = primitive.material;
-            const shader = material.extras.shader;
+            const shader = material.shader;
 
             gl.useProgram(shader.program);
 
@@ -104,12 +104,11 @@ export default (context = null) => {
 
                 if (primitive.indices) {
 
-                    const offset = primitive.indices.byteOffset / COMPONENT.SIZE[primitive.indices.componentType];
-                    gl.drawElements(primitive.mode, primitive.indices.count, primitive.indices.componentType, offset);
+                    gl.drawElements(primitive.mode, primitive.indices.count, primitive.indices.componentType, primitive.indices.byteOffset);
 
                 } else {
 
-                    gl.drawArrays(gl.TRIANGLES, 0, primitive.attributes.POSITION.count / 3);
+                    gl.drawArrays(primitive.mode, 0, primitive.attributes.POSITION.count / 3);
 
                 }
 
@@ -125,20 +124,6 @@ export default (context = null) => {
 
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-            // LIGHT PACKING:
-            //
-            // position: vec3
-            // color: vec3
-            // intensity: f32
-            // type: i32
-            // range: f32
-            // lightAngleScale: f32
-            // lightAngleOffset: f32
-            // forward: vec3
-            //
-            // (combine color and intensity to a vec4)
-            // VVVV - VVVV - IFFF
-
             // TODO: handle number of lights being larger than the capacity in a more intelligent way?
 
             const viewMatrix = mat4.invert(mat4.create(), cameraNode.worldMatrix);
@@ -151,6 +136,16 @@ export default (context = null) => {
 
                 const position = vec3.create();
                 vec3.transformMat4(position, position, modelViewMatrix);
+
+                // LIGHT PACKING:
+                //
+                // position: vec3
+                // type: i32
+                // range: f32
+                // lightAngleScale: f32
+                // lightAngleOffset: f32
+                // color & intensity: vec4
+                // forward: vec3
 
                 const offset = i * 16;
 
@@ -271,27 +266,26 @@ export default (context = null) => {
 
                     gl.bufferData(gl.ARRAY_BUFFER, dataView, gl.STATIC_DRAW);
 
-                    // setup and enable vertex attributes (Using the predefined and constant locations.)
-                    gl.vertexAttribPointer(ATTRIBUTE_LOCATION[name], TYPE[accessor.type], accessor.componentType, accessor.normalized, bufferView.byteStride, accessor.byteOffset);
-                    gl.enableVertexAttribArray(ATTRIBUTE_LOCATION[name]);
-
                     bufferView.extras.array_buffer = buffer;
                     bufferView.extras.bufferAccessCount = 1; // number of accessors linking to this buffer.
 
                 }
+
+                // setup and enable vertex attributes (Using the predefined and constant locations.)
+                gl.vertexAttribPointer(ATTRIBUTE_LOCATION[name], TYPE[accessor.type], accessor.componentType, accessor.normalized, bufferView.byteStride, accessor.byteOffset);
+                gl.enableVertexAttribArray(ATTRIBUTE_LOCATION[name]);
             }
 
             primitive.extras.vao = vao;
 
-
             const material = primitive.material;
 
-            if (material.extras.shader) {
+            if (material.shader) {
                 return; // shaderprogram already compiled.
             }
 
-            const shader = standardShader(gl, material);
-            material.extras.shader = shader;
+            const shader = standardShader(gl, material, Object.keys(primitive.attributes));
+            material.shader = shader;
 
             if (material.baseColorTexture !== null) {
                 material.baseColorTexture.texture.extras.gl_texture = this.loadTexture(material.baseColorTexture.texture);
