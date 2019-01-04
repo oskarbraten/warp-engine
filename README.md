@@ -10,13 +10,12 @@ A WebGL2 graphics engine inspired by the GLTF2.0 format.
 - [ ] Area lights
 - [ ] Double sided lighting
 - [ ] Transparency (opaque, mask, blend)
-- [ ] Point/line materials
 
 #### GLTF2.0:
 - [x] General functionality.
 - [ ] Animations
 - [ ] Morph targets and sparse accesors
-- [ ] Lights punctual
+- [x] Lights punctual
 - [ ] Generate normals and tangents they're not supplied
 
 #### Performance:
